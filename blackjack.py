@@ -71,12 +71,8 @@ class Shoe:
             deck = Deck()
             for card in deck.cards:
                 self.cards.append(card)
+        random.shuffle(self.cards)
         self.n_cards = len(self.cards)
-
-    def shuffle(self):
-        for i in range(len(self.cards) - 1, 0, -1):
-            r = random.randint(0, i)
-            self.cards[i], self.cards[r] = self.cards[r], self.cards[i]
 
     def draw(self):
         if self.n_cards > 0:
@@ -239,7 +235,7 @@ class Player:
         self.stack = 0.0
         self.invested = 0.0
         self.running_count = 0
-        self.true_count = 0
+        self.true_count = 0.0
 
     def buy_in(self, value: int):
         self.stack += value
@@ -251,6 +247,10 @@ class Player:
         self.invested += value
         self.hands.append(hand)
         return hand
+
+    def init_count(self):
+        self.running_count = 0
+        self.true_count = 0.0
 
     def update_count(self, dealer, shoe: Shoe):
         hands = self.hands.copy()
@@ -269,20 +269,17 @@ class Dealer:
     def __init__(self):
         self.cards = []
         self.sum = 0
-        self.stack = 0
-        self.is_hard = True
         self.is_blackjack = False
 
     def init_hand(self):
         self.cards = []
         self.sum = 0
         self.is_blackjack = False
-        self.is_hard = True
 
     def deal(self, shoe: Shoe):
         card = shoe.draw()
         self.cards.append(card)
-        self.sum, self.is_hard = evaluate_hand(self.cards)
+        self.sum, _ = evaluate_hand(self.cards)
         if self.sum == 21 and len(self.cards) == 2:
             self.is_blackjack = True
 
@@ -313,7 +310,6 @@ def main():
     player = Player()
     player.buy_in(initial_stack)
     shoe = Shoe(n_decs)
-    shoe.shuffle()
     logging.debug('----------------')
     for _ in range(n_games):
         logging.debug('New round starts')
@@ -321,9 +317,7 @@ def main():
         logging.debug('----------------')
         if shoe.n_cards < 20:
             shoe = Shoe(n_decs)
-            shoe.shuffle()
-            player.running_count = 0
-            player.true_count = 0
+            player.init_count()
         player.hands = []
         if args.ai is True and args.count is True and player.true_count > 1:
             bet = initial_bet * math.floor(player.true_count)
@@ -376,6 +370,7 @@ def main():
                             hand.is_split_hand = True
                             new_hand.is_split_hand = True
                             # Only one card more if split card is Ace
+                            # and apparently this hand can not be doubled anymore ?!
                             for handy in (hand, new_hand):
                                 if handy.cards[0].label == 'A':
                                     handy.is_hittable = False
@@ -421,6 +416,7 @@ def main():
                             logging.info(f'Incorrect play, correct play was {correct_play}')
                             decisions['incorrect'] += 1
                 if hand.is_hittable is True:
+                    # Hit or stay
                     correct_play = get_correct_play(hand, dealer.cards[0], len(player.hands))
                     if args.ai is True:
                         if correct_play in ('hit', 'surrender'):

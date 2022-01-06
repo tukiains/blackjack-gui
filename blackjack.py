@@ -516,29 +516,32 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='BlackJack')
     parser.add_argument('--n_games',
                         type=int,
-                        help='Number of rounds to be played')
+                        default=10,
+                        help='Number of rounds to be played. Default is 10.')
     parser.add_argument('--bet',
                         type=int,
-                        help='Bet size')
+                        default=1,
+                        help='Bet size. Default is 1.')
     parser.add_argument('--stack',
                         type=int,
-                        help='Stack size')
+                        default=1000,
+                        help='Stack size. Default is 1000.')
     parser.add_argument('--ai',
                         type=bool,
                         default=False,
-                        help='Computer play')
+                        help='Computer play. Default is False.')
     parser.add_argument('--count',
                         type=bool,
                         default=False,
-                        help='Count cards')
+                        help='Count cards. Default is False. Can be used with --ai=True.')
     parser.add_argument('--delay',
                         type=float,
                         default=0,
-                        help='Delay')
+                        help='Delay in the game flow. Default is 0.')
     parser.add_argument('--loglevel',
                         type=str,
                         default='DEBUG',
-                        help='Log level')
+                        help='Log level. Can be DEBUG or INFO. Default is DEBUG.')
     args = parser.parse_args()
     logging.basicConfig(level=args.loglevel)
     main()

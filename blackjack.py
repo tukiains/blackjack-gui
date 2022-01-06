@@ -45,7 +45,7 @@ class Card:
             return 10
         return 1, 11
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.label}"
 
 
@@ -74,7 +74,7 @@ class Shoe:
         random.shuffle(self.cards)
         self.n_cards = len(self.cards)
 
-    def draw(self):
+    def draw(self) -> Card:
         if self.n_cards > 0:
             card = self.cards.pop(0)
             self.n_cards -= 1
@@ -108,7 +108,7 @@ class Hand:
         self.is_hittable = False
         self.is_blackjack = True
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.cards}'
 
 
@@ -229,42 +229,6 @@ def get_correct_play(hand: Hand,
     raise ValueError("Don't know what to do")
 
 
-class Player:
-    def __init__(self):
-        self.hands = []
-        self.stack = 0.0
-        self.invested = 0.0
-        self.running_count = 0
-        self.true_count = 0.0
-
-    def buy_in(self, value: int):
-        self.stack += value
-
-    def start_new_hand(self, value: int):
-        hand = Hand()
-        hand.bet = value
-        self.stack -= value
-        self.invested += value
-        self.hands.append(hand)
-        return hand
-
-    def init_count(self):
-        self.running_count = 0
-        self.true_count = 0.0
-
-    def update_count(self, dealer, shoe: Shoe):
-        hands = self.hands.copy()
-        hands.append(dealer)
-        for hand in hands:
-            for card in hand.cards:
-                if card.label == 'A' or card.value == 10:
-                    self.running_count -= 1
-                elif card.value <= 6:
-                    self.running_count += 1
-        n_decs_left = shoe.n_cards / 52
-        self.true_count = self.running_count / n_decs_left
-
-
 class Dealer:
     def __init__(self):
         self.cards = []
@@ -283,8 +247,44 @@ class Dealer:
         if self.sum == 21 and len(self.cards) == 2:
             self.is_blackjack = True
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.cards}'
+
+
+class Player:
+    def __init__(self):
+        self.hands = []
+        self.stack = 0.0
+        self.invested = 0.0
+        self.running_count = 0
+        self.true_count = 0.0
+
+    def buy_in(self, value: int):
+        self.stack += value
+
+    def start_new_hand(self, value: int) -> Hand:
+        hand = Hand()
+        hand.bet = value
+        self.stack -= value
+        self.invested += value
+        self.hands.append(hand)
+        return hand
+
+    def init_count(self):
+        self.running_count = 0
+        self.true_count = 0.0
+
+    def update_count(self, dealer: Dealer, shoe: Shoe):
+        hands = self.hands.copy()
+        hands.append(dealer)
+        for hand in hands:
+            for card in hand.cards:
+                if card.label == 'A' or card.value == 10:
+                    self.running_count -= 1
+                elif card.value <= 6:
+                    self.running_count += 1
+        n_decs_left = shoe.n_cards / 52
+        self.true_count = self.running_count / n_decs_left
 
 
 def _is_correct(correct_play: str, action: str, decisions: dict) -> dict:

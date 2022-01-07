@@ -20,7 +20,8 @@ def evaluate_hand(cards: list) -> tuple:
             else:
                 the_sum += 1
         else:
-            the_sum += card.value
+            if isinstance(card.value, int):
+                the_sum += card.value
     if the_sum > 21:
         the_sum = 0
         is_hard = True
@@ -28,12 +29,13 @@ def evaluate_hand(cards: list) -> tuple:
             if card.label == 'A':
                 the_sum += 1
             else:
-                the_sum += card.value
+                if isinstance(card.value, int):
+                    the_sum += card.value
     return the_sum, is_hard
 
 
 class Card:
-    def __init__(self, label):
+    def __init__(self, label: str):
         self.label = label
         self.value = self._get_value()
 
@@ -42,7 +44,9 @@ class Card:
             return int(self.label)
         if self.label in ("J", "Q", "K"):
             return 10
-        return 1, 11
+        elif self.label == 'A':
+            return 1, 11
+        raise ValueError('Bad label')
 
     def __repr__(self) -> str:
         return f"{self.label}"
@@ -128,13 +132,17 @@ def get_correct_play(hand: Hand,
         if hand.sum <= 8:
             return hit
         if hand.sum == 9:
-            return double if dealer_card.value in (3, 4, 5, 6) and n_cards == 2 else hit
+            if dealer_card.value in range(3, 7) and n_cards == 2 and hand.is_hittable is True:
+                return double
+            return hit
         if hand.sum in (10, 11):
-            return hit if dealer_card.value == 10 or dealer_ace is True or n_cards != 2 else double
+            if dealer_card.value in range(2, 10) and n_cards == 2 and hand.is_hittable is True:
+                return double
+            return hit
         if hand.sum == 12:
             return stay if dealer_card.value in (4, 5, 6) else hit
         if hand.sum == 13:
-            return stay if dealer_card.value in (2, 3, 4, 5, 6) else hit
+            return stay if dealer_card.value in range(2, 7) else hit
         if hand.sum in (14, 15):
             if dealer_ace is False:
                 if dealer_card.value == 10 and n_cards == 2 and hand.is_split_hand is False:
@@ -203,23 +211,23 @@ def get_correct_play(hand: Hand,
         if hand.sum >= 19:
             return stay
         if hand.sum == 18:
-            if dealer_card.value in (3, 4, 5, 6):
-                if n_cards == 2:
+            if dealer_card.value in range(3, 7):
+                if n_cards == 2 and hand.is_hittable is True:
                     return double
                 return stay
             if dealer_card.value in (2, 7, 8):
                 return stay
             return hit
         if hand.sum == 17:
-            if dealer_card.value in (3, 4, 5, 6) and n_cards == 2:
+            if dealer_card.value in range(3, 7) and n_cards == 2 and hand.is_hittable is True:
                 return double
             return hit
         if hand.sum in (15, 16):
-            if dealer_card.value in (4, 5, 6) and n_cards == 2:
+            if dealer_card.value in (4, 5, 6) and n_cards == 2 and hand.is_hittable is True:
                 return double
             return hit
         if hand.sum in (13, 14):
-            if dealer_card.value in (5, 6) and n_cards == 2:
+            if dealer_card.value in (5, 6) and n_cards == 2 and hand.is_hittable is True:
                 return double
             return hit
         if hand.sum < 13:

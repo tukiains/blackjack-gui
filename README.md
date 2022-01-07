@@ -36,8 +36,9 @@ Let the computer play perfect basic game and use card counting technique to brin
 ./blackjack.py --n_games=100000 --ai=True --count=True --loglevel=INFO
 ```
 
-## Resources
-Blackjack rules used in this application: https://casinohelsinki.fi/en/games/blackjack-eng/
+## Notes
+* Insurance and even money are not implemented
+* Otherwise, rules follow: https://casinohelsinki.fi/en/games/blackjack-eng/
 
 
 ## Licence

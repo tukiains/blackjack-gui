@@ -37,10 +37,9 @@ class Card:
         self.label = label
         self.value = self._get_value()
 
-    def _get_value(self):
+    def _get_value(self) -> Union[int, tuple]:
         if self.label in ("2", "3", "4", "5", "6", "7", "8", "9", "10"):
-            value = int(self.label)
-            return value
+            return int(self.label)
         if self.label in ("J", "Q", "K"):
             return 10
         return 1, 11
@@ -259,14 +258,14 @@ class Player:
         self.running_count = 0
         self.true_count = 0.0
 
-    def buy_in(self, value: int):
-        self.stack += value
+    def buy_in(self, bet: float):
+        self.stack += bet
 
-    def start_new_hand(self, value: int) -> Hand:
+    def start_new_hand(self, bet: float) -> Hand:
         hand = Hand()
-        hand.bet = value
-        self.stack -= value
-        self.invested += value
+        hand.bet = bet
+        self.stack -= bet
+        self.invested += bet
         self.hands.append(hand)
         return hand
 
@@ -296,33 +295,29 @@ def _is_correct(correct_play: str, action: str, decisions: dict) -> dict:
 
 
 def main():
-    initial_stack = args.stack
-    initial_bet = args.bet
-    n_games = args.n_games
-    sleep_time = args.delay
     decisions = {
         'correct': 0,
         'incorrect': 0
     }
-    n_total_hands = 0
     n_decs = 6
+    n_total_hands = 0
     dealer = Dealer()
     player = Player()
-    player.buy_in(initial_stack)
+    player.buy_in(args.stack)
     shoe = Shoe(n_decs)
     logging.debug('----------------')
-    for _ in range(n_games):
+    for _ in range(args.n_games):
         logging.debug('New round starts')
         logging.debug(f'Stack: {player.stack}')
         logging.debug('----------------')
-        if shoe.n_cards < 20:
+        if shoe.n_cards < 52:
             shoe = Shoe(n_decs)
             player.init_count()
         player.hands = []
         if args.ai is True and args.count is True and player.true_count > 1:
-            bet = initial_bet * math.floor(player.true_count)
+            bet = args.bet * math.floor(player.true_count)
         else:
-            bet = initial_bet
+            bet = args.bet
         hand = player.start_new_hand(bet)
         dealer.init_hand()
         dealer.deal(shoe)
@@ -365,13 +360,11 @@ def main():
                             new_hand = player.start_new_hand(bet)
                             split_card = hand.cards.pop()
                             new_hand.deal(split_card)
-                            hand.deal(shoe)
-                            new_hand.deal(shoe)
-                            hand.is_split_hand = True
-                            new_hand.is_split_hand = True
                             # Only one card more if split card is Ace
                             # and apparently this hand can not be doubled anymore ?!
                             for handy in (hand, new_hand):
+                                handy.deal(shoe)
+                                handy.is_split_hand = True
                                 if handy.cards[0].label == 'A':
                                     handy.is_hittable = False
                             logging.debug(f'Player: {player.hands}')
@@ -390,12 +383,16 @@ def main():
         for hand in player.hands:
             hand_played = False
             while hand_played is False:
-                if hand.surrender is True:
+                if hand.surrender is True or hand.is_blackjack:
                     break
-                logging.debug(f'You are playing hand: {hand}')
+                if hand.is_split_hand and hand.sum != 21:
+                    logging.debug(f'You are playing hand: {hand}')
                 if len(hand.cards) == 2 and hand.is_hittable is True:
                     # Doubling
                     correct_play = get_correct_play(hand, dealer.cards[0], len(player.hands))
+                    if hand.sum == 21:
+                        hand.played = True
+                        break
                     if args.ai is True:
                         action = 'y' if correct_play == 'double' else 'n'
                     else:
@@ -447,14 +444,14 @@ def main():
             # Player already won
             hit_dealer = False
         while hit_dealer is True:
-            time.sleep(sleep_time)
+            time.sleep(args.delay)
             dealer.deal(shoe)
             logging.debug(f'Dealer: {dealer}')
-            time.sleep(sleep_time)
+            time.sleep(args.delay)
             if dealer.sum > 16:
                 hit_dealer = False
 
-        # Pay off
+        # Payout
         for hand in player.hands:
 
             # Losing hands
@@ -467,11 +464,11 @@ def main():
             elif hand.sum < dealer.sum <= 21:
                 logging.debug(f'Dealer: {dealer.sum}, Player: {hand.sum}, you lose!')
 
-            elif hand.sum == 21 and dealer.is_blackjack is True:
+            elif dealer.is_blackjack is True and hand.is_blackjack is False:
                 logging.debug(f'Dealer: BJ, Player: {hand.sum}, you lose to dealer BJ')
 
-            # Push hands
-            elif hand.is_blackjack is True and dealer.is_blackjack is True:
+            # Even hands
+            elif dealer.is_blackjack is True and hand.is_blackjack is True:
                 logging.debug(f'Dealer: BJ, Player: BJ, game is a push.')
                 player.stack += hand.bet
 
@@ -484,11 +481,11 @@ def main():
                 logging.debug(f'You win with BJ!')
                 player.stack += bet * 2.5
 
-            elif dealer.sum > 21 >= hand.sum:
-                logging.debug(f'Dealer: {dealer.sum}, Player: {hand.sum}, you win!')
+            elif dealer.sum > 21:
+                logging.debug(f'Dealer: {dealer.sum}, you win!')
                 player.stack += hand.bet * 2
 
-            elif dealer.sum < hand.sum <= 21:
+            elif dealer.sum < hand.sum:
                 logging.debug(f'Dealer: {dealer.sum}, Player: {hand.sum}, you win!')
                 player.stack += hand.bet * 2
 
@@ -499,7 +496,7 @@ def main():
         player.update_count(dealer, shoe)
         logging.debug('----------------')
 
-    profit = player.stack - initial_stack
+    profit = player.stack - args.stack
     logging.info(f'Number of hands played: {n_total_hands}')
     logging.info(f'Bet size: {args.bet} $')
     logging.info(f'Profit: {profit} $')

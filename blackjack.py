@@ -5,6 +5,10 @@ import time
 import logging
 import argparse
 import math
+import tkinter
+from dataclasses import dataclass
+from PIL import Image, ImageTk
+from itertools import compress
 
 
 def evaluate_hand(cards: list) -> tuple:
@@ -35,8 +39,9 @@ def evaluate_hand(cards: list) -> tuple:
 
 
 class Card:
-    def __init__(self, label: str):
+    def __init__(self, label: str, suit: str):
         self.label = label
+        self.suit = suit
         self.value = self._get_value()
 
     def _get_value(self) -> Union[int, tuple]:
@@ -58,9 +63,9 @@ class Deck:
         self._build()
 
     def _build(self):
-        for _ in ["Spades", "Clubs", "Diamonds", "Hearts"]:
+        for suit in ["spades", "clubs", "diamonds", "hearts"]:
             for v in ("2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"):
-                self.cards.append(Card(v))
+                self.cards.append(Card(v, suit))
 
 
 class Shoe:
@@ -259,9 +264,9 @@ class Dealer:
 
 
 class Player:
-    def __init__(self):
+    def __init__(self, stack: float = 1000):
         self.hands = []
-        self.stack = 0.0
+        self.stack = stack
         self.invested = 0.0
         self.running_count = 0
         self.true_count = 0.0
@@ -294,259 +299,291 @@ class Player:
         self.true_count = self.running_count / n_decs_left
 
 
-def _is_correct(correct_play: str, action: str, decisions: dict) -> dict:
-    if correct_play == action:
-        decisions['correct'] += 1
+@dataclass
+class Gui:
+    root: any
+    menu: any
+    label_text: any
+    frame_player: any
+    slot_player: any
+    frame_dealer: any
+    slot_dealer: any
+    info_text: any
+    info: any
+
+
+class Game:
+
+    def __init__(self, player: Player, dealer: Dealer, gui: Gui, bet: int = 1):
+        self.player = player
+        self.dealer = dealer
+        self.gui = gui
+        self.bet = bet
+        self.shoe = Shoe(6)
+
+    def deal(self):
+        self.player.init_count()
+        self.player.hands = []
+        hand = self.player.start_new_hand(self.bet)
+        self.dealer.init_hand()
+        self.dealer.deal(self.shoe)
+        self.update_dealer_card(0)
+        hand.deal(self.shoe)
+        hand.deal(self.shoe)
+        self.show()
+        self.draw_player_hands()
+        self.gui.label_text.set(f'Stack: {self.player.stack}')
+        if hand.cards[0].value != hand.cards[1].value:
+            self.gui.menu['split']['state'] = tkinter.DISABLED
+        else:
+            self.gui.menu['split']['state'] = tkinter.NORMAL
+            self.gui.info_text['2'].set('Split?')
+        if self.dealer.cards[0].label == 'A':
+            self.gui.menu['surrender']['state'] = tkinter.DISABLED
+        else:
+            self.gui.menu['surrender']['state'] = tkinter.NORMAL
+
+    def surrender(self):
+        self.player.stack += (self.bet/2)
+        self.gui.label_text.set(f'Stack: {self.player.stack}')
+        self.deal()
+
+    def double(self):
+        self.player.stack -= self.bet
+        for hand in self.player.hands:
+            if hand.is_hittable is True:
+                hand.deal(self.shoe)
+                hand.is_hittable = False
+                break
+        for hand in self.player.hands:
+            if hand.is_hittable is True:
+                #self.gui.infobox_text.set(f'Playing {hand}, double up, hit or stay?')
+                break
+
+    def hit(self):
+        for i in self.gui.info_text.values():
+            i.set('')
+        self.deal()
+
+    def split(self):
+        self.gui.menu['surrender']['state'] = tkinter.DISABLED
+        self.gui.info_text['2'].set('')
+        n_hands = len(self.player.hands)
+        for ind in range(n_hands):
+            hand = self.player.hands[ind]
+            if hand.cards[0].value == hand.cards[1].value:
+                new_hand = self.player.start_new_hand(self.bet)
+                split_card = hand.cards.pop()
+                new_hand.deal(split_card)
+                hand.is_split_hand = True
+                new_hand.is_split_hand = True
+                for handy in (hand, new_hand):
+                    handy.deal(self.shoe)
+                    handy.is_split_hand = True
+                    if handy.cards[0].label == 'A':
+                        handy.is_hittable = False
+                self.player.hands[ind] = hand
+                break
+
+        # Sort hands so that splittable hands are first
+        self.player.hands.sort(key=lambda x: not x.cards[0].value == x.cards[1].value)
+        n_hands = len(self.player.hands)
+        for ind in range(n_hands):
+            hand = self.player.hands[ind]
+            if hand.cards[0].value == hand.cards[1].value and len(self.player.hands) < 4:
+                self.gui.menu['split']['state'] = tkinter.NORMAL
+                pos = self.get_first_slot(n_hands) + ind
+                self.gui.info_text[str(pos)].set('Split, double up, hit or stay?')
+                break
+            else:
+                self.gui.menu['split']['state'] = tkinter.DISABLED
+                pos = self.get_first_slot(n_hands)
+                self.clean_info()
+                self.gui.info_text[str(pos)].set('Double up, hit or stay?')
+                self.hide(pos)
+        self.draw_player_hands()
+
+    def show(self):
+        for slot in range(4):
+            for n in range(2):
+                self.gui.slot_player[f'{str(slot)}{str(n)}'].configure(state=tkinter.NORMAL)
+
+    def hide(self, pos: int):
+        for slot in range(4):
+            if slot == pos:
+                state = tkinter.NORMAL
+            else:
+                state = tkinter.DISABLED
+            for n in range(2):
+                self.gui.slot_player[f'{str(slot)}{str(n)}'].configure(state=state)
+
+    def update_dealer_card(self, pos: int):
+        img, width, _ = get_image(self.dealer.cards[pos])
+        self.gui.slot_dealer[str(pos)].configure(image=img)
+        self.gui.slot_dealer[str(pos)].image = img
+
+    def update_player_cards(self, hand_no: int, slot: int = 2):
+        for n in range(2):
+            img, width, _ = get_image(self.player.hands[hand_no].cards[n])
+            self.gui.slot_player[f'{str(slot)}{str(n)}'].configure(image=img, width=width)
+            self.gui.slot_player[f'{str(slot)}{str(n)}'].image = img
+
+    def clean_slots(self):
+        width = 10
+        for slot in range(4):
+            for n in range(2):
+                self.gui.slot_player[f'{str(slot)}{str(n)}'].configure(image='', width=width)
+
+    def clean_info(self):
+        for slot in range(4):
+            self.gui.info_text[str(slot)].set('')
+
+    def draw_player_hands(self):
+        self.clean_slots()
+        n_hands = len(self.player.hands)
+        if n_hands == 1:
+            self.update_player_cards(0)
+        elif n_hands == 2:
+            self.update_player_cards(0, 1)
+            self.update_player_cards(1, 2)
+        elif n_hands == 3:
+            self.update_player_cards(0, 1)
+            self.update_player_cards(1, 2)
+            self.update_player_cards(2, 3)
+        elif n_hands == 4:
+            self.update_player_cards(0, 0)
+            self.update_player_cards(1, 1)
+            self.update_player_cards(2, 2)
+            self.update_player_cards(3, 3)
+
+    @staticmethod
+    def get_first_slot(n_hands: int):
+        if n_hands == 1:
+            return 2
+        if n_hands in (2, 3):
+            return 1
+        return 0
+
+
+def get_image(card: Card = None, width: int = 100, height: int = 130):
+    if card is None:
+        filename = 'images/back.png'
     else:
-        decisions['incorrect'] += 1
-    return decisions
+        prefix = {
+            'A': 'ace',
+            'J': 'jack',
+            'Q': 'queen',
+            'K': 'king',
+        }
+        if card.label in prefix.keys():
+            fix = prefix[card.label]
+        else:
+            fix = str(card.value)
+        filename = f'images/{fix}_of_{card.suit}.png'
+    image = Image.open(filename).resize((width, height), Image.ANTIALIAS)
+    return ImageTk.PhotoImage(image), width, height
 
 
 def main():
-    decisions = {
-        'correct': 0,
-        'incorrect': 0
+    root = tkinter.Tk()
+    root.geometry("1600x600")
+
+    # Stack info
+    label_text = tkinter.StringVar(root)
+    label = tkinter.Label(root, textvariable=label_text)
+    label.grid(row=2, column=4, columnspan=1)
+
+    # Hand info
+    info_text = {str(n): tkinter.StringVar(root) for n in range(4)}
+    info = {str(n): tkinter.Label(root, textvariable=info_text[str(n)], font=20, pady=30) for n in range(4)}
+    for ind, i in enumerate(info.values()):
+        i.grid(row=10, column=ind)
+
+    # Dealer cards
+    test, width_card, _ = get_image()
+    frame_dealer = tkinter.Frame(root, pady=20)
+    slot_dealer = {
+        '0': tkinter.Label(frame_dealer, image=test, width=width_card),
+        '1': tkinter.Label(frame_dealer, image=test, width=width_card)
     }
-    n_decs = 6
-    n_total_hands = 0
+    slot_dealer['0'].pack(side=tkinter.LEFT)
+    slot_dealer['1'].pack(side=tkinter.RIGHT)
+    frame_dealer.grid(row=2, column=2, columnspan=1)
+
+    # Player cards
+    frame_player = {str(n): tkinter.Frame(root, padx=8, pady=5) for n in range(4)}
+    slot_width = 10
+    slot_player = {
+        '00': tkinter.Label(frame_player['0'], width=slot_width),
+        '01': tkinter.Label(frame_player['0'], width=slot_width),
+        '10': tkinter.Label(frame_player['1'], width=slot_width),
+        '11': tkinter.Label(frame_player['1'], width=slot_width),
+        '20': tkinter.Label(frame_player['2'], width=width_card, image=test),
+        '21': tkinter.Label(frame_player['2'], width=width_card, image=test),
+        '30': tkinter.Label(frame_player['3'], width=slot_width),
+        '31': tkinter.Label(frame_player['3'], width=slot_width),
+    }
+    for frame in range(4):
+        slot_player[f'{frame}0'].pack(side=tkinter.LEFT)
+        slot_player[f'{frame}1'].pack(side=tkinter.LEFT)
+
+    for ind, frame in enumerate(frame_player.values()):
+        frame.grid(row=9, column=ind)
+
+    button_width = 15
+    fontsize = 15
+    menu = {
+        'surrender': tkinter.Button(master=root,
+                                    text="Surrender",
+                                    width=button_width,
+                                    font=fontsize,
+                                    command=lambda: game.surrender()),
+        'double': tkinter.Button(master=root,
+                                 text="Double up",
+                                 width=button_width,
+                                 font=fontsize,
+                                 command=lambda: game.double()),
+        'hit': tkinter.Button(master=root,
+                              text="Hit",
+                              width=button_width,
+                              font=fontsize,
+                              command=lambda: game.hit()),
+        'stay': tkinter.Button(master=root,
+                               text="Stay",
+                               width=button_width,
+                               font=fontsize),
+        'split': tkinter.Button(master=root,
+                                text="Split",
+                                width=button_width,
+                                font=fontsize,
+                                command=lambda: game.split())
+    }
+    for ind, button in enumerate(menu.values()):
+        button.grid(row=ind+3, column=4)
+
+    gui = Gui(root,
+              menu,
+              label_text,
+              frame_player,
+              slot_player,
+              frame_dealer,
+              slot_dealer,
+              info_text,
+              info)
+
     dealer = Dealer()
     player = Player()
+    game = Game(player, dealer, gui)
     player.buy_in(args.stack)
-    shoe = Shoe(n_decs)
-    logging.debug('----------------')
-    for _ in range(args.n_games):
-        logging.debug('New round starts')
-        logging.debug(f'Stack: {player.stack}')
-        logging.debug('----------------')
-        if shoe.n_cards < 52:
-            shoe = Shoe(n_decs)
-            player.init_count()
-        player.hands = []
-        if args.ai is True and args.count is True and player.true_count > 1:
-            bet = args.bet * math.floor(player.true_count)
-        else:
-            bet = args.bet
-        hand = player.start_new_hand(bet)
-        dealer.init_hand()
-        dealer.deal(shoe)
-        logging.debug(f'Dealer: {dealer}')
-        hand.deal(shoe)
-        hand.deal(shoe)
-        logging.debug(f'Player: {hand}')
-        if hand.sum == 21:
-            hand.blackjack()
-        else:
-            # Surrender can be done only here. And not against dealer's Ace.
-            if dealer.cards[0].label != 'A':
-                correct_play = get_correct_play(hand, dealer.cards[0], len(player.hands))
-                if args.ai is True:
-                    action = 'y' if correct_play == 'surrender' else 'n'
-                else:
-                    action = input('Surrender? y/n [n]')
-                if action == 'y':
-                    decisions = _is_correct(correct_play, 'surrender', decisions)
-                    hand.is_hittable = False
-                    hand.surrender = True
-                    player.stack += (bet/2)
-
-            # Splitting
-            done_splitting = False
-            while done_splitting is False:
-                if hand.surrender is True:
-                    break
-                n_hands = len(player.hands)
-                for ind in range(n_hands):
-                    hand = player.hands[ind]
-                    if hand.cards[0].value == hand.cards[1].value and hand.is_asked_to_split is False:
-                        correct_play = get_correct_play(hand, dealer.cards[0], len(player.hands))
-                        if args.ai is True:
-                            action = 'y' if correct_play == 'split' else 'n'
-                        else:
-                            action = input(f'Split {hand}? y/n [n]')
-                        if action == 'y':
-                            decisions = _is_correct(correct_play, 'split', decisions)
-                            new_hand = player.start_new_hand(bet)
-                            split_card = hand.cards.pop()
-                            new_hand.deal(split_card)
-                            # Only one card more if split card is Ace
-                            # and apparently this hand can not be doubled anymore ?!
-                            for handy in (hand, new_hand):
-                                handy.deal(shoe)
-                                handy.is_split_hand = True
-                                if handy.cards[0].label == 'A':
-                                    handy.is_hittable = False
-                            logging.debug(f'Player: {player.hands}')
-                        else:
-                            hand.is_asked_to_split = True
-                        if len(player.hands) == 4:
-                            break
-                done_splitting = True
-                for hand in player.hands:
-                    if hand.cards[0].value == hand.cards[1].value and hand.is_asked_to_split is False:
-                        done_splitting = False
-                if len(player.hands) == 4:
-                    done_splitting = True
-
-        # Deal Player:
-        for hand in player.hands:
-            hand_played = False
-            while hand_played is False:
-                if hand.surrender is True or hand.is_blackjack:
-                    break
-                if hand.is_split_hand and hand.sum != 21:
-                    logging.debug(f'You are playing hand: {hand}')
-                if len(hand.cards) == 2 and hand.is_hittable is True:
-                    # Doubling
-                    correct_play = get_correct_play(hand, dealer.cards[0], len(player.hands))
-                    if hand.sum == 21:
-                        hand.played = True
-                        break
-                    if args.ai is True:
-                        action = 'y' if correct_play == 'double' else 'n'
-                    else:
-                        action = input('Double down? y/n [n]')
-                    if action == 'y':
-                        player.stack -= bet
-                        hand.bet += bet
-                        player.invested += bet
-                        hand.deal(shoe)
-                        # Hand can't be played anymore after doubling and dealing
-                        hand.is_hittable = False
-                        hand_played = True
-                        decisions = _is_correct(correct_play, 'double', decisions)
-                    else:
-                        if correct_play != 'double':
-                            decisions['correct'] += 1
-                        else:
-                            logging.info(f'Incorrect play, correct play was {correct_play}')
-                            decisions['incorrect'] += 1
-                if hand.is_hittable is True:
-                    # Hit or stay
-                    correct_play = get_correct_play(hand, dealer.cards[0], len(player.hands))
-                    if args.ai is True:
-                        if correct_play in ('hit', 'surrender'):
-                            # Can not surrender anymore
-                            action = 'h'
-                        else:
-                            action = 's'
-                    else:
-                        action = input('Hit or stay? h/s [h]')
-                    if action == 's':
-                        decisions = _is_correct(correct_play, 'stay', decisions)
-                        break
-                    decisions = _is_correct(correct_play, 'hit', decisions)
-                    hand.deal(shoe)
-                else:
-                    hand_played = True
-                logging.debug(f'Player: {hand}')
-                if hand.sum >= 21:
-                    hand_played = True
-
-        # Deal Dealer:
-        hit_dealer = False
-        for hand in player.hands:
-            if hand.is_over is False and hand.surrender is False:
-                hit_dealer = True
-        if player.hands[0].is_blackjack is True:
-            if dealer.cards[0].label != 'A' and dealer.cards[0].value != 10:
-                # Player already won
-                hit_dealer = False
-            else:
-                hit_dealer = True
-        while hit_dealer is True:
-            time.sleep(args.delay)
-            dealer.deal(shoe)
-            logging.debug(f'Dealer: {dealer}')
-            time.sleep(args.delay)
-            if dealer.sum > 16:
-                hit_dealer = False
-            if player.hands[0].is_blackjack is True and dealer.is_blackjack is False:
-                hit_dealer = False
-
-        # Payout
-        for hand in player.hands:
-
-            # Losing hands
-            if hand.surrender:
-                logging.debug(f'You lose by surrendering.')
-
-            elif hand.sum > 21:
-                logging.debug(f'Player: {hand.sum}, you lose!')
-
-            elif hand.sum < dealer.sum <= 21:
-                logging.debug(f'Dealer: {dealer.sum}, Player: {hand.sum}, you lose!')
-
-            elif dealer.is_blackjack is True and hand.is_blackjack is False:
-                logging.debug(f'Dealer: BJ, Player: {hand.sum}, you lose to dealer BJ')
-
-            # Even hands
-            elif dealer.is_blackjack is True and hand.is_blackjack is True:
-                logging.debug(f'Dealer: BJ, Player: BJ, game is a push.')
-                player.stack += hand.bet
-
-            elif hand.is_blackjack is False and dealer.is_blackjack is False and hand.sum == dealer.sum:
-                logging.debug(f'Dealer: {dealer.sum}, Player: {hand.sum}, game is a push.')
-                player.stack += hand.bet
-
-            # Winning hands
-            elif hand.is_blackjack is True and dealer.is_blackjack is False:
-                logging.debug(f'You win with BJ!')
-                player.stack += bet * 2.5
-
-            elif dealer.sum > 21:
-                logging.debug(f'Dealer: {dealer.sum}, you win!')
-                player.stack += hand.bet * 2
-
-            elif dealer.sum < hand.sum:
-                logging.debug(f'Dealer: {dealer.sum}, Player: {hand.sum}, you win!')
-                player.stack += hand.bet * 2
-
-            else:
-                raise ValueError('Unknown result')
-
-        n_total_hands += len(player.hands)
-        player.update_count(dealer, shoe)
-        logging.debug('----------------')
-
-    profit = player.stack - args.stack
-    logging.info(f'Number of hands played: {n_total_hands}')
-    logging.info(f'Bet size: {args.bet} $')
-    logging.info(f'Profit: {profit} $')
-    logging.info(f'Return {round((1 + profit / player.invested) * 100 * 1e4)/1e4} %')
-    if args.ai is False:
-        logging.info(f'Correct decisions: {decisions["correct"] / (decisions["correct"] + decisions["incorrect"]) * 100} %')
+    game.deal()
+    tkinter.mainloop()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='BlackJack')
-    parser.add_argument('--n_games',
-                        type=int,
-                        default=10,
-                        help='Number of rounds to be played. Default is 10.')
-    parser.add_argument('--bet',
-                        type=int,
-                        default=1,
-                        help='Bet size. Default is 1.')
     parser.add_argument('--stack',
                         type=int,
                         default=1000,
                         help='Stack size. Default is 1000.')
-    parser.add_argument('--ai',
-                        type=bool,
-                        default=False,
-                        help='Computer play. Default is False.')
-    parser.add_argument('--count',
-                        type=bool,
-                        default=False,
-                        help='Count cards. Default is False. Can be used with --ai=True.')
-    parser.add_argument('--delay',
-                        type=float,
-                        default=0,
-                        help='Delay in the game flow. Default is 0.')
-    parser.add_argument('--loglevel',
-                        type=str,
-                        default='DEBUG',
-                        help='Log level. Can be DEBUG or INFO. Default is DEBUG.')
     args = parser.parse_args()
-    logging.basicConfig(level=args.loglevel)
     main()

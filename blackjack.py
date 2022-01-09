@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from typing import Union
 import random
-import time
 import argparse
 import tkinter
 from dataclasses import dataclass
@@ -397,16 +396,22 @@ class Game:
             surrender = ''
         if len(hand.cards) == 2 and hand.is_hittable is True:
             double = ', double up'
+            self.show_buttons(('double',))
         else:
             double = ''
+            self.hide_buttons(('double',))
         if hand.cards[0].value == hand.cards[1].value and len(hand.cards) == 2 and n_hands < 4:
             split = ', split'
+            self.show_buttons(('split',))
         else:
             split = ''
+            self.hide_buttons(('split',))
         if hand.is_hittable is True:
             hit = ', hit'
+            self.show_buttons(('hit',))
         else:
             hit = ''
+            self.hide_buttons(('hit',))
         if hand.sum >= 21:
             action = ''
         else:
@@ -419,6 +424,7 @@ class Game:
         self.deal()
 
     def double(self):
+        self.hide_buttons(('surrender',))
         self.player.stack -= self.bet
         self.gui.label_text.set(f'Stack: {self.player.stack}')
         hand = self.get_hand_in_active_slot()
@@ -492,6 +498,7 @@ class Game:
         self.deal()
 
     def hit(self):
+        self.hide_buttons(('surrender', 'double'))
         hand = self.get_hand_in_active_slot()
         hand.deal(self.shoe)
         self.display_player_hands()
@@ -520,7 +527,7 @@ class Game:
         self.resolve_next_hand()
 
     def split(self):
-        self.gui.menu['surrender']['state'] = tkinter.DISABLED
+        self.hide_buttons(('surrender',))
         n_hands = len(self.player.hands)
         for ind in range(n_hands):
             hand = self.player.hands[ind]
@@ -536,7 +543,9 @@ class Game:
                     if handy.sum == 21:
                         handy.is_finished = True
                     if handy.cards[0].label == 'A':
+                        # Split Aces receive only one card more
                         handy.is_hittable = False
+                        handy.is_finished = True
                 self.player.hands[ind] = hand
                 break
 
@@ -551,10 +560,8 @@ class Game:
                 break
             else:
                 self.player.sort_hands()
-                self.gui.menu['split']['state'] = tkinter.DISABLED
-                hand = self.player.hands[0]
-                self.active_slot = hand.slot
-                self.ask_what_to_do(hand)
+                self.display_player_hands()
+                self.resolve_next_hand()
         self.display_player_hands()
 
     def show(self):

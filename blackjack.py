@@ -364,6 +364,8 @@ class Game:
         self.display_dealer_cards()
         hand.deal(self.shoe)
         hand.deal(self.shoe)
+        hand.cards[0]=Card('J', 'clubs')
+        hand.cards[1] = Card('K', 'diamonds')
         self.show_buttons()
         self.hide_buttons(('next',))
         self.show()
@@ -653,25 +655,25 @@ def get_image(card: Card = None, width: int = 100, height: int = 130, full_size:
             fix = str(card.value)
         filename = f'images/{fix}_of_{card.suit}.png'
     image = Image.open(filename).resize((width, height), Image.ANTIALIAS)
-    width = width if full_size is True else width - 55
+    width = width if full_size is True else width - 65
     return ImageTk.PhotoImage(image), width, height
 
 
 def main():
     root = tkinter.Tk()
-    root.geometry("1600x600")
+    root.geometry("1200x700")
 
     # Stack info
     label_text = tkinter.StringVar(root)
     label = tkinter.Label(root, textvariable=label_text)
-    label.grid(row=1, column=10, columnspan=1)
+    #label.grid(row=1, column=10, columnspan=1)
 
     # Hand info
     info_text = {str(slot): tkinter.StringVar(root) for slot in range(4)}
     info = {str(slot): tkinter.Label(root, textvariable=info_text[str(slot)], font=20, pady=30)
             for slot in range(4)}
     for ind, i in enumerate(info.values()):
-        i.grid(row=10, column=ind)
+        i.place(x=ind*250, y=500)
 
     # Dealer cards
     card_back_img, width_card, _ = get_image(full_size=True)
@@ -683,7 +685,7 @@ def main():
         slot_dealer[str(pos)].pack(side=tkinter.LEFT)
     for pos in range(N_CARDS_MAX):
         slot_dealer[str(pos)].pack(side=tkinter.LEFT)
-    frame_dealer.grid(row=2, column=2)
+    frame_dealer.place(x=330, y=30)
 
     # Player cards
     frame_player = {str(n): tkinter.Frame(root, padx=8, pady=5) for n in range(4)}
@@ -692,9 +694,8 @@ def main():
     for frame in range(4):
         for pos in range(N_CARDS_MAX):
             slot_player[f'{str(frame)}{str(pos)}'].pack(side=tkinter.LEFT)
-
     for ind, frame in enumerate(frame_player.values()):
-        frame.grid(row=8, column=ind, rowspan=2)
+        frame.place(x=ind*250, y=350)
 
     # Buttons
     menu = {name.split()[0].lower(): tkinter.Button(master=root, text=name, width=15, font=15)
@@ -716,11 +717,12 @@ def main():
             button.configure(command=lambda: game.reset())
         else:
             raise ValueError
+    button_x = 1000
     for ind, button in enumerate(menu.values()):
-        button.grid(row=ind+3, column=10)
+        button.place(x=button_x, y=ind*33+150)
 
-    menu['next'].grid(row=9)
-    menu['reset'].grid(row=2)
+    menu['next'].place(x=button_x, y=400)
+    menu['reset'].place(x=button_x, y=50)
 
     gui = Gui(root,
               menu,

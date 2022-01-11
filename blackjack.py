@@ -71,20 +71,24 @@ class Shoe:
     def __init__(self, n_decs: int):
         self.cards = []
         self.n_cards = 0
-        self._build(n_decs)
+        self.n_decs = n_decs
+        self._n_cards_total = self.n_decs * 52
+        self._build()
 
-    def _build(self, n_decs: int):
-        for _ in range(n_decs):
+    def _build(self):
+        for _ in range(self.n_decs):
             deck = Deck()
             for card in deck.cards:
                 self.cards.append(card)
         random.shuffle(self.cards)
         self.n_cards = len(self.cards)
 
-    def draw(self) -> Card:
+    def draw(self, progress: any) -> Card:
         if self.n_cards > 0:
             card = self.cards.pop(0)
             self.n_cards -= 1
+            fraction = (self._n_cards_total - self.n_cards) / self._n_cards_total
+            progress.place(x=30, y=150, anchor="se", relheight=fraction, relwidth=1.)
             return card
         raise ValueError('Empty shoe!')
 
@@ -104,9 +108,9 @@ class Hand:
         self.slot = None
         self.is_finished = False  # if True, no more playing for this hand
 
-    def deal(self, source: Union[Shoe, Card]):
+    def deal(self, source: Union[Shoe, Card], progress: any):
         if isinstance(source, Shoe):
-            self.cards.append(source.draw())
+            self.cards.append(source.draw(progress))
         else:
             self.cards.append(source)
         self.sum, self.is_hard = evaluate_hand(self.cards)
@@ -259,8 +263,8 @@ class Dealer:
         self.is_finished = False
         self.is_over = False
 
-    def deal(self, shoe: Shoe):
-        card = shoe.draw()
+    def deal(self, shoe: Shoe, progress: any):
+        card = shoe.draw(progress)
         self.cards.append(card)
         self.sum, _ = evaluate_hand(self.cards)
         if self.sum > 16:
@@ -338,6 +342,7 @@ class Gui:
     info: any
     chips: any
     finger: any
+    shoe_progress: any
 
 
 class Game:
@@ -361,14 +366,11 @@ class Game:
         self.player.hands = []
         hand = self.player.start_new_hand(self.bet)
         self.dealer.init_hand()
-        self.dealer.deal(self.shoe)
-        self.dealer.deal(self.shoe)
+        self.dealer.deal(self.shoe, self.gui.shoe_progress)
+        self.dealer.deal(self.shoe, self.gui.shoe_progress)
         self.display_dealer_cards()
-        hand.deal(self.shoe)
-        hand.deal(self.shoe)
-        #hand.cards[0] = Card('2', 'clubs')
-        #hand.cards[1] = Card('2', 'diamonds')
-        #hand.is_blackjack = True
+        hand.deal(self.shoe, self.gui.shoe_progress)
+        hand.deal(self.shoe, self.gui.shoe_progress)
         self.show_buttons()
         self.hide_buttons(('next',))
         self.show()
@@ -420,7 +422,7 @@ class Game:
         self.display_stack()
         hand = self.get_hand_in_active_slot()
         hand.bet += self.bet
-        hand.deal(self.shoe)
+        hand.deal(self.shoe, self.gui.shoe_progress)
         self.display_chip(hand, 1)
         hand.is_finished = True
         self.display_player_hands()
@@ -441,7 +443,7 @@ class Game:
             if self.is_all_over() is False:
                 self.display_dealer_cards(hide_second=False)
                 while self.dealer.is_finished is False:
-                    self.dealer.deal(self.shoe)
+                    self.dealer.deal(self.shoe, self.gui.shoe_progress)
                     self.display_dealer_cards()
             self.payout()
 
@@ -518,7 +520,7 @@ class Game:
     def hit(self):
         self.hide_buttons(('surrender', 'double'))
         hand = self.get_hand_in_active_slot()
-        hand.deal(self.shoe)
+        hand.deal(self.shoe, self.gui.shoe_progress)
         self.display_player_hands()
         if hand.is_over is True:
             self.hide(hand)
@@ -553,7 +555,7 @@ class Game:
             if hand.cards[0].value == hand.cards[1].value:
                 new_hand = self.player.start_new_hand(self.bet)
                 split_card = hand.cards.pop()
-                new_hand.deal(split_card)
+                new_hand.deal(split_card, self.gui.shoe_progress)
                 hand.is_split_hand = True
                 new_hand.is_split_hand = True
                 self.display_chip(new_hand, 0)
@@ -716,6 +718,14 @@ def main():
     root = tkinter.Tk()
     root.geometry("1200x700")
 
+    # Shoe status
+    shoe_status_container = tkinter.Label(root, borderwidth=0, background='white')
+    shoe_status_container.place(x=20, y=30, height=150, width=30)
+    shoe_progress = tkinter.Label(shoe_status_container, background="black", borderwidth=0,
+                                  anchor="e")
+    shoe_label = tkinter.Label(root, text='Discard', font=12)
+    shoe_label.place(x=5, y=190)
+
     # Stack info
     label_text = tkinter.StringVar(root)
     label = tkinter.Label(root, textvariable=label_text, font=15)
@@ -742,7 +752,7 @@ def main():
         slot_dealer[str(pos)].image = card_back_img
         slot_dealer[str(pos)].pack(side=tkinter.LEFT)
     for pos in range(N_CARDS_MAX):
-        slot_dealer[str(pos)].place(y=50, x=350+pos*105)
+        slot_dealer[str(pos)].place(y=40, x=350+pos*105)
 
     # Player cards
     slot_player = {f'{str(slot)}{str(pos)}': tkinter.Label(root)
@@ -798,7 +808,8 @@ def main():
               info_text,
               info,
               chips,
-              finger)
+              finger,
+              shoe_progress)
 
     dealer = Dealer()
     player = Player()

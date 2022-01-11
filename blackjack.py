@@ -70,6 +70,8 @@ class Game:
         self.display_chip(hand, 0)
         if hand.is_blackjack:
             self.resolve_blackjack()
+        if self.dealer.cards[0].label == 'A':
+            self.hide_buttons(('surrender', ))
 
     def resolve_blackjack(self):
         if self.dealer.cards[0].label == 'A' or self.dealer.cards[0].value == 10:

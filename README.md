@@ -18,6 +18,7 @@ $ python3 -m venv venv
 $ source venv/bin/activate
 $ pip3 install pillow
 ```
+<img src="images/bj-shot.png" alt="blackjackpy GUI" width="600"/>
 
 ## Usage
 

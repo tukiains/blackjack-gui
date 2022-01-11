@@ -3,8 +3,7 @@ from pathlib import Path
 import pytest
 rootpath = Path(__file__).parents[1].absolute()
 sys.path.append(str(rootpath))
-import blackjack
-from blackjack import Card, Hand
+from lib import Card, Hand, evaluate_hand, get_correct_play
 
 
 @pytest.mark.parametrize("cards, the_sum, is_hard", [
@@ -25,8 +24,8 @@ from blackjack import Card, Hand
     ([Card("A", "hearts"), Card("A", "hearts"), Card("9", "hearts")], 21, False),
 ])
 def test_evaluate_hand(cards, the_sum, is_hard):
-    the_sum, is_hard = blackjack.evaluate_hand(cards)
-    assert blackjack.evaluate_hand(cards) == (the_sum, is_hard)
+    the_sum, is_hard = evaluate_hand(cards)
+    assert evaluate_hand(cards) == (the_sum, is_hard)
 
 
 # Test hands that are OK to hit
@@ -223,11 +222,11 @@ def test_evaluate_hand(cards, the_sum, is_hard):
 def test_get_correct_play(cards, dealer, correct_play):
     hand = Hand()
     for label in cards:
-        hand.cards.append(Card(label))
-    hand.sum, hand.is_hard = blackjack.evaluate_hand(hand.cards)
+        hand.cards.append(Card(label, 'clubs'))
+    hand.sum, hand.is_hard = evaluate_hand(hand.cards)
     n_hands = 1
-    dealer_card = Card(dealer)
-    assert blackjack.get_correct_play(hand, dealer_card, n_hands) == correct_play
+    dealer_card = Card(dealer, 'clubs')
+    assert get_correct_play(hand, dealer_card, n_hands) == correct_play
 
 
 # Test hands that can not be doubled
@@ -263,9 +262,9 @@ def test_get_correct_play(cards, dealer, correct_play):
 def test_get_correct_play_no_double(cards, dealer, correct_play):
     hand = Hand()
     for label in cards:
-        hand.cards.append(Card(label))
-    hand.sum, hand.is_hard = blackjack.evaluate_hand(hand.cards)
+        hand.cards.append(Card(label, 'clubs'))
+    hand.sum, hand.is_hard = evaluate_hand(hand.cards)
     n_hands = 1
     hand.is_hittable = False
-    dealer_card = Card(dealer)
-    assert blackjack.get_correct_play(hand, dealer_card, n_hands) == correct_play
+    dealer_card = Card(dealer, 'hearts')
+    assert get_correct_play(hand, dealer_card, n_hands) == correct_play

@@ -364,6 +364,8 @@ class Game:
         self.hide_fingers()
         self.player.init_count()
         self.player.hands = []
+        if self.shoe.n_cards < 52:
+            self.shoe = Shoe(6)
         hand = self.player.start_new_hand(self.bet)
         self.dealer.init_hand()
         self.dealer.deal(self.shoe, self.gui.shoe_progress)

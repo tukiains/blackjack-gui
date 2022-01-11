@@ -203,7 +203,7 @@ class Game:
     def reset(self):
         """Method for Reset button."""
         self.clean_info()
-        self.player.buy_in(self.player.stack)
+        self.player.buy_in(self.player.initial_stack)
         self.shoe = self.init_shoe()
         self.clean_dealer_slots()
         self.deal()

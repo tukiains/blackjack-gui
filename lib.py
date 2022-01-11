@@ -127,6 +127,7 @@ class Player:
     def __init__(self, stack: float = 1000):
         self.hands = []
         self.stack = stack
+        self.initial_stack = stack
         self.invested = 0.0
         self.running_count = 0
         self.true_count = 0.0

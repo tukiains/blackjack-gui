@@ -34,12 +34,12 @@ Open GUI version of blackjackpy:
 ./blackjack.py
 ```
 
-With the default settings, play 10 rounds of Blackjack without GUI.
+With the default settings, play 10 rounds of Blackjack without GUI:
 ```
 ./blackjack.py --gui=False
 ```
 
-Let the computer play perfect basic game and use card counting technique to bring down the house.
+Let the computer play perfect basic game and use card counting technique to bring down the house:
 ```
 ./blackjack.py --n_games=100000 --ai=True --count=True --loglevel=INFO --gui=False
 ```

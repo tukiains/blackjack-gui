@@ -7,6 +7,16 @@ $ git clone  https://github.com/tukiains/blackjackpy/
 $ cd blackjackpy/
 ```
 
+Blackjackpy GUI uses [tkinter](https://docs.python.org/3/library/tkinter.html)
+and [Pillow](https://pillow.readthedocs.io/en/stable/). You might need to install these using, e.g.
+```
+$ sudo apt install python3-pil.imagetk
+```
+or using pip:
+```
+$ pip3 install pillow
+```
+
 ## Usage
 
 ```

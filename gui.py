@@ -431,6 +431,7 @@ def get_finger_image():
 def main(args):
     root = tkinter.Tk()
     root.geometry("1200x700")
+    root.title('Blackjack')
 
     # Advisor button
     fix_mistakes = tkinter.IntVar()

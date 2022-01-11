@@ -5,6 +5,9 @@ from dataclasses import dataclass
 from PIL import Image, ImageTk
 import sys
 from pathlib import Path
+
+import lib
+
 rootpath = Path(__file__).absolute()
 sys.path.append(str(rootpath))
 from lib import Card, Hand, Player, Dealer, Shoe
@@ -25,6 +28,7 @@ class Gui:
     chips: any
     finger: any
     shoe_progress: any
+    fix_mistakes: any
 
 
 class Game:
@@ -66,14 +70,6 @@ class Game:
         self.display_chip(hand, 0)
         if hand.is_blackjack:
             self.resolve_blackjack()
-        if hand.cards[0].value != hand.cards[1].value:
-            self.gui.menu['split']['state'] = tkinter.DISABLED
-        else:
-            self.gui.menu['split']['state'] = tkinter.NORMAL
-        if self.dealer.cards[0].label == 'A':
-            self.gui.menu['surrender']['state'] = tkinter.DISABLED
-        else:
-            self.gui.menu['surrender']['state'] = tkinter.NORMAL
 
     def resolve_blackjack(self):
         if self.dealer.cards[0].label == 'A' or self.dealer.cards[0].value == 10:
@@ -98,16 +94,22 @@ class Game:
 
     def surrender(self):
         """Method for Surrender button."""
+        if self.gui.fix_mistakes.get() == 1:
+            if self.check_play(self.player.hands[0], 'surrender') is False:
+                return
         self.player.stack += (self.bet/2)
         self.display_stack()
         self.deal()
 
     def double(self):
         """Method for Double button."""
+        hand = self.get_hand_in_active_slot()
+        if self.gui.fix_mistakes.get() == 1:
+            if self.check_play(hand, 'double') is False:
+                return
         self.hide_buttons(('surrender',))
         self.player.stack -= self.bet
         self.display_stack()
-        hand = self.get_hand_in_active_slot()
         hand.bet += self.bet
         hand.deal(self.shoe, self.gui.shoe_progress)
         self.display_chip(hand, 1)
@@ -118,6 +120,14 @@ class Game:
             self.hide_chips(hand)
         self.clean_info()
         self.resolve_next_hand()
+
+    def check_play(self, hand: Hand, play: str) -> bool:
+        correct_play = lib.get_correct_play(hand, self.dealer.cards[0], len(self.player.hands))
+        if correct_play != play:
+            self.display_info(hand, 'Incorrect! Try again..')
+            self.gui.root.after(1000, self.clean_info)
+            return False
+        return True
 
     def resolve_next_hand(self):
         hand = self.get_first_unfinished_hand()
@@ -168,7 +178,7 @@ class Game:
                 result = f'Push hand'
             else:
                 raise ValueError
-            self.gui.info_text[str(hand.slot)].set(result)
+            self.display_info(hand, result)
         self.display_stack()
         self.hide_buttons()
         self.show_buttons(('next',))
@@ -192,6 +202,10 @@ class Game:
                 return False
         return True
 
+    def display_info(self, hand: Hand, info: str):
+        """Prints text below hand."""
+        self.gui.info_text[str(hand.slot)].set(info)
+
     def reset(self):
         """Method for Reset button."""
         self.clean_info()
@@ -207,8 +221,11 @@ class Game:
 
     def hit(self):
         """Method for Hit button."""
-        self.hide_buttons(('surrender', 'double'))
         hand = self.get_hand_in_active_slot()
+        if self.gui.fix_mistakes.get() == 1:
+            if self.check_play(hand, 'hit') is False:
+                return
+        self.hide_buttons(('surrender', 'double'))
         hand.deal(self.shoe, self.gui.shoe_progress)
         self.display_player_hands()
         if hand.is_over is True:
@@ -234,11 +251,18 @@ class Game:
     def stay(self):
         """Method for Stay button."""
         hand = self.get_hand_in_active_slot()
+        if self.gui.fix_mistakes.get() == 1:
+            if self.check_play(hand, 'stay') is False:
+                return
         hand.is_finished = True
         self.resolve_next_hand()
 
     def split(self):
         """Method for Split button."""
+        hand = self.get_hand_in_active_slot()
+        if self.gui.fix_mistakes.get() == 1:
+            if self.check_play(hand, 'split') is False:
+                return
         self.hide_buttons(('surrender',))
         n_hands = len(self.player.hands)
         for ind in range(n_hands):
@@ -414,6 +438,13 @@ def main():
     root = tkinter.Tk()
     root.geometry("1200x700")
 
+    # Advisor button
+    fix_mistakes = tkinter.IntVar()
+    checkbox_container = tkinter.Checkbutton(root,
+                                             text='Coach mode',
+                                             variable=fix_mistakes)
+    checkbox_container.place(x=1025, y=600)
+
     # Shoe status
     shoe_status_container = tkinter.Label(root, borderwidth=0, background='white')
     shoe_status_container.place(x=20, y=30, height=150, width=30)
@@ -425,7 +456,7 @@ def main():
     # Stack info
     label_text = tkinter.StringVar(root)
     label = tkinter.Label(root, textvariable=label_text, font=15)
-    label.place(x=1050, y=520)
+    label.place(x=1035, y=520)
 
     # Hand info
     info_text = {str(slot): tkinter.StringVar(root) for slot in range(4)}
@@ -448,7 +479,7 @@ def main():
         slot_dealer[str(pos)].image = card_back_img
         slot_dealer[str(pos)].pack(side=tkinter.LEFT)
     for pos in range(N_CARDS_MAX):
-        slot_dealer[str(pos)].place(y=40, x=350+pos*105)
+        slot_dealer[str(pos)].place(y=40, x=300+pos*105)
 
     # Player cards
     slot_player = {f'{str(slot)}{str(pos)}': tkinter.Label(root)
@@ -505,7 +536,8 @@ def main():
               info,
               chips,
               finger,
-              shoe_progress)
+              shoe_progress,
+              fix_mistakes)
 
     dealer = Dealer()
     player = Player()
@@ -515,7 +547,7 @@ def main():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='BlackJack')
+    parser = argparse.ArgumentParser(description='Blackjack')
     parser.add_argument('--stack',
                         type=int,
                         default=1000,

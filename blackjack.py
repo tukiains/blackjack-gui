@@ -332,12 +332,12 @@ class Gui:
     root: any
     menu: any
     label_text: any
-    frame_player: any
     slot_player: any
-    frame_dealer: any
     slot_dealer: any
     info_text: any
     info: any
+    chips: any
+    finger: any
 
 
 class Game:
@@ -355,6 +355,8 @@ class Game:
         return Shoe(6)
 
     def deal(self):
+        self.hide_all_chips()
+        self.hide_fingers()
         self.player.init_count()
         self.player.hands = []
         hand = self.player.start_new_hand(self.bet)
@@ -364,15 +366,17 @@ class Game:
         self.display_dealer_cards()
         hand.deal(self.shoe)
         hand.deal(self.shoe)
-        hand.cards[0]=Card('J', 'clubs')
-        hand.cards[1] = Card('K', 'diamonds')
+        #hand.cards[0] = Card('2', 'clubs')
+        #hand.cards[1] = Card('2', 'diamonds')
+        #hand.is_blackjack = True
         self.show_buttons()
         self.hide_buttons(('next',))
         self.show()
         self.display_player_hands()
         self.active_slot = hand.slot
-        self.gui.label_text.set(f'Stack: {self.player.stack}')
+        self.display_stack()
         self.ask_what_to_do(hand)
+        self.display_chip(hand, 0)
         if hand.is_blackjack:
             self.resolve_blackjack()
         if hand.cards[0].value != hand.cards[1].value:
@@ -392,47 +396,37 @@ class Game:
     def ask_what_to_do(self, hand: Hand):
         self.clean_info()
         n_hands = len(self.player.hands)
-        if n_hands == 1 and len(hand.cards) == 2 and self.dealer.cards[0].label != 'A':
-            surrender = ', surrender'
-        else:
-            surrender = ''
         if len(hand.cards) == 2 and hand.is_hittable is True:
-            double = ', double up'
             self.show_buttons(('double',))
         else:
-            double = ''
             self.hide_buttons(('double',))
         if hand.cards[0].value == hand.cards[1].value and len(hand.cards) == 2 and n_hands < 4:
-            split = ', split'
             self.show_buttons(('split',))
         else:
-            split = ''
             self.hide_buttons(('split',))
         if hand.is_hittable is True:
-            hit = ', hit'
             self.show_buttons(('hit',))
         else:
-            hit = ''
             self.hide_buttons(('hit',))
-        if hand.sum >= 21:
-            action = ''
-        else:
-            action = f'Stay{surrender}{double}{split}{hit}?'
-        self.gui.info_text[str(hand.slot)].set(action)
 
     def surrender(self):
         self.player.stack += (self.bet/2)
-        self.gui.label_text.set(f'Stack: {self.player.stack}')
+        self.display_stack()
         self.deal()
 
     def double(self):
         self.hide_buttons(('surrender',))
         self.player.stack -= self.bet
-        self.gui.label_text.set(f'Stack: {self.player.stack}')
+        self.display_stack()
         hand = self.get_hand_in_active_slot()
+        hand.bet += self.bet
         hand.deal(self.shoe)
+        self.display_chip(hand, 1)
         hand.is_finished = True
         self.display_player_hands()
+        if hand.sum > 21:
+            self.hide(hand)
+            self.hide_chips(hand)
         self.clean_info()
         self.resolve_next_hand()
 
@@ -441,6 +435,7 @@ class Game:
         if hand is not None:
             self.active_slot = hand.slot
             self.ask_what_to_do(hand)
+            self.display_finger(hand)
         else:
             self.clean_info()
             if self.is_all_over() is False:
@@ -451,35 +446,56 @@ class Game:
             self.payout()
 
     def payout(self):
+        self.hide_fingers()
         for hand in self.player.hands:
             if hand.is_blackjack is True and self.dealer.is_blackjack is False:
                 self.player.stack += hand.bet * 2.5
                 result = f'Win by Blackjack!'
+                self._display_chips(hand, bj=True)
             elif hand.is_blackjack is True and self.dealer.is_blackjack is True:
                 self.player.stack += hand.bet
-                result = f'Push hand'
+                result = f'Push hand (both have BJ)'
             elif hand.is_over is False and self.dealer.is_over is True:
                 self.player.stack += hand.bet * 2
                 result = f'Win (dealer > 21)'
+                self._display_chips(hand)
             elif hand.is_over is True:
                 result = f'Lose (player > 21)'
+                self.hide_chips(hand)
+                self.hide(hand)
             elif hand.sum < self.dealer.sum:
                 result = f'Lose ({hand.sum} vs {self.dealer.sum})'
+                self.hide_chips(hand)
+                self.hide(hand)
             elif hand.surrender is True:
                 self.player.stack += hand.bet / 2
                 result = f'Lose by surrender'
             elif hand.sum > self.dealer.sum:
                 self.player.stack += hand.bet * 2
                 result = f'Win ({hand.sum} vs {self.dealer.sum})'
+                self._display_chips(hand)
             elif hand.sum == self.dealer.sum:
                 self.player.stack += hand.bet
                 result = f'Push hand'
             else:
                 raise ValueError
             self.gui.info_text[str(hand.slot)].set(result)
-        self.gui.label_text.set(f'Stack: {self.player.stack}')
+        self.display_stack()
         self.hide_buttons()
         self.show_buttons(('next',))
+
+    def display_stack(self):
+        self.gui.label_text.set(f'Stack: {self.player.stack} $')
+
+    def _display_chips(self, hand, bj: bool = False):
+        if bj is True:
+            self.display_chip(hand, 1)
+            self.display_chip(hand, 2, color='blue')
+        elif hand.bet == self.bet:
+            self.display_chip(hand, 1)
+        elif hand.bet == (2 * self.bet):
+            for n in range(4):
+                self.display_chip(hand, n)
 
     def is_all_over(self) -> bool:
         for hand in self.player.hands:
@@ -505,7 +521,8 @@ class Game:
         hand.deal(self.shoe)
         self.display_player_hands()
         if hand.is_over is True:
-            self.hide(hand.slot)
+            self.hide(hand)
+            self.hide_chips(hand)
         if hand.sum == 21:
             hand.is_finished = True
         if hand.is_finished is False:
@@ -539,6 +556,8 @@ class Game:
                 new_hand.deal(split_card)
                 hand.is_split_hand = True
                 new_hand.is_split_hand = True
+                self.display_chip(new_hand, 0)
+                self.display_stack()
                 for handy in (hand, new_hand):
                     handy.deal(self.shoe)
                     handy.is_split_hand = True
@@ -572,10 +591,10 @@ class Game:
             for n in range(N_CARDS_MAX):
                 self.gui.slot_player[f'{str(slot)}{str(n)}'].configure(state=tkinter.NORMAL)
 
-    def hide(self, slot):
+    def hide(self, hand: Hand):
         """Hides cards in slot."""
         for n in range(N_CARDS_MAX):
-            self.gui.slot_player[f'{str(slot)}{str(n)}'].configure(state=tkinter.DISABLED)
+            self.gui.slot_player[f'{str(hand.slot)}{str(n)}'].configure(state=tkinter.DISABLED)
 
     def hide_buttons(self, buttons: tuple = None):
         """Hides menu buttons."""
@@ -618,17 +637,16 @@ class Game:
         """Displays dealer cards."""
         for ind, card in enumerate(self.dealer.cards):
             if ind == 1 and hide_second is True and len(self.dealer.cards) == 2:
-                img, width, _ = get_image(full_size=True)
+                img, width, _ = get_image()
             else:
-                img, width, _ = get_image(card, full_size=True)
+                img, width, _ = get_image(card)
             self.gui.slot_dealer[str(ind)].configure(image=img, width=width)
             self.gui.slot_dealer[str(ind)].image = img
 
     def display_player_cards(self, hand: Hand):
         """Displays cards of one hand."""
         for ind, card in enumerate(hand.cards):
-            full_size = True if ind == len(hand.cards) - 1 else False
-            img, width, _ = get_image(card, full_size=full_size)
+            img, width, _ = get_image(card)
             self.gui.slot_player[f'{str(hand.slot)}{str(ind)}'].configure(image=img, width=width)
             self.gui.slot_player[f'{str(hand.slot)}{str(ind)}'].image = img
 
@@ -638,8 +656,31 @@ class Game:
         for hand in self.player.hands:
             self.display_player_cards(hand)
 
+    def display_chip(self, hand: Hand, pos: int, color: str = 'red'):
+        img = get_chip_image(color)
+        self.gui.chips[f'{str(hand.slot)}{str(pos)}'].configure(image=img)
+        self.gui.chips[f'{str(hand.slot)}{str(pos)}'].image = img
 
-def get_image(card: Card = None, width: int = 100, height: int = 130, full_size: bool = True):
+    def display_finger(self, hand: Hand):
+        self.hide_fingers()
+        img = get_finger_image()
+        self.gui.finger[f'{str(hand.slot)}'].configure(image=img)
+        self.gui.finger[f'{str(hand.slot)}'].image = img
+
+    def hide_chips(self, hand: Hand):
+        for pos in range(4):
+            self.gui.chips[f'{str(hand.slot)}{str(pos)}'].configure(image='')
+
+    def hide_all_chips(self):
+        for chip in self.gui.chips.values():
+            chip.configure(image='')
+
+    def hide_fingers(self):
+        for finger in self.gui.finger.values():
+            finger.configure(image='')
+
+
+def get_image(card: Card = None, width: int = 100, height: int = 130):
     if card is None:
         filename = 'images/back.png'
     else:
@@ -655,8 +696,20 @@ def get_image(card: Card = None, width: int = 100, height: int = 130, full_size:
             fix = str(card.value)
         filename = f'images/{fix}_of_{card.suit}.png'
     image = Image.open(filename).resize((width, height), Image.ANTIALIAS)
-    width = width if full_size is True else width - 65
     return ImageTk.PhotoImage(image), width, height
+
+
+def get_chip_image(color: str = 'red'):
+    size = 50
+    filename = f'images/{color}-chip.png'
+    image = Image.open(filename).resize((size, size), Image.ANTIALIAS)
+    return ImageTk.PhotoImage(image)
+
+
+def get_finger_image():
+    filename = f'images/finger2.png'
+    image = Image.open(filename).resize((40, 60), Image.ANTIALIAS)
+    return ImageTk.PhotoImage(image)
 
 
 def main():
@@ -665,37 +718,50 @@ def main():
 
     # Stack info
     label_text = tkinter.StringVar(root)
-    label = tkinter.Label(root, textvariable=label_text)
-    #label.grid(row=1, column=10, columnspan=1)
+    label = tkinter.Label(root, textvariable=label_text, font=15)
+    label.place(x=1050, y=520)
 
     # Hand info
     info_text = {str(slot): tkinter.StringVar(root) for slot in range(4)}
     info = {str(slot): tkinter.Label(root, textvariable=info_text[str(slot)], font=20, pady=30)
             for slot in range(4)}
     for ind, i in enumerate(info.values()):
-        i.place(x=ind*250, y=500)
+        i.place(x=ind*250, y=600)
+
+    # Dealer finger
+    finger = {str(slot): tkinter.Label(root) for slot in range(4)}
+    info = {str(slot): tkinter.Label(root) for slot in range(4)}
+    for ind, f in enumerate(finger.values()):
+        f.place(x=ind*250+20, y=260)
 
     # Dealer cards
-    card_back_img, width_card, _ = get_image(full_size=True)
-    frame_dealer = tkinter.Frame(root, pady=20)
-    slot_dealer = {f'{str(pos)}': tkinter.Label(frame_dealer) for pos in range(N_CARDS_MAX)}
+    card_back_img, width_card, _ = get_image()
+    slot_dealer = {f'{str(pos)}': tkinter.Label(root) for pos in range(N_CARDS_MAX)}
     for pos in range(2):
         slot_dealer[str(pos)].configure(image=card_back_img)
         slot_dealer[str(pos)].image = card_back_img
         slot_dealer[str(pos)].pack(side=tkinter.LEFT)
     for pos in range(N_CARDS_MAX):
-        slot_dealer[str(pos)].pack(side=tkinter.LEFT)
-    frame_dealer.place(x=330, y=30)
+        slot_dealer[str(pos)].place(y=50, x=350+pos*105)
 
     # Player cards
-    frame_player = {str(n): tkinter.Frame(root, padx=8, pady=5) for n in range(4)}
-    slot_player = {f'{str(slot)}{str(pos)}': tkinter.Label(frame_player[str(slot)])
+    slot_player = {f'{str(slot)}{str(pos)}': tkinter.Label(root)
                    for slot in range(4) for pos in range(N_CARDS_MAX)}
     for frame in range(4):
         for pos in range(N_CARDS_MAX):
-            slot_player[f'{str(frame)}{str(pos)}'].pack(side=tkinter.LEFT)
-    for ind, frame in enumerate(frame_player.values()):
-        frame.place(x=ind*250, y=350)
+            slot_player[f'{str(frame)}{str(pos)}'].place(x=frame*250+pos*30, y=350-pos*15)
+
+    # Chips
+    chips = {f'{str(slot)}{str(pos)}': tkinter.Label(root)
+             for slot in range(4) for pos in range(4)}
+    for slot in range(4):
+        for pos in range(4):
+            padx, pady = 0, 0
+            if pos in (1, 3):
+                padx = 50
+            if pos in (2, 3):
+                pady = 50
+            chips[f'{str(slot)}{str(pos)}'].place(x=slot*250+padx, y=500+pady)
 
     # Buttons
     menu = {name.split()[0].lower(): tkinter.Button(master=root, text=name, width=15, font=15)
@@ -717,22 +783,22 @@ def main():
             button.configure(command=lambda: game.reset())
         else:
             raise ValueError
-    button_x = 1000
+    x_sidepanel = 1000
     for ind, button in enumerate(menu.values()):
-        button.place(x=button_x, y=ind*33+150)
+        button.place(x=x_sidepanel, y=ind*33+150)
 
-    menu['next'].place(x=button_x, y=400)
-    menu['reset'].place(x=button_x, y=50)
+    menu['next'].place(x=x_sidepanel, y=400)
+    menu['reset'].place(x=x_sidepanel, y=50)
 
     gui = Gui(root,
               menu,
               label_text,
-              frame_player,
               slot_player,
-              frame_dealer,
               slot_dealer,
               info_text,
-              info)
+              info,
+              chips,
+              finger)
 
     dealer = Dealer()
     player = Player()

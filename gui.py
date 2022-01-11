@@ -173,7 +173,6 @@ class Game:
             else:
                 raise ValueError
             self.display_info(hand, result)
-        self.display_stack()
         self.hide_buttons()
         self.show_buttons(('deal',))
 
@@ -183,7 +182,7 @@ class Game:
     def _display_chips(self, hand, bj: bool = False):
         if bj is True:
             self.display_chip(hand, 1)
-            self.display_chip(hand, 2, color='blue')
+            self.display_chip(hand, 4, color='blue')
         elif hand.bet == self.bet:
             self.display_chip(hand, 1)
         elif hand.bet == (2 * self.bet):
@@ -418,7 +417,7 @@ def get_image(card: Card = None, width: int = 100, height: int = 130):
 def get_chip_image(color: str = 'red'):
     size = 50
     filename = f'images/{color}-chip.png'
-    image = Image.open(filename).resize((size, size), Image.ANTIALIAS)
+    image = Image.open(filename).resize((size, size-15), Image.ANTIALIAS)
     return ImageTk.PhotoImage(image)
 
 
@@ -485,14 +484,16 @@ def main(args):
 
     # Chips
     chips = {f'{str(slot)}{str(pos)}': tkinter.Label(root)
-             for slot in range(4) for pos in range(4)}
+             for slot in range(4) for pos in range(5)}
     for slot in range(4):
-        for pos in range(4):
+        for pos in range(5):
             padx, pady = 0, 0
             if pos in (1, 3):
                 padx = 50
-            if pos in (2, 3):
-                pady = 50
+            if pos in (2, 3, 4):
+                pady = 35
+            if pos == 4:
+                padx = 25
             chips[f'{str(slot)}{str(pos)}'].place(x=slot*250+padx, y=500+pady)
 
     # Buttons

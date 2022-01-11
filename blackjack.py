@@ -563,7 +563,7 @@ class Game:
                 self.display_chip(new_hand, 0)
                 self.display_stack()
                 for handy in (hand, new_hand):
-                    handy.deal(self.shoe)
+                    handy.deal(self.shoe, self.gui.shoe_progress)
                     handy.is_split_hand = True
                     if handy.sum == 21:
                         handy.is_finished = True

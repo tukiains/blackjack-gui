@@ -48,12 +48,13 @@ class Shoe:
         random.shuffle(self.cards)
         self.n_cards = len(self.cards)
 
-    def draw(self, progress: any) -> Card:
+    def draw(self, progress: any = None) -> Card:
         if self.n_cards > 0:
             card = self.cards.pop(0)
             self.n_cards -= 1
             fraction = (self._n_cards_total - self.n_cards) / self._n_cards_total
-            progress.place(x=30, y=150, anchor="se", relheight=fraction, relwidth=1.)
+            if progress is not None:
+                progress.place(x=30, y=150, anchor="se", relheight=fraction, relwidth=1.)
             return card
         raise ValueError('Empty shoe!')
 
@@ -73,7 +74,7 @@ class Hand:
         self.slot = None
         self.is_finished = False  # if True, no more playing for this hand
 
-    def deal(self, source: Union[Shoe, Card], progress: any):
+    def deal(self, source: Union[Shoe, Card], progress: any = None):
         if isinstance(source, Shoe):
             self.cards.append(source.draw(progress))
         else:
@@ -107,7 +108,7 @@ class Dealer:
         self.is_finished = False
         self.is_over = False
 
-    def deal(self, shoe: Shoe, progress: any):
+    def deal(self, shoe: Shoe, progress: any = None):
         card = shoe.draw(progress)
         self.cards.append(card)
         self.sum, _ = evaluate_hand(self.cards)

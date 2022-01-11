@@ -24,16 +24,24 @@ Options:
 | `--ai`       | False   | If True, computer plays instead of you.      |
 | `--count`    | False   | If True, computer player uses card counting. |
 | `--loglevel` | DEBUG   | Adjust amount of logging: DEBUG or INFO.     |
+| `--gui`      | True    | Play with GUI.                               |
+
+
 
 ## Examples
-With the default settings, play 10 rounds of Blackjack.
+Open GUI version of blackjackpy:
 ```
 ./blackjack.py
 ```
 
+With the default settings, play 10 rounds of Blackjack without GUI.
+```
+./blackjack.py --gui=False
+```
+
 Let the computer play perfect basic game and use card counting technique to bring down the house.
 ```
-./blackjack.py --n_games=100000 --ai=True --count=True --loglevel=INFO
+./blackjack.py --n_games=100000 --ai=True --count=True --loglevel=INFO --gui=False
 ```
 
 ## Notes

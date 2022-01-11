@@ -61,7 +61,7 @@ class Game:
         hand.deal(self.shoe, self.gui.shoe_progress)
         hand.deal(self.shoe, self.gui.shoe_progress)
         self.show_buttons()
-        self.hide_buttons(('next',))
+        self.hide_buttons(('deal',))
         self.show()
         self.display_player_hands()
         self.active_slot = hand.slot
@@ -181,7 +181,7 @@ class Game:
             self.display_info(hand, result)
         self.display_stack()
         self.hide_buttons()
-        self.show_buttons(('next',))
+        self.show_buttons(('deal',))
 
     def display_stack(self):
         self.gui.label_text.set(f'Stack: {self.player.stack} $')
@@ -502,7 +502,7 @@ def main():
 
     # Buttons
     menu = {name.split()[0].lower(): tkinter.Button(master=root, text=name, width=15, font=15)
-            for name in ('Surrender', 'Double up', 'Hit', 'Stay', 'Split', 'Next deal', 'Reset')}
+            for name in ('Surrender', 'Double up', 'Hit', 'Stay', 'Split', 'Deal', 'Reset')}
     for name, button in menu.items():
         if name == 'hit':
             button.configure(command=lambda: game.hit())
@@ -514,7 +514,7 @@ def main():
             button.configure(command=lambda: game.stay())
         elif name == 'double':
             button.configure(command=lambda: game.double())
-        elif name == 'next':
+        elif name == 'deal':
             button.configure(command=lambda: game.next())
         elif name == 'reset':
             button.configure(command=lambda: game.reset())
@@ -524,7 +524,7 @@ def main():
     for ind, button in enumerate(menu.values()):
         button.place(x=x_sidepanel, y=ind*33+150)
 
-    menu['next'].place(x=x_sidepanel, y=400)
+    menu['deal'].place(x=x_sidepanel, y=400)
     menu['reset'].place(x=x_sidepanel, y=50)
 
     gui = Gui(root,

@@ -490,6 +490,13 @@ def main(args):
     for ind, f in enumerate(finger.values()):
         f.place(x=ind*250+10, y=250)
 
+    # Player cards
+    slot_player = {f'{str(slot)}{str(pos)}': tkinter.Label(root, borderwidth=0, background=bc)
+                   for slot in range(4) for pos in range(N_CARDS_MAX)}
+    for frame in range(4):
+        for pos in range(N_CARDS_MAX):
+            slot_player[f'{str(frame)}{str(pos)}'].place(x=frame*250+pos*30, y=350-pos*30)
+
     # Dealer cards
     n_dealer_cards = 7
     card_back_img, width_card, _ = get_image()
@@ -501,13 +508,6 @@ def main(args):
         slot_dealer[str(pos)].pack(side=tkinter.LEFT)
     for pos, slot in enumerate(slot_dealer.values()):
         slot.place(y=40, x=300+pos*105)
-
-    # Player cards
-    slot_player = {f'{str(slot)}{str(pos)}': tkinter.Label(root, borderwidth=0, background=bc)
-                   for slot in range(4) for pos in range(N_CARDS_MAX)}
-    for frame in range(4):
-        for pos in range(N_CARDS_MAX):
-            slot_player[f'{str(frame)}{str(pos)}'].place(x=frame*250+pos*30, y=350-pos*30)
 
     # Chips
     chips = {f'{str(slot)}{str(pos)}': tkinter.Label(root, borderwidth=0, background=bc)

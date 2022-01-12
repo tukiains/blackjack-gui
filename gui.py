@@ -476,14 +476,14 @@ def main(args):
         slot_dealer[str(pos)].place(y=40, x=300+pos*105)
 
     # Player cards
-    slot_player = {f'{str(slot)}{str(pos)}': tkinter.Label(root)
+    slot_player = {f'{str(slot)}{str(pos)}': tkinter.Label(root, borderwidth=0)
                    for slot in range(4) for pos in range(N_CARDS_MAX)}
     for frame in range(4):
         for pos in range(N_CARDS_MAX):
             slot_player[f'{str(frame)}{str(pos)}'].place(x=frame*250+pos*30, y=350-pos*15)
 
     # Chips
-    chips = {f'{str(slot)}{str(pos)}': tkinter.Label(root)
+    chips = {f'{str(slot)}{str(pos)}': tkinter.Label(root, borderwidth=0)
              for slot in range(4) for pos in range(5)}
     for slot in range(4):
         for pos in range(5):

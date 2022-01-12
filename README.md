@@ -60,7 +60,7 @@ $ ./blackjack.py --n_games=100000 --ai=True --count=True --loglevel=INFO --gui=F
 ## Notes
 * Insurance and even money not implemented
 * Otherwise, rules follow: https://casinohelsinki.fi/en/games/blackjack-eng/
-
+* Card images taken from [here](https://code.google.com/archive/p/vector-playing-cards/).
 
 ## Licence
 MIT

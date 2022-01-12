@@ -400,11 +400,11 @@ class Game:
     def display_info(self, hand: Hand, info: str):
         """Prints text below hand."""
         if hand.is_blackjack is True:
-            self.gui.info[str(hand.slot)].place(x=hand.slot * 245, y=585)
+            self.gui.info[str(hand.slot)].place(x=hand.slot * 250 + 20, y=585)
         elif hand.bet in (self.bet, self.bet * 2, self.bet*4):
-            self.gui.info[str(hand.slot)].place(x=hand.slot * 245, y=555)
+            self.gui.info[str(hand.slot)].place(x=hand.slot * 250 + 20, y=555)
         else:
-            self.gui.info[str(hand.slot)].place(x=hand.slot * 245, y=520)
+            self.gui.info[str(hand.slot)].place(x=hand.slot * 250 + 20, y=520)
         self.gui.info_text[str(hand.slot)].set(info)
 
     @staticmethod
@@ -451,17 +451,6 @@ def main(args):
     root.title('Blackjack')
     root.configure(background=bc)
 
-    # Side panel
-    panel = tkinter.Label(root, width=200, height=720, background='lightgrey', borderwidth=2,
-                          relief="groove")
-    panel.place(x=1000, y=0)
-
-    # Advisor button
-    fix_mistakes = tkinter.IntVar()
-    checkbox_container = tkinter.Checkbutton(root, text='Coach mode', variable=fix_mistakes,
-                                             background='lightgrey')
-    checkbox_container.place(x=1040, y=600)
-
     # Shoe status
     shoe_status_container = tkinter.Label(root, borderwidth=0, background='white')
     shoe_status_container.place(x=20, y=30, height=150, width=30)
@@ -478,24 +467,27 @@ def main(args):
     label.place(x=430, y=670)
 
     # Hand info
+    x_slot = 250
+    padding_left = 20
     info_text = {str(slot): tkinter.StringVar(root) for slot in range(4)}
     info = {str(slot): tkinter.Label(root, textvariable=info_text[str(slot)], font=20,
                                      borderwidth=0, background=bc, fg="white")
             for slot in range(4)}
     for ind, i in enumerate(info.values()):
-        i.place(x=ind * 240, y=585)
+        i.place(x=ind*x_slot+padding_left, y=585)
 
     # Dealer finger
     finger = {str(slot): tkinter.Label(root, borderwidth=0, background=bc) for slot in range(4)}
     for ind, f in enumerate(finger.values()):
-        f.place(x=ind*250+10, y=250)
+        f.place(x=ind*x_slot+padding_left-5, y=250)
 
     # Player cards
     slot_player = {f'{str(slot)}{str(pos)}': tkinter.Label(root, borderwidth=0, background=bc)
                    for slot in range(4) for pos in range(N_CARDS_MAX)}
     for frame in range(4):
         for pos in range(N_CARDS_MAX):
-            slot_player[f'{str(frame)}{str(pos)}'].place(x=frame*250+pos*30, y=350-pos*30)
+            slot_player[f'{str(frame)}{str(pos)}'].place(x=frame*x_slot+pos*30+padding_left,
+                                                         y=350-pos*30)
 
     # Dealer cards
     n_dealer_cards = 7
@@ -524,7 +516,18 @@ def main(args):
             elif pos == 4:
                 padx = 25
                 pady = 35
-            chips[f'{str(slot)}{str(pos)}'].place(x=slot*250+padx, y=500+pady)
+            chips[f'{str(slot)}{str(pos)}'].place(x=slot*x_slot+padding_left+padx+20, y=500+pady)
+
+    # Side panel
+    panel = tkinter.Label(root, width=200, height=720, background='lightgrey', borderwidth=2,
+                          relief="groove")
+    panel.place(x=1000, y=0)
+
+    # Advisor button
+    fix_mistakes = tkinter.IntVar()
+    checkbox_container = tkinter.Checkbutton(root, text='Coach mode', variable=fix_mistakes,
+                                             background='lightgrey')
+    checkbox_container.place(x=1040, y=600)
 
     # Buttons
     menu = {name.split()[0].lower(): tkinter.Button(master=root, text=name, width=12, font=15)

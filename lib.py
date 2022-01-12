@@ -1,5 +1,6 @@
 import random
 from typing import Union
+import tkinter
 
 
 class Card:
@@ -48,7 +49,7 @@ class Shoe:
         random.shuffle(self.cards)
         self.n_cards = len(self.cards)
 
-    def draw(self, progress: any = None) -> Card:
+    def draw(self, progress: tkinter.Label = None) -> Card:
         if self.n_cards > 0:
             card = self.cards.pop(0)
             self.n_cards -= 1
@@ -74,7 +75,7 @@ class Hand:
         self.slot = None
         self.is_finished = False  # if True, no more playing for this hand
 
-    def deal(self, source: Union[Shoe, Card], progress: any = None):
+    def deal(self, source: Union[Shoe, Card], progress: tkinter.Label = None):
         if isinstance(source, Shoe):
             self.cards.append(source.draw(progress))
         else:
@@ -108,7 +109,7 @@ class Dealer:
         self.is_finished = False
         self.is_over = False
 
-    def deal(self, shoe: Shoe, progress: any = None):
+    def deal(self, shoe: Shoe, progress: tkinter.Label = None):
         card = shoe.draw(progress)
         self.cards.append(card)
         self.sum, _ = evaluate_hand(self.cards)

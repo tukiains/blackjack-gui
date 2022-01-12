@@ -1,5 +1,5 @@
 # blackjackpy
-Single-player Blackjack with possibility to simulate games.
+Single-player Blackjack against Dealer with possibility to simulate games.
 
 ## Installation
 ``` 

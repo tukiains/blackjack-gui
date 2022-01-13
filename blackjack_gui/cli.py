@@ -1,7 +1,7 @@
 import time
 import logging
 import math
-from lib import Player, Dealer, Shoe, get_correct_play
+from .lib import Player, Dealer, Shoe, get_correct_play
 
 
 def _is_correct(correct_play: str, action: str, decisions: dict) -> dict:

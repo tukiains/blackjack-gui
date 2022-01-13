@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
+import os
 import tkinter
 from dataclasses import dataclass
 from PIL import Image, ImageTk
-from lib import Card, Hand, Player, Dealer, Shoe, get_correct_play
+from .lib import Card, Hand, Player, Dealer, Shoe, get_correct_play
 
 
 N_CARDS_MAX = 9
+IMG_PATH = f'{os.path.dirname(__file__)}/images/'
 
 
 @dataclass
@@ -426,7 +428,7 @@ class Game:
 
 def get_image(card: Card = None, width: int = 100, height: int = 130):
     if card is None:
-        filename = 'images/back.png'
+        filename = f'{IMG_PATH}/back.png'
     else:
         prefix = {
             'A': 'ace',
@@ -438,20 +440,20 @@ def get_image(card: Card = None, width: int = 100, height: int = 130):
             fix = prefix[card.label]
         else:
             fix = str(card.value)
-        filename = f'images/{fix}_of_{card.suit}.png'
+        filename = f'{IMG_PATH}/{fix}_of_{card.suit}.png'
     image = Image.open(filename).resize((width, height), Image.ANTIALIAS)
     return ImageTk.PhotoImage(image), width, height
 
 
 def get_chip_image(color: str = 'red'):
     size = 50
-    filename = f'images/{color}-chip.png'
+    filename = f'{IMG_PATH}/{color}-chip.png'
     image = Image.open(filename).resize((size, size-15), Image.ANTIALIAS)
     return ImageTk.PhotoImage(image)
 
 
 def get_finger_image():
-    filename = f'images/finger2.png'
+    filename = f'{IMG_PATH}/finger2.png'
     image = Image.open(filename).resize((40, 60), Image.ANTIALIAS)
     return ImageTk.PhotoImage(image)
 

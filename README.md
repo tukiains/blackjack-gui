@@ -1,29 +1,18 @@
-# blackjackpy
-Single-player Blackjack against Dealer with possibility to simulate games.
+# blackjack-gui
+Single-player Blackjack with GUI and possibility to simulate games.
 
 ## Installation
 ``` 
-$ git clone  https://github.com/tukiains/blackjackpy/
-$ cd blackjackpy/
-```
-
-Blackjackpy GUI uses [Pillow](https://pillow.readthedocs.io/en/stable/). 
-You might need to install it system-wide using, e.g.
-```
-$ sudo apt install python3-pil.imagetk
-```
-or using pip, e.g.
-```
 $ python3 -m venv venv
 $ source venv/bin/activate
-$ pip3 install pillow
+$ pip3 install blackjack-gui
 ```
-<img src="images/bj-shot.png" alt="blackjackpy GUI" width="600"/>
+<img src="images/bj-shot.png" alt="blackjack-gui" width="600"/>
 
 ## Usage
 
 ```
-blackjack.py [OPTION...]
+blackjack [OPTION...]
 ```
 
 Options:
@@ -42,19 +31,19 @@ Options:
 
 
 ## Examples
-Open GUI version of blackjackpy:
+Open GUI version:
 ```
-$ ./blackjack.py
+$ blackjack
 ```
 
 With the default settings, play 10 rounds of Blackjack without GUI:
 ```
-$ ./blackjack.py --gui=False
+$ blackjack --gui=False
 ```
 
 Let the computer play perfect basic game and use card counting technique to bring down the house:
 ```
-$ ./blackjack.py --n_games=100000 --ai=True --count=True --loglevel=INFO --gui=False
+$ blackjack --n_games=100000 --ai=True --count=True --loglevel=INFO --gui=False
 ```
 
 ## Notes

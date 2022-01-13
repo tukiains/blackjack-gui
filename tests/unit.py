@@ -1,9 +1,5 @@
-import sys
-from pathlib import Path
 import pytest
-rootpath = Path(__file__).parents[1].absolute()
-sys.path.append(str(rootpath))
-from lib import Card, Hand, evaluate_hand, get_correct_play
+from blackjack_gui.lib import Card, Hand, evaluate_hand, get_correct_play
 
 
 @pytest.mark.parametrize("cards, the_sum, is_hard", [

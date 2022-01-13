@@ -21,6 +21,7 @@ class Gui:
     finger: dict
     shoe_progress: tkinter.Label
     fix_mistakes: tkinter.IntVar
+    slider: tkinter.Scale
 
 
 class Game:
@@ -32,9 +33,12 @@ class Game:
         self.bet = bet
         self.shoe = self.init_shoe()
         self.active_slot = None
+        self.initial_bet = bet
 
     def deal(self):
         """Starts new round."""
+        self.bet = self.gui.slider.get()
+        self.gui.slider.configure(state=tkinter.DISABLED)
         self.hide_all_chips()
         self.hide_fingers()
         self.player.init_count()
@@ -96,6 +100,7 @@ class Game:
         self.player.buy_in(self.player.initial_stack)
         self.shoe = self.init_shoe()
         self.clean_dealer_slots()
+        self.gui.slider.set(self.initial_bet)
         self.deal()
 
     def next(self):
@@ -234,6 +239,7 @@ class Game:
             self.display_info(hand, result)
         self.hide_buttons()
         self.show_buttons(('deal',))
+        self.gui.slider.configure(state=tkinter.NORMAL)
 
     def resolve_blackjack(self):
         """Resolves player blackjack."""
@@ -372,7 +378,13 @@ class Game:
     def display_chip(self, hand: Hand, pos: int, color: str = 'red'):
         """Displays chip for certain hand and chip position."""
         img = get_chip_image(color)
-        self.gui.chips[f'{str(hand.slot)}{str(pos)}'].configure(image=img)
+        if color == 'red':
+            text = self.bet
+        else:
+            text = '.5' if self.bet == 1 else self.bet / 2
+        self.gui.chips[f'{str(hand.slot)}{str(pos)}'].configure(image=img, compound='center',
+                                                                fg='white', text=text,
+                                                                font='helvetica 10 bold')
         self.gui.chips[f'{str(hand.slot)}{str(pos)}'].image = img
 
     def display_finger(self, hand: Hand):
@@ -385,12 +397,12 @@ class Game:
     def hide_chips(self, hand: Hand):
         """Hides chips of a hand."""
         for pos in range(4):
-            self.gui.chips[f'{str(hand.slot)}{str(pos)}'].configure(image='')
+            self.gui.chips[f'{str(hand.slot)}{str(pos)}'].configure(image='', text='')
 
     def hide_all_chips(self):
         """Hides chips of all hands."""
         for chip in self.gui.chips.values():
-            chip.configure(image='')
+            chip.configure(image='', text='')
 
     def hide_fingers(self):
         """Hides all dealer fingers."""
@@ -504,6 +516,7 @@ def main(args):
     # Chips
     chips = {f'{str(slot)}{str(pos)}': tkinter.Label(root, borderwidth=0, background=bc)
              for slot in range(4) for pos in range(5)}
+
     for slot in range(4):
         for pos in range(5):
             padx, pady = 0, 0
@@ -556,6 +569,14 @@ def main(args):
     menu['deal'].place(x=x_sidepanel, y=500)
     menu['reset'].place(x=x_sidepanel, y=20)
 
+    # Bet selector
+    bet_label = tkinter.Label(text='Bet:', background='lightgray')
+    slider = tkinter.Scale(root, from_=1, to=10, orient=tkinter.HORIZONTAL,
+                           background='lightgray')
+    slider.set(args.bet)
+    slider.place(x=x_sidepanel+40, y=100)
+    bet_label.place(x=x_sidepanel, y=120)
+
     gui = Gui(root,
               menu,
               label_text,
@@ -566,10 +587,11 @@ def main(args):
               chips,
               finger,
               shoe_progress,
-              fix_mistakes)
+              fix_mistakes,
+              slider)
 
     dealer = Dealer()
     player = Player(stack=args.stack)
-    game = Game(player, dealer, gui)
+    game = Game(player, dealer, gui, bet=args.bet)
     game.reset()
     tkinter.mainloop()

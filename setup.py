@@ -16,7 +16,7 @@ setup(
     long_description_content_type='text/markdown',
     author='Simo Tukiainen',
     author_email='tukiains@gmail.com',
-    url='https://github.com/tukiains/blackjackpy',
+    url='https://github.com/tukiains/blackjack-gui',
     license='MIT License',
     packages=find_packages(),
     include_package_data=True,

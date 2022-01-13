@@ -7,7 +7,7 @@ $ python3 -m venv venv
 $ source venv/bin/activate
 $ pip3 install blackjack-gui
 ```
-<img src="images/bj-shot.png" alt="blackjack-gui" width="600"/>
+<img src="blackjack_gui/images/bj-shot.png" alt="blackjack-gui" width="600"/>
 
 ## Usage
 

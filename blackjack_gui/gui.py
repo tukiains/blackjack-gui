@@ -212,22 +212,22 @@ class Game:
         for hand in self.player.hands:
             if hand.is_blackjack is True and self.dealer.is_blackjack is False:
                 self.player.stack += hand.bet * 2.5
-                result = f'Win by Blackjack!'
+                result = f'WIN BY BLACKJACK!'
                 self._display_chips(hand, bj=True)
             elif hand.is_blackjack is True and self.dealer.is_blackjack is True:
                 self.player.stack += hand.bet
-                result = f'Push hand (both have BJ)'
+                result = f'PUSH'
             elif hand.is_over is False and self.dealer.is_over is True:
                 self.player.stack += hand.bet * 2
-                result = f'Win (dealer > 21)'
+                result = f'WIN'
                 self._display_chips(hand)
             elif hand.is_over is True:
-                result = f'Lose (> 21)'
+                result = f'BUST'
                 self.hide_chips(hand)
                 self.hide(hand)
                 hand.bet = 0
             elif hand.sum < self.dealer.sum:
-                result = f'Lose ({hand.sum} vs {self.dealer.sum})'
+                result = f'LOSE ({hand.sum} vs {self.dealer.sum})'
                 self.hide_chips(hand)
                 self.hide(hand)
                 hand.bet = 0
@@ -236,11 +236,11 @@ class Game:
                 result = f'Lose by surrender'
             elif hand.sum > self.dealer.sum:
                 self.player.stack += hand.bet * 2
-                result = f'Win ({hand.sum} vs {self.dealer.sum})'
+                result = f'WIN ({hand.sum} vs {self.dealer.sum})'
                 self._display_chips(hand)
             elif hand.sum == self.dealer.sum:
                 self.player.stack += hand.bet
-                result = f'Push hand'
+                result = f'PUSH'
             else:
                 raise ValueError
             self.display_info(hand, result)
@@ -275,7 +275,7 @@ class Game:
         """Verifies player decision."""
         correct_play = get_correct_play(hand, self.dealer.cards[0], len(self.player.hands))
         if correct_play != play:
-            self.display_info(hand, 'Incorrect! Try again..')
+            self.display_info(hand, 'Try again!')
             self.gui.root.after(1000, self.clean_info)
             return False
         return True
@@ -420,12 +420,6 @@ class Game:
 
     def display_info(self, hand: Hand, info: str):
         """Prints text below hand."""
-        if hand.is_blackjack is True:
-            self.gui.info[str(hand.slot)].place(x=hand.slot * 250 + 20, y=585)
-        elif hand.bet in (self.bet, self.bet * 2, self.bet*4):
-            self.gui.info[str(hand.slot)].place(x=hand.slot * 250 + 20, y=555)
-        else:
-            self.gui.info[str(hand.slot)].place(x=hand.slot * 250 + 20, y=520)
         self.gui.info_text[str(hand.slot)].set(info)
 
     @staticmethod
@@ -470,12 +464,41 @@ def get_finger_image():
     return ImageTk.PhotoImage(image)
 
 
+def round_polygon(canvas, x, y, sharpness, **kwargs):
+    if sharpness < 2:
+        sharpness = 2
+    ratio_multiplier = sharpness - 1
+    ratio_divider = sharpness
+    points = []
+    for i in range(len(x)):
+        points.append(x[i])
+        points.append(y[i])
+        if i != (len(x) - 1):
+            points.append((ratio_multiplier*x[i] + x[i + 1])/ratio_divider)
+            points.append((ratio_multiplier*y[i] + y[i + 1])/ratio_divider)
+            points.append((ratio_multiplier*x[i + 1] + x[i])/ratio_divider)
+            points.append((ratio_multiplier*y[i + 1] + y[i])/ratio_divider)
+        else:
+            points.append((ratio_multiplier*x[i] + x[0])/ratio_divider)
+            points.append((ratio_multiplier*y[i] + y[0])/ratio_divider)
+            points.append((ratio_multiplier*x[0] + x[i])/ratio_divider)
+            points.append((ratio_multiplier*y[0] + y[i])/ratio_divider)
+            points.append(x[0])
+            points.append(y[0])
+    return canvas.create_polygon(points, **kwargs, smooth=tkinter.TRUE)
+
+
 def main(args):
     bc = '#4e9572'
     root = tkinter.Tk()
     root.geometry("1200x700")
     root.title('Blackjack')
     root.configure(background=bc)
+
+    rect = tkinter.Canvas(root, bg=bc, height=100, width=80, bd=0, highlightthickness=0,
+                          relief='ridge')
+    rect.place(x=525, y=485)
+    round_polygon(rect, [5, 75, 75, 5], [5, 5, 90, 90], 10, width=4, outline="#bbb500", fill=bc)
 
     # Shoe status
     shoe_status_container = tkinter.Label(root, borderwidth=0, background='white')
@@ -496,11 +519,11 @@ def main(args):
     x_slot = 250
     padding_left = 20
     info_text = {str(slot): tkinter.StringVar(root) for slot in range(4)}
-    info = {str(slot): tkinter.Label(root, textvariable=info_text[str(slot)], font=20,
+    info = {str(slot): tkinter.Label(root, textvariable=info_text[str(slot)], font='helvetica 11 bold',
                                      borderwidth=0, background=bc, fg="white")
             for slot in range(4)}
     for ind, i in enumerate(info.values()):
-        i.place(x=ind*x_slot+padding_left, y=585)
+        i.place(x=ind*x_slot+padding_left+118, y=465)
 
     # Dealer finger
     finger = {str(slot): tkinter.Label(root, borderwidth=0, background=bc) for slot in range(4)}

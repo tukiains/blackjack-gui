@@ -43,6 +43,7 @@ class Game:
         self.gui.slider.configure(state=tkinter.DISABLED)
         self.hide_all_chips()
         self.hide_fingers()
+        self.clean_player_slots()
         self.player.init_count()
         self.player.hands = []
         if self.shoe.n_cards < 52:
@@ -57,13 +58,15 @@ class Game:
         self.show_buttons()
         self.hide_buttons(('deal',))
         self.show()
-        self.display_player_hands()
         self.active_slot = hand.slot
         self.display_stack()
         self.enable_correct_buttons(hand)
         self.display_chip(hand, 0)
         if hand.is_blackjack:
             self.resolve_blackjack()
+            self.display_player_cards(hand, rotate_last=True)
+        else:
+            self.display_player_cards(hand)
         if self.dealer.cards[0].label == 'A':
             self.hide_buttons(('surrender', ))
 
@@ -89,7 +92,7 @@ class Game:
         hand.deal(self.shoe, self.gui.shoe_progress)
         self.display_chip(hand, 1)
         hand.is_finished = True
-        self.display_player_hands()
+        self.display_player_cards(hand, rotate_last=True)
         if hand.sum > 21:
             self.hide(hand)
             self.hide_chips(hand)
@@ -119,12 +122,14 @@ class Game:
                 return
         self.hide_buttons(('surrender', 'double'))
         hand.deal(self.shoe, self.gui.shoe_progress)
-        self.display_player_hands()
+        if hand.sum == 21:
+            self.display_player_cards(hand, rotate_last=True)
+            hand.is_finished = True
+        else:
+            self.display_player_cards(hand)
         if hand.is_over is True:
             self.hide(hand)
             self.hide_chips(hand)
-        if hand.sum == 21:
-            hand.is_finished = True
         if hand.is_finished is False:
             self.enable_correct_buttons(hand)
         else:
@@ -342,7 +347,7 @@ class Game:
         """Cleans player card slots."""
         for slot in range(4):
             for n in range(N_CARDS_MAX):
-                self.gui.slot_player[f'{str(slot)}{str(n)}'].configure(image='', width=0)
+                self.gui.slot_player[f'{str(slot)}{str(n)}'].configure(image='', width=0, height=0)
 
     def clean_dealer_slots(self):
         """Cleans dealer slot."""
@@ -364,11 +369,13 @@ class Game:
             self.gui.slot_dealer[str(ind)].configure(image=img, width=width)
             self.gui.slot_dealer[str(ind)].image = img
 
-    def display_player_cards(self, hand: Hand):
+    def display_player_cards(self, hand: Hand, rotate_last: bool = False):
         """Displays cards of one hand."""
         for ind, card in enumerate(hand.cards):
-            img, width, _ = get_image(card)
-            self.gui.slot_player[f'{str(hand.slot)}{str(ind)}'].configure(image=img, width=width)
+            rotate = True if ind == len(hand.cards) - 1 and rotate_last is True else False
+            img, width, height = get_image(card, rotate=rotate)
+            self.gui.slot_player[f'{str(hand.slot)}{str(ind)}'].configure(image=img, width=width,
+                                                                          height=height)
             self.gui.slot_player[f'{str(hand.slot)}{str(ind)}'].image = img
 
     def display_player_hands(self):
@@ -426,7 +433,7 @@ class Game:
         return Shoe(6)
 
 
-def get_image(card: Card = None, width: int = 100, height: int = 130):
+def get_image(card: Card = None, width: int = 100, height: int = 130, rotate: bool = False):
     if card is None:
         filename = f'{IMG_PATH}/back.png'
     else:
@@ -442,6 +449,11 @@ def get_image(card: Card = None, width: int = 100, height: int = 130):
             fix = str(card.value)
         filename = f'{IMG_PATH}/{fix}_of_{card.suit}.png'
     image = Image.open(filename).resize((width, height), Image.ANTIALIAS)
+    if rotate is True:
+        image = image.resize((height, height))
+        image = image.rotate(angle=90)
+        image = image.resize((height, width))
+        width, height = height, width
     return ImageTk.PhotoImage(image), width, height
 
 

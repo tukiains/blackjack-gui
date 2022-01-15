@@ -64,9 +64,7 @@ class Game:
         self.display_chip(hand, 0)
         if hand.is_blackjack:
             self.resolve_blackjack()
-            self.display_player_cards(hand, rotate_last=True)
-        else:
-            self.display_player_cards(hand)
+        self.display_player_cards(hand)
         if self.dealer.cards[0].label == 'A':
             self.hide_buttons(('surrender', ))
 
@@ -123,10 +121,8 @@ class Game:
         self.hide_buttons(('surrender', 'double'))
         hand.deal(self.shoe, self.gui.shoe_progress)
         if hand.sum == 21:
-            self.display_player_cards(hand, rotate_last=True)
             hand.is_finished = True
-        else:
-            self.display_player_cards(hand)
+        self.display_player_cards(hand)
         if hand.is_over is True:
             self.hide(hand)
             self.hide_chips(hand)
@@ -175,7 +171,10 @@ class Game:
                 break
 
         self.player.hands.sort(key=lambda x: not x.cards[0].value == x.cards[1].value)
-        self.display_player_hands()
+        for hand in self.player.hands:
+            rotate = True if hand.cards[0].label == 'A' and hand.cards[1].label != 'A' else False
+            self.display_player_cards(hand, rotate_last=rotate)
+
         n_hands = len(self.player.hands)
         for ind in range(n_hands):
             hand = self.player.hands[ind]
@@ -186,9 +185,7 @@ class Game:
                 break
             else:
                 self.player.sort_hands()
-                self.display_player_hands()
                 self.resolve_next_hand()
-        self.display_player_hands()
 
     def resolve_next_hand(self):
         """Moves to next unfinished hand."""
@@ -250,8 +247,7 @@ class Game:
 
     def resolve_blackjack(self):
         """Resolves player blackjack."""
-        if self.dealer.cards[0].label == 'A' or self.dealer.cards[0].value == 10:
-            self.display_dealer_cards(hide_second=False)
+        self.display_dealer_cards(hide_second=False)
         self.payout()
 
     def enable_correct_buttons(self, hand: Hand):

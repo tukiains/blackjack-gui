@@ -86,6 +86,7 @@ def main(args):
                             for handy in (hand, new_hand):
                                 handy.deal(shoe)
                                 handy.is_split_hand = True
+                                handy.is_blackjack = False
                                 if handy.cards[0].label == 'A':
                                     handy.is_hittable = False
                             logging.debug(f'Player: {player.hands}')
@@ -186,11 +187,11 @@ def main(args):
             elif hand.sum > 21:
                 logging.debug(f'Player: {hand.sum}, you lose!')
 
+            elif dealer.is_blackjack is True and hand.is_blackjack is False:
+                logging.debug(f'Dealer: BJ, Player: {hand.sum}, you lose to dealer BJ!')
+
             elif hand.sum < dealer.sum <= 21:
                 logging.debug(f'Dealer: {dealer.sum}, Player: {hand.sum}, you lose!')
-
-            elif dealer.is_blackjack is True and hand.is_blackjack is False:
-                logging.debug(f'Dealer: BJ, Player: {hand.sum}, you lose to dealer BJ')
 
             # Even hands
             elif dealer.is_blackjack is True and hand.is_blackjack is True:

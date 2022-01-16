@@ -38,6 +38,10 @@ if __name__ == '__main__':
                         type=str,
                         default='DEBUG',
                         help='Log level. Can be DEBUG or INFO. Default is DEBUG.')
+    parser.add_argument('--cards',
+                        type=lambda s: s.split(','),
+                        default=None,
+                        help='Simulate starting hand. E.g. --cards=A,7 to simulate soft 18.')
 
     args = parser.parse_args()
     if args.gui.lower() == 'true':

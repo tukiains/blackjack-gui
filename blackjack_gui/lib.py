@@ -50,6 +50,7 @@ class Shoe:
         self.n_cards = len(self.cards)
 
     def draw(self, progress: tkinter.Label = None) -> Card:
+        """Draws a card from shoe."""
         if self.n_cards > 0:
             card = self.cards.pop(0)
             self.n_cards -= 1
@@ -58,6 +59,14 @@ class Shoe:
                 progress.place(x=30, y=150, anchor="se", relheight=fraction, relwidth=1.)
             return card
         raise ValueError('Empty shoe!')
+
+    def arrange(self, cards: list):
+        """Arranges shoe so that next cards are the requested ones."""
+        labels = [card.label for card in self.cards]
+        for ind, card in enumerate(cards):
+            shoe_ind = labels[ind:].index(str(card)) + ind
+            self.cards[shoe_ind], self.cards[ind] = self.cards[ind], self.cards[shoe_ind]
+            labels[shoe_ind], labels[ind] = labels[ind], labels[shoe_ind]
 
 
 class Hand:

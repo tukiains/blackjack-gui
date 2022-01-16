@@ -28,7 +28,7 @@ def main(args):
         logging.debug('New round starts')
         logging.debug(f'Stack: {player.stack}')
         logging.debug('----------------')
-        if shoe.n_cards < 52:
+        if shoe.n_cards < 52 or args.cards is not None:
             shoe = Shoe(n_decs)
             player.init_count()
         player.hands = []
@@ -40,6 +40,8 @@ def main(args):
         dealer.init_hand()
         dealer.deal(shoe)
         logging.debug(f'Dealer: {dealer}')
+        if args.cards is not None:
+            shoe.arrange(args.cards)
         hand.deal(shoe)
         hand.deal(shoe)
         logging.debug(f'Player: {hand}')

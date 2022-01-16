@@ -30,10 +30,6 @@ if __name__ == '__main__':
                         type=bool,
                         default=False,
                         help='Count cards. Default is False. Can be used with --ai=True.')
-    parser.add_argument('--delay',
-                        type=float,
-                        default=0,
-                        help='Delay in the game flow. Default is 0.')
     parser.add_argument('--loglevel',
                         type=str,
                         default='DEBUG',

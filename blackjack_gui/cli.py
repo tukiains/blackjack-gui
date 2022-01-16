@@ -168,10 +168,8 @@ def main(args):
             else:
                 hit_dealer = True
         while hit_dealer is True:
-            time.sleep(args.delay)
             dealer.deal(shoe)
             logging.debug(f'Dealer: {dealer}')
-            time.sleep(args.delay)
             if dealer.sum > 16:
                 hit_dealer = False
             if player.hands[0].is_blackjack is True and dealer.is_blackjack is False:

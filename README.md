@@ -1,5 +1,5 @@
 # blackjack-gui
-Single-player Blackjack with GUI and CLI interfaces. Can be used to simulate games (with simple card counting) 
+Single-player Blackjack including GUI and CLI interfaces. Can be used to simulate games (with simple card counting) 
 and learn basic strategy.
 
 ## Installation
@@ -8,7 +8,7 @@ $ python3 -m venv venv
 $ source venv/bin/activate
 $ pip3 install blackjack-gui
 ```
-<img src="blackjack_gui/images/bj-shot.png" alt="blackjack-gui" width="600"/>
+<img src="blackjack_gui/images/bj-shot.png" alt="" width="600"/>
 
 ## Usage
 
@@ -36,7 +36,7 @@ Options:
 
 
 ## Examples
-Open GUI version:
+Open the GUI version:
 ```
 $ blackjack
 ```
@@ -57,10 +57,10 @@ $ blackjack --n_games=10000 --ai=True --loglevel=INFO --gui=False --cards=A,8
 ```
 
 ## Notes
-* Uses 6 decs and shuffling when 52 cards remaining in the shoe
-* Insurance and even money not implemented
-* Otherwise, rules follow: https://casinohelsinki.fi/en/games/blackjack-eng/
-* Basic strategy according to [American casino guidebook](https://www.americancasinoguidebook.com/wp-content/uploads/2014/04/BJ-strategy-chart-for-web.pdf)
+* Uses 6 decs and shuffles after 5 decs.
+* Insurance and even money not implemented.
+* Otherwise, rules follow: https://casinohelsinki.fi/en/games/blackjack-eng/.
+* Basic strategy according to [American casino guidebook](https://www.americancasinoguidebook.com/wp-content/uploads/2014/04/BJ-strategy-chart-for-web.pdf).
 * Card images taken from [here](https://code.google.com/archive/p/vector-playing-cards/).
 
 ## Licence

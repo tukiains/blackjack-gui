@@ -37,7 +37,12 @@ if __name__ == '__main__':
     parser.add_argument('--cards',
                         type=lambda s: s.split(','),
                         default=None,
-                        help='Simulate starting hand. E.g. --cards=A,7 to simulate soft 18.')
+                        help='Determine first player cards. E.g. --cards=A,7 to simulate soft 18.')
+    parser.add_argument('--dealer_cards',
+                        type=lambda s: s.split(','),
+                        default=None,
+                        help='Determine first dealer cards. Useful for tests.')
+
 
     args = parser.parse_args()
     if args.gui.lower() == 'true':

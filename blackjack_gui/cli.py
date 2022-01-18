@@ -1,4 +1,3 @@
-import time
 import logging
 import math
 from .lib import Player, Dealer, Shoe, get_correct_play
@@ -38,6 +37,8 @@ def main(args):
             bet = args.bet
         hand = player.start_new_hand(bet)
         dealer.init_hand()
+        if args.dealer_cards is not None:
+            shoe.arrange(args.dealer_cards)
         dealer.deal(shoe)
         logging.debug(f'Dealer: {dealer}')
         if args.cards is not None:
@@ -157,6 +158,8 @@ def main(args):
                     hand_played = True
 
         # Deal Dealer:
+        if args.dealer_cards is not None and len(args.dealer_cards) > 1:
+            shoe.arrange(args.dealer_cards[1:])
         hit_dealer = False
         for hand in player.hands:
             if hand.is_over is False and hand.surrender is False:

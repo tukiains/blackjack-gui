@@ -5,3 +5,4 @@ blackjack_gui.egg-info/
 build/
 dist/
 venv/
+*__init__.pyc*

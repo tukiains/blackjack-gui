@@ -60,8 +60,13 @@ $ blackjack --n_games=10000 --ai=True --loglevel=INFO --gui=False --cards=A,8
 ```
 
 ## Tests
-Install pytest:
+Install `blackjack-gui` from GitHub and `pytest`:
 ```
+$ git clone https://github.com/tukiains/blackjack-gui
+$ cd blackjack-gui/
+$ python3 -m venv venv
+$ source venv/bin/activate
+$ pip3 install .
 $ pip3 install pytest
 ```
 Run unit and integration tests:

@@ -24,15 +24,16 @@ blackjack --gui=False [OPTION...]
 
 Options:
 
-| Name         | Default | Description                                                                                  | 
-|:-------------|:--------|:---------------------------------------------------------------------------------------------|
-| `--stack`    | 1000    | Initial stack. Can be used with `--gui=True` too.                                              |
-| `--bet`      | 1       | Bet size.                                                                                    |
-| `--n_games`  | 10      | Number of rounds to be played.                                                               |
-| `--ai`       | False   | If True, computer plays instead of you.                                                      |
-| `--count`    | False   | If True, `ai` uses card counting.                                                            |
-| `--loglevel` | DEBUG   | Adjust amount of logging: DEBUG or INFO.                                                     |
-| `--cards`    |         | Simulate certain starting hand only. E.g. `--cards=A,8`. Shuffles the shoe after every hand. |
+| Name             | Default | Description                                                                             | 
+|:-----------------|:--------|:----------------------------------------------------------------------------------------|
+| `--stack`        | 1000    | Initial stack. Can be used with `--gui=True` too.                                       |
+| `--bet`          | 1       | Bet size.                                                                               |
+| `--n_games`      | 10      | Number of rounds to be played.                                                          |
+| `--ai`           | False   | If True, computer plays instead of you.                                                 |
+| `--count`        | False   | If True, `ai` uses card counting.                                                       |
+| `--loglevel`     | DEBUG   | Adjust amount of logging: DEBUG or INFO.                                                |
+| `--cards`        |         | Determine first player cards, e.g. `--cards=A,8,K`. Shuffles the shoe after every hand. |
+| `--dealer_cards` |         | Determine first dealer cards. Useful for testing.                                       |
 
 
 ## Examples
@@ -55,6 +56,18 @@ Simulate soft 19 starting hand only:
 ```
 $ blackjack --n_games=10000 --ai=True --loglevel=INFO --gui=False --cards=A,8
 ```
+
+## Tests
+Install pytest:
+```
+$ pip3 install pytest
+```
+Run unit and integration tests:
+```
+$ pytest-3 tests/unit.py
+$ pytest-3 tests/integration.py
+```
+
 
 ## Notes
 * Uses 6 decs and shuffles after 5 decs.

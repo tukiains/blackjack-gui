@@ -43,7 +43,6 @@ if __name__ == '__main__':
                         default=None,
                         help='Determine first dealer cards. Useful for tests.')
 
-
     args = parser.parse_args()
     if args.gui.lower() == 'true':
         logging.basicConfig(level='WARNING')

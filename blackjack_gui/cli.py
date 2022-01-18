@@ -11,7 +11,7 @@ def _is_correct(correct_play: str, action: str, decisions: dict) -> dict:
     return decisions
 
 
-def main(args):
+def main(args) -> float:
     decisions = {
         'correct': 0,
         'incorrect': 0
@@ -230,3 +230,5 @@ def main(args):
     logging.info(f'Return {round((1 + profit / player.invested) * 100 * 1e4)/1e4} %')
     if args.ai is False:
         logging.info(f'Correct decisions: {decisions["correct"] / (decisions["correct"] + decisions["incorrect"]) * 100} %')
+    if args.cards is not None and args.dealer_cards is not None:
+        print(player.stack)

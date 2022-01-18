@@ -1,4 +1,4 @@
-name: Blackjack-GUI test and lint
+name: tests
 
 on: [push]
 

@@ -1,4 +1,6 @@
 # blackjack-gui
+![](https://github.com/tukiains/blackjack-gui/workflows/tests/badge.svg)
+
 Single-player Blackjack including GUI and CLI interfaces. Can be used to simulate games (with simple card counting) 
 and learn basic strategy.
 

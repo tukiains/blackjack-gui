@@ -33,8 +33,8 @@ def test_surrender(player, dealer, stack):
 
 
 @pytest.mark.parametrize("player, dealer, stack", [
-    ('9,2,J', '10,Q', 12),
-    ('9,2,J', '10,A', 8),
+    ('9,2,J', '10,Q', 11),
+    ('9,2,J', '10,A', 9),
     ('8,2,8', '2,10,6', 10),
     ('8,2,8', '2,10,5', 12),
     ('5,5,K', '9,10', 12),

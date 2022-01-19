@@ -239,7 +239,7 @@ def get_correct_play(hand: Hand,
                 return double
             return hit
         if hand.sum == 11:
-            if dealer_card.value in range(2, 11) and n_cards == 2 and hand.is_hittable is True:
+            if dealer_card.value in range(2, 10) and n_cards == 2 and hand.is_hittable is True:
                 return double
             return hit
         if hand.sum == 12:

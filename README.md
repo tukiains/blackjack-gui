@@ -75,12 +75,16 @@ $ pytest-3 tests/unit.py
 $ pytest-3 tests/integration.py
 ```
 
+## Basic strategy chart
+<img src="blackjack_gui/images/chart.png" alt="" width="400"/>
+<img src="blackjack_gui/images/chart-symbols.png" alt="" width="258"/>
+
+* Note that 16 with 3 or more cards = Stay
 
 ## Notes
 * Uses 6 decs and shuffles after 5 decs.
 * Insurance and even money not implemented.
 * Otherwise, rules follow: https://casinohelsinki.fi/en/games/blackjack-eng/.
-* Basic strategy according to [American casino guidebook](https://www.americancasinoguidebook.com/wp-content/uploads/2014/04/BJ-strategy-chart-for-web.pdf).
 * Card images taken from [here](https://code.google.com/archive/p/vector-playing-cards/).
 
 ## Licence

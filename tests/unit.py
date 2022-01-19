@@ -131,7 +131,8 @@ def test_evaluate_hand(cards, the_sum, is_hard):
     (["9", "5"], "7", "hit"),
     (["9", "5"], "8", "hit"),
     (["9", "5"], "9", "hit"),
-    (["9", "5"], "10", "hit"),
+    (["9", "5"], "10", "surrender"),
+    (["9", "3", "2"], "10", "hit"),
     (["9", "5"], "A", "hit"),
     # Hard 15
     (["9", "6"], "2", "stay"),
@@ -156,7 +157,7 @@ def test_evaluate_hand(cards, the_sum, is_hard):
     (["J", "6"], "9", "surrender"),
     (["J", "6"], "10", "surrender"),
     (["J", "4", "2"], "9", "hit"),
-    (["J", "4", "2"], "10", "stay"),  # Well-known exception
+    (["J", "4", "2"], "10", "stay"),  # No hitting here (known exception)
     (["J", "6"], "A", "hit"),
     # Hard 17
     (["J", "7"], "2", "stay"),
@@ -376,8 +377,8 @@ def test_evaluate_hand(cards, the_sum, is_hard):
     (["8", "8"], "7", "split"),
     (["8", "8"], "8", "split"),
     (["8", "8"], "9", "split"),
-    (["8", "8"], "10", "split"),
-    (["8", "8"], "A", "split"),
+    (["8", "8"], "10", "surrender"),
+    (["8", "8"], "A", "hit"),
     # 9, 9
     (["9", "9"], "2", "split"),
     (["9", "9"], "3", "split"),
@@ -410,7 +411,7 @@ def test_evaluate_hand(cards, the_sum, is_hard):
     (["A", "A"], "8", "split"),
     (["A", "A"], "9", "split"),
     (["A", "A"], "10", "split"),
-    (["A", "A"], "A", "split"),
+    (["A", "A"], "A", "hit"),
 ])
 def test_get_correct_play(cards, dealer, correct_play):
     hand = Hand()

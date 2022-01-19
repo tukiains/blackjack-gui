@@ -231,4 +231,5 @@ def main(args) -> float:
     if args.ai is False:
         logging.info(f'Correct decisions: {decisions["correct"] / (decisions["correct"] + decisions["incorrect"]) * 100} %')
     if args.cards is not None and args.dealer_cards is not None:
+        # For integration tests
         print(player.stack)

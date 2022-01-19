@@ -247,22 +247,22 @@ def get_correct_play(hand: Hand,
         if hand.sum == 13:
             return stay if dealer_card.value in range(2, 7) else hit
         if hand.sum == 14:
+            if _should_surrender(hand, dealer_card, (10,)) is True:
+                return surrender
             return stay if dealer_card.value in range(2, 7) else hit
         if hand.sum == 15:
-            if dealer_ace is False:
-                if dealer_card.value == 10 and n_cards == 2 and hand.is_split_hand is False:
-                    return surrender
-                if dealer_card.value <= 6:
-                    return stay
+            if _should_surrender(hand, dealer_card, (10,)) is True:
+                return surrender
+            if dealer_ace is False and dealer_card.value <= 6:
+                return stay
             return hit
         if hand.sum == 16:
+            if _should_surrender(hand, dealer_card, (9, 10)) is True:
+                return surrender
             if n_cards >= 3 and dealer_card.value == 10:
                 return stay
-            if dealer_ace is False:
-                if dealer_card.value in (9, 10) and n_cards == 2 and hand.is_split_hand is False:
-                    return surrender
-                if dealer_card.value <= 6:
-                    return stay
+            if dealer_ace is False and dealer_card.value <= 6:
+                return stay
             return hit
         if hand.sum >= 17:
             return stay
@@ -270,7 +270,7 @@ def get_correct_play(hand: Hand,
     # Pairs
     if n_cards == 2 and cards[0].value == cards[1].value:
         if cards[0].label == 'A':
-            return hit if n_hands == 4 else split
+            return hit if n_hands == 4 or dealer_ace is True else split
         if cards[0].value == 10:
             return stay
         if cards[0].value == 9:
@@ -278,7 +278,9 @@ def get_correct_play(hand: Hand,
                 return stay
             return split
         if cards[0].value == 8:
-            if n_hands == 4:
+            if _should_surrender(hand, dealer_card, (10,)) is True:
+                return surrender
+            if n_hands == 4 or dealer_ace is True:
                 return hit
             return split
         if cards[0].value == 7:
@@ -337,3 +339,11 @@ def get_correct_play(hand: Hand,
             return hit
 
     raise ValueError("Don't know what to do")
+
+
+def _should_surrender(hand: Hand, dealer_card: Card, values: tuple) -> bool:
+    if hand.is_split_hand is True or dealer_card.label[0] == 'A' or len(hand.cards) != 2:
+        return False
+    if dealer_card.value in values:
+        return True
+    return False

@@ -52,8 +52,8 @@ def test_double(player, dealer, stack):
     ('A,A,5,2', '5,10,J', 12),
     ('A,A,A,A,A,A,A,A', '10,7', 6),
     ('A,A,A,A,K,K,K,K', '10,K', 14),
-    ('8,8,3,3,J,K', '10,K', 14),
-    ('A,A,K,K', 'A,K', 8)
+    ('8,8,3,3,J,K', '10,K', 9.5),
+    ('A,A,K,K', 'A,K', 9)
 ])
 def test_split(player, dealer, stack):
     assert call(player, dealer) == stack

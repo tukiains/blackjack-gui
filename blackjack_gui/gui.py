@@ -24,6 +24,7 @@ class Gui:
     shoe_progress: tkinter.Label
     fix_mistakes: tkinter.IntVar
     slider: tkinter.Scale
+    insurance_chip: tkinter.Label
 
 
 class Game:
@@ -42,6 +43,7 @@ class Game:
         self.bet = self.gui.slider.get()
         self.gui.slider.configure(state=tkinter.DISABLED)
         self.hide_all_chips()
+        self.hide_insurance_chip()
         self.hide_fingers()
         self.clean_player_slots()
         self.player.init_count()
@@ -55,6 +57,10 @@ class Game:
         self.display_dealer_cards()
         hand.deal(self.shoe, self.gui.shoe_progress)
         hand.deal(self.shoe, self.gui.shoe_progress)
+        if self.dealer.cards[0].label == 'A':
+            self.show_buttons(('insure',))
+        else:
+            self.hide_buttons(('insure',))
         self.show_buttons()
         self.hide_buttons(('deal',))
         self.show()
@@ -140,6 +146,15 @@ class Game:
         hand.is_finished = True
         self.resolve_next_hand()
 
+    def insure(self):
+        """Method for Insure button."""
+        hand = self.get_hand_in_active_slot()
+        self.dealer.insurance_bet = (hand.bet / 2)
+        self.display_insurance_chip()
+        self.player.stack -= self.dealer.insurance_bet
+        self.display_stack()
+        self.hide_buttons(('insure',))
+
     def split(self):
         """Method for Split button."""
         hand = self.get_hand_in_active_slot()
@@ -196,8 +211,14 @@ class Game:
             self.display_finger(hand)
         else:
             self.clean_info()
-            if self.is_all_over() is False:
+            if self.is_all_over() is False or self.dealer.insurance_bet > 0:
                 self.display_dealer_cards(hide_second=False)
+                if self.dealer.is_blackjack and self.dealer.insurance_bet > 0:
+                    self.display_insurance_chip(triple=True)
+                    self.player.stack += (self.dealer.insurance_bet * 3)
+                    self.display_stack()
+                else:
+                    self.hide_insurance_chip()
                 while self.dealer.is_finished is False:
                     self.dealer.deal(self.shoe, self.gui.shoe_progress)
                     self.display_dealer_cards()
@@ -332,8 +353,9 @@ class Game:
     def show_buttons(self, buttons: tuple = None):
         """Shows menu buttons."""
         if buttons is None:
-            for button in self.gui.menu.values():
-                button.configure(state=tkinter.NORMAL)
+            for key, button in self.gui.menu.items():
+                if key != 'insure':
+                    button.configure(state=tkinter.NORMAL)
         else:
             for button in buttons:
                 if button in self.gui.menu.keys():
@@ -379,6 +401,22 @@ class Game:
         self.clean_player_slots()
         for hand in self.player.hands:
             self.display_player_cards(hand)
+
+    def display_insurance_chip(self, triple: bool = False):
+        bet = self.dealer.insurance_bet if triple is False else self.dealer.insurance_bet * 3
+        if bet == 0.5:
+            color = 'blue'
+            text = '0.5'
+        else:
+            color = 'red'
+            text = str(round(bet))
+        img = get_chip_image(color)
+        self.gui.insurance_chip.configure(image=img, compound='center', fg='white', text=text,
+                                          font='helvetica 10 bold')
+        self.gui.insurance_chip.image = img
+
+    def hide_insurance_chip(self):
+        self.gui.insurance_chip.configure(image='', text='')
 
     def display_chip(self, hand: Hand, pos: int, color: str = 'red'):
         """Displays chip for certain hand and chip position."""
@@ -564,6 +602,10 @@ def main(args):
                 pady = 35
             chips[f'{str(slot)}{str(pos)}'].place(x=slot*x_slot+padding_left+padx+20, y=500+pady)
 
+    # Insurance chip
+    insurance_chip = tkinter.Label(root, borderwidth=0, background=bc)
+    insurance_chip.place(x=450, y=400)
+
     # Side panel
     panel = tkinter.Label(root, width=200, height=720, background='lightgrey', borderwidth=2,
                           relief="groove")
@@ -577,7 +619,8 @@ def main(args):
 
     # Buttons
     menu = {name.split()[0].lower(): tkinter.Button(master=root, text=name, width=12, font=15)
-            for name in ('Surrender', 'Double up', 'Hit', 'Stay', 'Split', 'Deal', 'Reset')}
+            for name in ('Insure', 'Surrender', 'Double up', 'Hit', 'Stay', 'Split', 'Deal',
+                         'Reset')}
     for name, button in menu.items():
         if name == 'hit':
             button.configure(command=lambda: game.hit())
@@ -593,11 +636,13 @@ def main(args):
             button.configure(command=lambda: game.next())
         elif name == 'reset':
             button.configure(command=lambda: game.reset())
+        elif name == 'insure':
+            button.configure(command=lambda: game.insure())
         else:
             raise ValueError
     x_sidepanel = 1025
     for ind, button in enumerate(menu.values()):
-        button.place(x=x_sidepanel, y=ind*33+300)
+        button.place(x=x_sidepanel, y=ind*33+270)
 
     menu['deal'].place(x=x_sidepanel, y=500)
     menu['reset'].place(x=x_sidepanel, y=20)
@@ -621,7 +666,8 @@ def main(args):
               finger,
               shoe_progress,
               fix_mistakes,
-              slider)
+              slider,
+              insurance_chip)
 
     dealer = Dealer()
     player = Player(stack=args.stack)

@@ -110,6 +110,7 @@ class Dealer:
         self.is_blackjack = False
         self.is_finished = False
         self.is_over = False
+        self.insurance_bet = 0
 
     def init_hand(self):
         self.cards = []
@@ -117,6 +118,7 @@ class Dealer:
         self.is_blackjack = False
         self.is_finished = False
         self.is_over = False
+        self.insurance_bet = 0
 
     def deal(self, shoe: Shoe, progress: tkinter.Label = None):
         card = shoe.draw(progress)

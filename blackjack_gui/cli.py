@@ -230,11 +230,10 @@ def main(args):
     logging.info(f'Number of rounds played: {args.n_games}')
     logging.info(f'Number of hands played (including splits): {n_total_hands}')
     logging.info(f'Initial bet size: {args.bet} $')
-    logging.info(f'Total invested: {player.invested} $')
     logging.info(f'Total win: {profit} $')
-    logging.info(f'Average bet / hand: {average_bet_per_hand} $')
-    logging.info(f'Average win / hand: {average_profit_per_hand} $')
-    logging.info(f'Average return / hand: {round(average_return_per_hand * 1e4)/1e4} %')
+    logging.info(f'Average bet / hand: {"%.3f"%average_bet_per_hand} $')
+    logging.info(f'Average win / hand: {"%.6f"%average_profit_per_hand} $')
+    logging.info(f'Average return / hand: {"%.3f"%average_return_per_hand} %')
     if args.ai is False:
         logging.info(f'Correct decisions: {decisions["correct"] / (decisions["correct"] + decisions["incorrect"]) * 100} %')
     if args.cards is not None and args.dealer_cards is not None:

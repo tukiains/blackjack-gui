@@ -11,7 +11,7 @@ def _is_correct(correct_play: str, action: str, decisions: dict) -> dict:
     return decisions
 
 
-def main(args) -> float:
+def main(args):
     decisions = {
         'correct': 0,
         'incorrect': 0
@@ -224,10 +224,17 @@ def main(args) -> float:
         logging.debug('----------------')
 
     profit = player.stack - args.stack
-    logging.info(f'Number of hands played: {n_total_hands}')
-    logging.info(f'Bet size: {args.bet} $')
-    logging.info(f'Profit: {profit} $')
-    logging.info(f'Return {round((1 + profit / player.invested) * 100 * 1e4)/1e4} %')
+    average_bet_per_hand = player.invested / n_total_hands
+    average_profit_per_hand = profit / n_total_hands
+    average_return_per_hand = (1 + average_profit_per_hand / average_bet_per_hand) * 100
+    logging.info(f'Number of rounds played: {args.n_games}')
+    logging.info(f'Number of hands played (including splits): {n_total_hands}')
+    logging.info(f'Initial bet size: {args.bet} $')
+    logging.info(f'Total invested: {player.invested} $')
+    logging.info(f'Total win: {profit} $')
+    logging.info(f'Average bet / hand: {average_bet_per_hand} $')
+    logging.info(f'Average win / hand: {average_profit_per_hand} $')
+    logging.info(f'Average return / hand: {round(average_return_per_hand * 1e4)/1e4} %')
     if args.ai is False:
         logging.info(f'Correct decisions: {decisions["correct"] / (decisions["correct"] + decisions["incorrect"]) * 100} %')
     if args.cards is not None and args.dealer_cards is not None:

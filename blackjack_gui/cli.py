@@ -41,6 +41,18 @@ def main(args):
             shoe.arrange(args.dealer_cards)
         dealer.deal(shoe)
         logging.debug(f'Dealer: {dealer}')
+        if dealer.cards[0].label == 'A':
+            should_insure = 'yes' if player.true_count > 3 else 'no'
+            if args.ai is True:
+                action = 'y' if should_insure == 'yes' and args.count is True else 'n'
+            else:
+                action = input('Insure? y/n [n]')
+            if action == 'y':
+                decisions = _is_correct(should_insure, 'yes', decisions)
+                insurance_bet = bet / 2
+                player.stack -= insurance_bet
+                player.invested += insurance_bet
+                dealer.insurance_bet = insurance_bet
         if args.cards is not None:
             shoe.arrange(args.cards)
         hand.deal(shoe)
@@ -179,6 +191,12 @@ def main(args):
                 hit_dealer = False
 
         # Payout
+
+        # Insurance
+        if dealer.is_blackjack is True and dealer.insurance_bet > 0:
+            logging.debug(f'You win insurance bet.')
+            player.stack += dealer.insurance_bet * 3
+
         for hand in player.hands:
 
             # Losing hands

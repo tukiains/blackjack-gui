@@ -59,6 +59,12 @@ def test_split(player, dealer, stack):
     assert call(player, dealer) == stack
 
 
+def test_insurance():
+    player = 'K,J'
+    dealer = 'A,K'
+    assert call(player, dealer) == 9
+
+
 def call(player: str, dealer: str) -> float:
     result = subprocess.check_output(f'{prefix} '
                                      f'--cards={player} '

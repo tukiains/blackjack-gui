@@ -111,6 +111,7 @@ class Dealer:
         self.is_finished = False
         self.is_over = False
         self.insurance_bet = 0
+        self.even_money = False
 
     def init_hand(self):
         self.cards = []
@@ -119,6 +120,7 @@ class Dealer:
         self.is_finished = False
         self.is_over = False
         self.insurance_bet = 0
+        self.even_money = False
 
     def deal(self, shoe: Shoe, progress: tkinter.Label = None):
         card = shoe.draw(progress)

@@ -41,7 +41,14 @@ def main(args):
             shoe.arrange(args.dealer_cards)
         dealer.deal(shoe)
         logging.debug(f'Dealer: {dealer}')
-        if dealer.cards[0].label == 'A':
+        if args.cards is not None:
+            shoe.arrange(args.cards)
+        hand.deal(shoe)
+        hand.deal(shoe)
+        logging.debug(f'Player: {hand}')
+
+        # Insurance bet
+        if dealer.cards[0].label == 'A' and hand.is_blackjack is False:
             should_insure = 'yes' if player.true_count > 3 else 'no'
             if args.ai is True:
                 action = 'y' if should_insure == 'yes' and args.count is True else 'n'
@@ -53,15 +60,18 @@ def main(args):
                 player.stack -= insurance_bet
                 player.invested += insurance_bet
                 dealer.insurance_bet = insurance_bet
-        if args.cards is not None:
-            shoe.arrange(args.cards)
-        hand.deal(shoe)
-        hand.deal(shoe)
-        logging.debug(f'Player: {hand}')
-        if hand.sum == 21:
-            hand.is_blackjack = True
-            hand.is_hittable = False
-        else:
+        # Even money
+        elif dealer.cards[0].label == 'A' and hand.is_blackjack is True:
+            should_take_even_money = 'yes' if player.true_count > 3 else 'no'
+            if args.ai is True:
+                action = 'y' if should_take_even_money == 'yes' and args.count is True else 'n'
+            else:
+                action = input('Take even money? y/n [n]')
+            if action == 'y':
+                decisions = _is_correct(should_take_even_money, 'yes', decisions)
+                dealer.even_money = True
+
+        if hand.is_blackjack is False:
             # Surrender can be done only here. And not against dealer's Ace.
             if dealer.cards[0].label != 'A':
                 correct_play = get_correct_play(hand, dealer.cards[0], len(player.hands))
@@ -174,7 +184,7 @@ def main(args):
             shoe.arrange(args.dealer_cards[1:])
         hit_dealer = False
         for hand in player.hands:
-            if hand.is_over is False and hand.surrender is False:
+            if (hand.is_over is False and hand.surrender is False) or dealer.insurance_bet > 0:
                 hit_dealer = True
         if player.hands[0].is_blackjack is True:
             if dealer.cards[0].label != 'A' and dealer.cards[0].value != 10:
@@ -192,12 +202,19 @@ def main(args):
 
         # Payout
 
+        # Even money
+        if dealer.even_money is True:
+            player.stack += hand.bet * 2
+
         # Insurance
-        if dealer.is_blackjack is True and dealer.insurance_bet > 0:
+        elif dealer.is_blackjack is True and dealer.insurance_bet > 0:
             logging.debug(f'You win insurance bet.')
             player.stack += dealer.insurance_bet * 3
 
         for hand in player.hands:
+
+            if dealer.even_money is True:
+                continue
 
             # Losing hands
             if hand.surrender:
@@ -253,7 +270,11 @@ def main(args):
     logging.info(f'Average win / hand: {"%.6f"%average_profit_per_hand} $')
     logging.info(f'Average return / hand: {"%.3f"%average_return_per_hand} %')
     if args.ai is False:
-        logging.info(f'Correct decisions: {decisions["correct"] / (decisions["correct"] + decisions["incorrect"]) * 100} %')
+        try:
+            correct_decisions = decisions["correct"] / (decisions["correct"] + decisions["incorrect"]) * 100
+        except ZeroDivisionError:
+            correct_decisions = 100
+        logging.info(f'Correct decisions: {correct_decisions} %')
     if args.cards is not None and args.dealer_cards is not None:
         # For integration tests
         print(player.stack)

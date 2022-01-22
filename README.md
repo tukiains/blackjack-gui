@@ -83,7 +83,6 @@ $ pytest-3 tests/integration.py
 
 ## Notes
 * Uses 6 decs and shuffles after 5.
-* Insurance and even money not implemented.
 * Otherwise, rules follow: https://casinohelsinki.fi/en/games/blackjack-eng/.
 * Card images taken from [here](https://code.google.com/archive/p/vector-playing-cards/).
 

@@ -57,10 +57,6 @@ class Game:
         self.display_dealer_cards()
         hand.deal(self.shoe, self.gui.shoe_progress)
         hand.deal(self.shoe, self.gui.shoe_progress)
-        if self.dealer.cards[0].label == 'A':
-            self.show_buttons(('insure',))
-        else:
-            self.hide_buttons(('insure',))
         self.show_buttons()
         self.hide_buttons(('deal',))
         self.show()
@@ -68,11 +64,19 @@ class Game:
         self.display_stack()
         self.enable_correct_buttons(hand)
         self.display_chip(hand, 0)
-        if hand.is_blackjack:
-            self.resolve_blackjack()
         self.display_player_cards(hand)
-        if self.dealer.cards[0].label == 'A':
-            self.hide_buttons(('surrender', ))
+        if self.dealer.cards[0].label != 'A':
+            self.hide_buttons(('insure', 'even-money'))
+            if hand.is_blackjack:
+                self.resolve_blackjack()
+        else:
+            self.hide_buttons(('surrender',))
+            if hand.is_blackjack is True:
+                self.show_buttons(('even-money', ))
+                self.hide_buttons(('insure', ))
+            else:
+                self.show_buttons(('insure',))
+                self.hide_buttons(('even-money', ))
 
     def surrender(self):
         """Method for Surrender button."""
@@ -82,6 +86,11 @@ class Game:
         self.player.stack += (self.bet/2)
         self.display_stack()
         self.deal()
+
+    def even_money(self):
+        """Method for Even Money button"""
+        self.dealer.even_money = True
+        self.payout()
 
     def double(self):
         """Method for Double button."""
@@ -227,8 +236,13 @@ class Game:
     def payout(self):
         """Handles payout of all hands."""
         self.hide_fingers()
+
         for hand in self.player.hands:
-            if hand.is_blackjack is True and self.dealer.is_blackjack is False:
+            if self.dealer.even_money is True:
+                self.player.stack += hand.bet * 2
+                result = f'EVEN MONEY'
+                self._display_chips(hand)
+            elif hand.is_blackjack is True and self.dealer.is_blackjack is False:
                 self.player.stack += hand.bet * 2.5
                 result = f'WIN BY BLACKJACK!'
                 self._display_chips(hand, bj=True)
@@ -354,7 +368,7 @@ class Game:
         """Shows menu buttons."""
         if buttons is None:
             for key, button in self.gui.menu.items():
-                if key != 'insure':
+                if key not in ('insure', 'even-money'):
                     button.configure(state=tkinter.NORMAL)
         else:
             for button in buttons:
@@ -619,7 +633,7 @@ def main(args):
 
     # Buttons
     menu = {name.split()[0].lower(): tkinter.Button(master=root, text=name, width=12, font=15)
-            for name in ('Insure', 'Surrender', 'Double up', 'Hit', 'Stay', 'Split', 'Deal',
+            for name in ('Even-money', 'Insure', 'Surrender', 'Double up', 'Hit', 'Stay', 'Split', 'Deal',
                          'Reset')}
     for name, button in menu.items():
         if name == 'hit':
@@ -638,11 +652,13 @@ def main(args):
             button.configure(command=lambda: game.reset())
         elif name == 'insure':
             button.configure(command=lambda: game.insure())
+        elif name == 'even-money':
+            button.configure(command=lambda: game.even_money())
         else:
             raise ValueError
     x_sidepanel = 1025
     for ind, button in enumerate(menu.values()):
-        button.place(x=x_sidepanel, y=ind*33+270)
+        button.place(x=x_sidepanel, y=ind*33+230)
 
     menu['deal'].place(x=x_sidepanel, y=500)
     menu['reset'].place(x=x_sidepanel, y=20)

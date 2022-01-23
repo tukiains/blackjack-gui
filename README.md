@@ -11,7 +11,7 @@ $ python3 -m venv venv
 $ source venv/bin/activate
 $ pip3 install blackjack-gui
 ```
-<img src="blackjack_gui/images/bj-shot.png" alt="" width="600"/>
+<img src="https://github.com/tukiains/blackjack-gui/blob/main/blackjack_gui/images/bj-shot.png?raw=true" alt="" width="600"/>
 
 ## Usage
 
@@ -77,8 +77,8 @@ $ pytest-3 tests/integration.py
 ```
 
 ## Basic strategy chart
-<img src="blackjack_gui/images/chart.png" alt="" width="400"/>
-<img src="blackjack_gui/images/chart-symbols.png" alt="" width="258"/>
+<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart.png" alt="" width="400"/>
+<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-symbols.png" alt="" width="258"/>
 
 * Note that 16 vs 10 with 3 or more cards = Stay
 

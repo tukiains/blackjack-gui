@@ -232,7 +232,6 @@ class Game:
                 if self.dealer.is_blackjack and self.dealer.insurance_bet > 0:
                     self.display_insurance_chip(triple=True)
                     self.player.stack += (self.dealer.insurance_bet * 3)
-                    self.display_stack()
                 else:
                     self.hide_insurance_chip()
                 while self.dealer.is_finished is False:
@@ -428,12 +427,14 @@ class Game:
 
     def display_insurance_chip(self, triple: bool = False):
         bet = self.dealer.insurance_bet if triple is False else self.dealer.insurance_bet * 3
+        color = 'red'
         if bet == 0.5:
             color = 'blue'
             text = '0.5'
-        else:
-            color = 'red'
+        elif bet % 1 == 0:
             text = str(round(bet))
+        else:
+            text = str(bet)
         img = get_chip_image(color)
         self.gui.insurance_chip.configure(image=img, compound='center', fg='white', text=text,
                                           font='helvetica 10 bold')

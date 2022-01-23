@@ -90,14 +90,13 @@ class Hand:
         else:
             self.cards.append(source)
         self.sum, self.is_hard = evaluate_hand(self.cards)
+        if self.sum >= 21:
+            self.is_finished = True
+            self.is_hittable = False
         if self.sum > 21:
             self.is_over = True
-            self.is_hittable = False
-            self.is_finished = True
         if self.sum == 21 and len(self.cards) == 2 and self.is_split_hand is False:
             self.is_blackjack = True
-            self.is_hittable = False
-            self.is_finished = True
 
     def __repr__(self) -> str:
         return f'{self.cards}'

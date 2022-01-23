@@ -25,6 +25,7 @@ class Gui:
     fix_mistakes: tkinter.IntVar
     slider: tkinter.Scale
     insurance_chip: tkinter.Label
+    dealer_info: tkinter.Label
 
 
 class Game:
@@ -47,6 +48,7 @@ class Game:
         self.hide_insurance_chip()
         self.hide_fingers()
         self.clean_player_slots()
+        self.dealer_info()
         self.player.init_count()
         self.player.hands = []
         if self.shoe.n_cards < 52:
@@ -142,12 +144,11 @@ class Game:
                 return
         self.hide_buttons(('surrender', 'double'))
         hand.deal(self.shoe, self.gui.shoe_progress)
-        if hand.sum == 21:
-            hand.is_finished = True
         self.display_player_cards(hand)
         if hand.is_over is True:
             self.hide(hand)
             self.hide_chips(hand)
+            self.display_info(hand, 'BUST')
         if hand.is_finished is False:
             self.enable_correct_buttons(hand)
         else:
@@ -249,17 +250,19 @@ class Game:
                 self._display_chips(hand)
             elif hand.is_blackjack is True and self.dealer.is_blackjack is False:
                 self.player.stack += hand.bet * 2.5
-                result = f'WIN BY BLACKJACK!'
+                result = f'BLACKJACK'
                 self._display_chips(hand, bj=True)
             elif hand.is_blackjack is True and self.dealer.is_blackjack is True:
                 self.player.stack += hand.bet
                 result = f'PUSH'
             elif self.dealer.is_blackjack is True and hand.is_blackjack is False:
+                self.dealer_info('BLACKJACK')
                 result = f'LOSE'
                 self._resolve_lost_hand(hand)
             elif hand.is_over is False and self.dealer.is_over is True:
+                self.dealer_info('BUST')
                 self.player.stack += hand.bet * 2
-                result = f'WIN'
+                result = f''
                 self._display_chips(hand)
             elif hand.is_over is True:
                 result = f'BUST'
@@ -296,7 +299,6 @@ class Game:
 
     def enable_correct_buttons(self, hand: Hand):
         """Enables buttons that are OK to press with certain hand."""
-        self.clean_info()
         n_hands = len(self.player.hands)
         if len(hand.cards) == 2 and hand.is_hittable is True:
             self.show_buttons(('double',))
@@ -459,6 +461,9 @@ class Game:
         self.gui.finger[f'{str(hand.slot)}'].configure(image=img)
         self.gui.finger[f'{str(hand.slot)}'].image = img
 
+    def dealer_info(self, text: str = ''):
+        self.gui.dealer_info.configure(text=text)
+
     def hide_chips(self, hand: Hand):
         """Hides chips of a hand."""
         for pos in range(4):
@@ -576,7 +581,11 @@ def main(args):
                                      background=bc, fg="white")
             for slot in range(4)}
     for ind, i in enumerate(info.values()):
-        i.place(x=ind*x_slot+padding_left+118, y=465)
+        i.place(x=ind*x_slot+padding_left+110, y=465)
+
+    # Dealer info
+    dealer_info = tkinter.Label(root, text='', font='helvetica 11 bold', borderwidth=0, background=bc, fg="white")
+    dealer_info.place(x=305, y=180)
 
     # Dealer finger
     finger = {str(slot): tkinter.Label(root, borderwidth=0, background=bc) for slot in range(4)}
@@ -682,7 +691,8 @@ def main(args):
               shoe_progress,
               fix_mistakes,
               slider,
-              insurance_chip)
+              insurance_chip,
+              dealer_info)
 
     dealer = Dealer()
     player = Player(stack=args.stack)

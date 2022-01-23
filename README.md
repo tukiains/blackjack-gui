@@ -17,7 +17,7 @@ $ pip3 install blackjack-gui
 
 ### GUI version
 ```
-blackjack
+blackjack [OPTION...]
 ```
 
 ### CLI version
@@ -25,18 +25,18 @@ blackjack
 blackjack --gui=False [OPTION...]
 ```
 
-Options:
+### Options
 
-| Name             | Default | Description                                                                             | 
-|:-----------------|:--------|:----------------------------------------------------------------------------------------|
-| `--stack`        | 1000    | Initial stack. Can be used with `--gui=True` too.                                       |
-| `--bet`          | 1       | Bet size.                                                                               |
-| `--n_games`      | 10      | Number of rounds to be played.                                                          |
-| `--ai`           | False   | If True, computer plays instead of you.                                                 |
-| `--count`        | False   | If True, `ai` uses card counting.                                                       |
-| `--loglevel`     | DEBUG   | Adjust amount of logging: DEBUG or INFO.                                                |
-| `--cards`        |         | Determine first player cards, e.g. `--cards=A,8,K`. Shuffles the shoe after every hand. |
-| `--dealer_cards` |         | Determine first dealer cards. Useful for testing.                                       |
+| Name             | Default | CLI only | Description                                                                                 | 
+|:-----------------|:--------|:---------|:--------------------------------------------------------------------------------------------|
+| `--stack`        | 1000    |          | Initial stack.                                                                              |
+| `--bet`          | 1       |          | Initial bet size.                                                                           |
+| `--n_games`      | 10      | x        | Number of rounds to be played.                                                              |
+| `--ai`           | False   | x        | If True, computer plays instead of you.                                                     |
+| `--count`        | False   | x        | If True, `ai` uses card counting.                                                           |
+| `--loglevel`     | DEBUG   | x        | Adjust amount of logging: DEBUG or INFO.                                                    |
+| `--cards`        |         |          | Determine the first player cards, e.g. `--cards=A,8,K`. Shuffles the shoe after every hand. |
+| `--dealer_cards` |         |          | Determine the first dealer cards. Useful for testing.                                       |
 
 
 ## Examples

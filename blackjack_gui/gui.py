@@ -95,6 +95,8 @@ class Game:
     def even_money(self):
         """Method for Even Money button"""
         self.dealer.even_money = True
+        hand = self.get_hand_in_active_slot()
+        self.hide(hand)
         self.payout()
 
     def double(self):

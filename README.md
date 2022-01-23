@@ -1,5 +1,6 @@
 # blackjack-gui
 ![](https://github.com/tukiains/blackjack-gui/workflows/tests/badge.svg)
+[![Downloads](https://pepy.tech/badge/blackjack-gui)](https://pepy.tech/project/blackjack-gui)
 
 Single-player Blackjack including GUI and CLI interfaces. Can be used to simulate games (with simple card counting) 
 and learn basic strategy.

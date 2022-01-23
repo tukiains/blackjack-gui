@@ -415,8 +415,7 @@ class Game:
         for ind, card in enumerate(hand.cards):
             rotate = True if ind == len(hand.cards) - 1 and rotate_last is True else False
             img, width, height = get_image(card, rotate=rotate)
-            self.gui.slot_player[f'{str(hand.slot)}{str(ind)}'].configure(image=img, width=width,
-                                                                          height=height)
+            self.gui.slot_player[f'{str(hand.slot)}{str(ind)}'].configure(image=img, width=width, height=height)
             self.gui.slot_player[f'{str(hand.slot)}{str(ind)}'].image = img
 
     def display_player_hands(self):
@@ -436,8 +435,7 @@ class Game:
         else:
             text = str(bet)
         img = get_chip_image(color)
-        self.gui.insurance_chip.configure(image=img, compound='center', fg='white', text=text,
-                                          font='helvetica 10 bold')
+        self.gui.insurance_chip.configure(image=img, compound='center', fg='white', text=text, font='helvetica 10 bold')
         self.gui.insurance_chip.image = img
 
     def hide_insurance_chip(self):
@@ -450,8 +448,7 @@ class Game:
             text = self.bet
         else:
             text = '.5' if self.bet == 1 else self.bet / 2
-        self.gui.chips[f'{str(hand.slot)}{str(pos)}'].configure(image=img, compound='center',
-                                                                fg='white', text=text,
+        self.gui.chips[f'{str(hand.slot)}{str(pos)}'].configure(image=img, compound='center', fg='white', text=text,
                                                                 font='helvetica 10 bold')
         self.gui.chips[f'{str(hand.slot)}{str(pos)}'].image = img
 
@@ -554,32 +551,29 @@ def main(args):
     root.title('Blackjack')
     root.configure(background=bc)
 
-    rect = tkinter.Canvas(root, bg=bc, height=100, width=80, bd=0, highlightthickness=0,
-                          relief='ridge')
+    rect = tkinter.Canvas(root, bg=bc, height=100, width=80, bd=0, highlightthickness=0, relief='ridge')
     rect.place(x=525, y=485)
     round_polygon(rect, [5, 75, 75, 5], [5, 5, 90, 90], 10, width=4, outline="#bbb500", fill=bc)
 
     # Shoe status
     shoe_status_container = tkinter.Label(root, borderwidth=0, background='white')
     shoe_status_container.place(x=20, y=30, height=150, width=30)
-    shoe_progress = tkinter.Label(shoe_status_container, background="black", borderwidth=0,
-                                  anchor="e")
-    shoe_label = tkinter.Label(root, text='Discard', font=12, borderwidth=0, background=bc,
-                               fg='white')
+    shoe_progress = tkinter.Label(shoe_status_container, background="black", borderwidth=0, anchor="e")
+    shoe_label = tkinter.Label(root, text='Discard', font=12, borderwidth=0, background=bc, fg='white')
     shoe_label.place(x=5, y=190)
 
     # Stack info
     label_text = tkinter.StringVar(root)
-    label = tkinter.Label(root, textvariable=label_text, font='Helvetica 13 bold', borderwidth=0,
-                          background=bc, fg='white')
+    label = tkinter.Label(root, textvariable=label_text, font='Helvetica 13 bold', borderwidth=0, background=bc,
+                          fg='white')
     label.place(x=430, y=670)
 
     # Hand info
     x_slot = 250
     padding_left = 20
     info_text = {str(slot): tkinter.StringVar(root) for slot in range(4)}
-    info = {str(slot): tkinter.Label(root, textvariable=info_text[str(slot)], font='helvetica 11 bold',
-                                     borderwidth=0, background=bc, fg="white")
+    info = {str(slot): tkinter.Label(root, textvariable=info_text[str(slot)], font='helvetica 11 bold', borderwidth=0,
+                                     background=bc, fg="white")
             for slot in range(4)}
     for ind, i in enumerate(info.values()):
         i.place(x=ind*x_slot+padding_left+118, y=465)
@@ -594,14 +588,12 @@ def main(args):
                    for slot in range(4) for pos in range(N_CARDS_MAX)}
     for frame in range(4):
         for pos in range(N_CARDS_MAX):
-            slot_player[f'{str(frame)}{str(pos)}'].place(x=frame*x_slot+pos*30+padding_left,
-                                                         y=350-pos*30)
+            slot_player[f'{str(frame)}{str(pos)}'].place(x=frame*x_slot+pos*30+padding_left, y=350-pos*30)
 
     # Dealer cards
     n_dealer_cards = 7
     card_back_img, width_card, _ = get_image()
-    slot_dealer = {f'{str(pos)}': tkinter.Label(root, borderwidth=0, background=bc)
-                   for pos in range(n_dealer_cards)}
+    slot_dealer = {f'{str(pos)}': tkinter.Label(root, borderwidth=0, background=bc) for pos in range(n_dealer_cards)}
     for pos in range(2):
         slot_dealer[str(pos)].configure(image=card_back_img)
         slot_dealer[str(pos)].image = card_back_img
@@ -632,20 +624,17 @@ def main(args):
     insurance_chip.place(x=450, y=400)
 
     # Side panel
-    panel = tkinter.Label(root, width=200, height=720, background='lightgrey', borderwidth=2,
-                          relief="groove")
+    panel = tkinter.Label(root, width=200, height=720, background='lightgrey', borderwidth=2, relief="groove")
     panel.place(x=1000, y=0)
 
     # Advisor button
     fix_mistakes = tkinter.IntVar()
-    checkbox_container = tkinter.Checkbutton(root, text='Coach mode', variable=fix_mistakes,
-                                             background='lightgrey')
+    checkbox_container = tkinter.Checkbutton(root, text='Coach mode', variable=fix_mistakes, background='lightgrey')
     checkbox_container.place(x=1040, y=600)
 
     # Buttons
     menu = {name.split()[0].lower(): tkinter.Button(master=root, text=name.replace('-', ' '), width=12, font=15)
-            for name in ('Even-money', 'Insurance', 'Surrender', 'Double up', 'Hit', 'Stay', 'Split', 'Deal',
-                         'Reset')}
+            for name in ('Even-money', 'Insurance', 'Surrender', 'Double up', 'Hit', 'Stay', 'Split', 'Deal', 'Reset')}
     for name, button in menu.items():
         if name == 'hit':
             button.configure(command=lambda: game.hit())
@@ -676,8 +665,7 @@ def main(args):
 
     # Bet selector
     bet_label = tkinter.Label(text='Bet:', background='lightgray')
-    slider = tkinter.Scale(root, from_=1, to=10, orient=tkinter.HORIZONTAL,
-                           background='lightgray')
+    slider = tkinter.Scale(root, from_=1, to=10, orient=tkinter.HORIZONTAL, background='lightgray')
     slider.set(args.bet)
     slider.place(x=x_sidepanel+40, y=100)
     bet_label.place(x=x_sidepanel, y=120)

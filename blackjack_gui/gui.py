@@ -29,14 +29,15 @@ class Gui:
 
 class Game:
 
-    def __init__(self, player: Player, dealer: Dealer, gui: Gui, bet: int = 1):
+    def __init__(self, player: Player, dealer: Dealer, gui: Gui, args: any):
         self.player = player
         self.dealer = dealer
         self.gui = gui
-        self.bet = bet
+        self.args = args
+        self.bet = args.bet
         self.shoe = self.init_shoe()
         self.active_slot = None
-        self.initial_bet = bet
+        self.initial_bet = args.bet
 
     def deal(self):
         """Starts new round."""
@@ -52,9 +53,13 @@ class Game:
             self.shoe = Shoe(6)
         hand = self.player.start_new_hand(self.bet)
         self.dealer.init_hand()
+        if self.args.dealer_cards is not None:
+            self.shoe.arrange(self.args.dealer_cards)
         self.dealer.deal(self.shoe, self.gui.shoe_progress)
         self.dealer.deal(self.shoe, self.gui.shoe_progress)
         self.display_dealer_cards()
+        if self.args.cards is not None:
+            self.shoe.arrange(self.args.cards)
         hand.deal(self.shoe, self.gui.shoe_progress)
         hand.deal(self.shoe, self.gui.shoe_progress)
         self.show_buttons()
@@ -690,6 +695,6 @@ def main(args):
 
     dealer = Dealer()
     player = Player(stack=args.stack)
-    game = Game(player, dealer, gui, bet=args.bet)
+    game = Game(player, dealer, gui, args)
     game.reset()
     tkinter.mainloop()

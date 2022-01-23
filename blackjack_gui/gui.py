@@ -71,16 +71,16 @@ class Game:
         self.display_chip(hand, 0)
         self.display_player_cards(hand)
         if self.dealer.cards[0].label != 'A':
-            self.hide_buttons(('insure', 'even-money'))
+            self.hide_buttons(('insurance', 'even-money'))
             if hand.is_blackjack:
                 self.resolve_blackjack()
         else:
             self.hide_buttons(('surrender',))
             if hand.is_blackjack is True:
                 self.show_buttons(('even-money', ))
-                self.hide_buttons(('insure', ))
+                self.hide_buttons(('insurance', ))
             else:
-                self.show_buttons(('insure',))
+                self.show_buttons(('insurance',))
                 self.hide_buttons(('even-money', ))
 
     def surrender(self):
@@ -162,14 +162,14 @@ class Game:
         hand.is_finished = True
         self.resolve_next_hand()
 
-    def insure(self):
-        """Method for Insure button."""
+    def insurance(self):
+        """Method for Insurance button."""
         hand = self.get_hand_in_active_slot()
         self.dealer.insurance_bet = (hand.bet / 2)
         self.display_insurance_chip()
         self.player.stack -= self.dealer.insurance_bet
         self.display_stack()
-        self.hide_buttons(('insure',))
+        self.hide_buttons(('insurance',))
 
     def split(self):
         """Method for Split button."""
@@ -378,7 +378,7 @@ class Game:
         """Shows menu buttons."""
         if buttons is None:
             for key, button in self.gui.menu.items():
-                if key not in ('insure', 'even-money'):
+                if key not in ('insurance', 'even-money'):
                     button.configure(state=tkinter.NORMAL)
         else:
             for button in buttons:
@@ -642,8 +642,8 @@ def main(args):
     checkbox_container.place(x=1040, y=600)
 
     # Buttons
-    menu = {name.split()[0].lower(): tkinter.Button(master=root, text=name, width=12, font=15)
-            for name in ('Even-money', 'Insure', 'Surrender', 'Double up', 'Hit', 'Stay', 'Split', 'Deal',
+    menu = {name.split()[0].lower(): tkinter.Button(master=root, text=name.replace('-', ' '), width=12, font=15)
+            for name in ('Even-money', 'Insurance', 'Surrender', 'Double up', 'Hit', 'Stay', 'Split', 'Deal',
                          'Reset')}
     for name, button in menu.items():
         if name == 'hit':
@@ -660,8 +660,8 @@ def main(args):
             button.configure(command=lambda: game.next())
         elif name == 'reset':
             button.configure(command=lambda: game.reset())
-        elif name == 'insure':
-            button.configure(command=lambda: game.insure())
+        elif name == 'insurance':
+            button.configure(command=lambda: game.insurance())
         elif name == 'even-money':
             button.configure(command=lambda: game.even_money())
         else:

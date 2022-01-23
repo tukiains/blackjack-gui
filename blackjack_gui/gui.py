@@ -236,7 +236,6 @@ class Game:
     def payout(self):
         """Handles payout of all hands."""
         self.hide_fingers()
-
         for hand in self.player.hands:
             if self.dealer.even_money is True:
                 self.player.stack += hand.bet * 2
@@ -249,23 +248,22 @@ class Game:
             elif hand.is_blackjack is True and self.dealer.is_blackjack is True:
                 self.player.stack += hand.bet
                 result = f'PUSH'
+            elif self.dealer.is_blackjack is True and hand.is_blackjack is False:
+                result = f'LOSE'
+                self._resolve_lost_hand(hand)
             elif hand.is_over is False and self.dealer.is_over is True:
                 self.player.stack += hand.bet * 2
                 result = f'WIN'
                 self._display_chips(hand)
             elif hand.is_over is True:
                 result = f'BUST'
-                self.hide_chips(hand)
-                self.hide(hand)
-                hand.bet = 0
+                self._resolve_lost_hand(hand)
             elif hand.sum < self.dealer.sum:
                 result = f'LOSE ({hand.sum} vs {self.dealer.sum})'
-                self.hide_chips(hand)
-                self.hide(hand)
-                hand.bet = 0
+                self._resolve_lost_hand(hand)
             elif hand.surrender is True:
                 self.player.stack += hand.bet / 2
-                result = f'Lose by surrender'
+                result = ''
             elif hand.sum > self.dealer.sum:
                 self.player.stack += hand.bet * 2
                 result = f'WIN ({hand.sum} vs {self.dealer.sum})'
@@ -279,6 +277,11 @@ class Game:
         self.hide_buttons()
         self.show_buttons(('deal',))
         self.gui.slider.configure(state=tkinter.NORMAL)
+
+    def _resolve_lost_hand(self, hand: Hand):
+        self.hide_chips(hand)
+        self.hide(hand)
+        hand.bet = 0
 
     def resolve_blackjack(self):
         """Resolves player blackjack."""

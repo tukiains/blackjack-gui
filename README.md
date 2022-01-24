@@ -6,11 +6,19 @@ Single-player Blackjack including GUI and CLI interfaces. Can be used to simulat
 and learn basic strategy.
 
 ## Installation
+`blackjack-gui` uses [tkinter](https://en.wikipedia.org/wiki/Tkinter). Make sure it's installed in your system:
 ``` 
+$ sudo apt install python3-tk
+```
+or similar. Otherwise, you get an error message like `ModuleNotFoundError: No module named 'tkinter'`. 
+
+After that:
+```
 $ python3 -m venv venv
 $ source venv/bin/activate
 $ pip3 install blackjack-gui
 ```
+
 <img src="https://github.com/tukiains/blackjack-gui/blob/main/blackjack_gui/images/bj-shot.png?raw=true" alt="" width="600"/>
 
 ## Usage

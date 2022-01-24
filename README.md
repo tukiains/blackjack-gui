@@ -2,19 +2,19 @@
 ![](https://github.com/tukiains/blackjack-gui/workflows/tests/badge.svg)
 [![Downloads](https://pepy.tech/badge/blackjack-gui)](https://pepy.tech/project/blackjack-gui)
 
-Single-player Blackjack including GUI and CLI interfaces. Can be used to simulate games (with simple card counting) 
-and learn basic strategy.
+Single-player Blackjack including GUI and CLI interfaces, written in Python. Can be used to simulate games with or without card counting 
+and to practise basic strategy.
 
 <img src="https://github.com/tukiains/blackjack-gui/blob/main/blackjack_gui/images/bj-shot.png?raw=true" alt="" width="600"/>
 
 ## Installation
-`blackjack-gui` uses [tkinter](https://en.wikipedia.org/wiki/Tkinter). Make sure it's installed in your system:
+`blackjack-gui` requires Python 3.8 or newer and uses [tkinter](https://en.wikipedia.org/wiki/Tkinter). Make sure it's installed in your system:
 ``` 
 $ sudo apt install python3-tk
 ```
-or similar. Otherwise, you get an error message like `ModuleNotFoundError: No module named 'tkinter'`. 
+or similar (otherwise, you'll see `ModuleNotFoundError: No module named 'tkinter'`). 
 
-After that:
+Then:
 ```
 $ python3 -m venv venv
 $ source venv/bin/activate
@@ -68,7 +68,19 @@ Simulate soft 19 starting hand only:
 $ blackjack --n_games=10000 --ai=True --loglevel=INFO --gui=False --cards=A,8
 ```
 
-## Basic strategy chart
+## Rules
+Blackjack rules vary depending on the casino. In this application they follow: https://casinohelsinki.fi/en/games/blackjack-eng/, i.e.:
+
+* 6 decs
+* Blackjack pays 3 to 2
+* Dealer must stand on soft 17
+* Any two cards can be doubled
+* Max. 4 hands can be achieved by splitting
+* Aces can be split but they receive only one extra card
+* Doubling after splitting is allowed
+* Surrender is allowed but not against Ace
+
+### Optimal basic strategy
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart.png" alt="" width="400"/>
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-symbols.png" alt="" width="258"/>
 
@@ -91,8 +103,6 @@ $ pytest-3 tests/integration.py
 ```
 
 ## Notes
-* Uses 6 decs and shuffles after 5.
-* Rules follow: https://casinohelsinki.fi/en/games/blackjack-eng/.
 * Card images taken from [here](https://code.google.com/archive/p/vector-playing-cards/).
 
 ## Licence

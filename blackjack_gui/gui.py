@@ -179,45 +179,26 @@ class Game:
             if self.check_play(hand, 'split') is False:
                 return
         self.hide_buttons(('surrender',))
-        n_hands = len(self.player.hands)
-        for ind in range(n_hands):
-            hand = self.player.hands[ind]
-            if hand.cards[0].value == hand.cards[1].value:
-                new_hand = self.player.start_new_hand(self.bet)
-                split_card = hand.cards.pop()
-                new_hand.deal(split_card, self.gui.shoe_progress)
-                hand.is_split_hand = True
-                new_hand.is_split_hand = True
-                self.display_chip(new_hand, 0)
-                self.display_stack()
-                for handy in (hand, new_hand):
-                    handy.deal(self.shoe, self.gui.shoe_progress)
-                    handy.is_split_hand = True
-                    if handy.sum == 21:
-                        handy.is_finished = True
-                    if handy.cards[0].label == 'A':
-                        # Split Aces receive only one card more
-                        handy.is_hittable = False
-                        handy.is_finished = True
-                self.player.hands[ind] = hand
-                break
+        new_hand = self.player.start_new_hand(self.bet)
+        split_card = hand.cards.pop()
+        new_hand.deal(split_card, self.gui.shoe_progress)
+        self.display_chip(new_hand, 0)
+        self.display_stack()
+        for handy in (hand, new_hand):
+            handy.is_split_hand = True
+            handy.deal(self.shoe, self.gui.shoe_progress)
+            if handy.cards[0].label == 'A':
+                # Split Aces receive only one card more
+                handy.is_hittable = False
+                handy.is_finished = True
 
-        self.player.hands.sort(key=lambda x: not x.cards[0].value == x.cards[1].value)
+        self.player.sort_hands()
+        if len(self.player.hands) < 4:
+            self.player.hands.sort(key=lambda x: not x.cards[0].value == x.cards[1].value)
         for hand in self.player.hands:
             rotate = True if hand.cards[0].label == 'A' and hand.cards[1].label != 'A' else False
             self.display_player_cards(hand, rotate_last=rotate)
-
-        n_hands = len(self.player.hands)
-        for ind in range(n_hands):
-            hand = self.player.hands[ind]
-            if hand.cards[0].value == hand.cards[1].value and len(self.player.hands) < 4:
-                self.gui.menu['split']['state'] = tkinter.NORMAL
-                self.display_finger(hand)
-                self.enable_correct_buttons(hand)
-                break
-            else:
-                self.player.sort_hands()
-                self.resolve_next_hand()
+        self.resolve_next_hand()
 
     def resolve_next_hand(self):
         """Moves to next unfinished hand."""

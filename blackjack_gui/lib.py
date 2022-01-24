@@ -4,10 +4,11 @@ import tkinter
 
 
 class Card:
-    def __init__(self, label: str, suit: str):
+    def __init__(self, label: str, suit: str, visible: bool = True):
         self.label = label
         self.suit = suit
         self.value = self._get_value()
+        self.visible = visible  # Only visible cards can be used for counting
 
     def _get_value(self) -> Union[int, tuple]:
         if self.label in ("2", "3", "4", "5", "6", "7", "8", "9", "10"):
@@ -19,7 +20,7 @@ class Card:
         raise ValueError('Bad label')
 
     def __repr__(self) -> str:
-        return f"{self.label}"
+        return f"{self.label} {self.suit} Visible: {self.visible}"
 
 
 class Deck:
@@ -182,6 +183,8 @@ class Player:
         hands.append(dealer)
         for hand in hands:
             for card in hand.cards:
+                if card.visible is False:
+                    continue
                 if card.label == 'A' or card.value == 10:
                     self.running_count -= 1
                 elif card.value <= 6:

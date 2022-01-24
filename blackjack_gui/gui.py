@@ -49,16 +49,17 @@ class Game:
         self.hide_fingers()
         self.clean_player_slots()
         self.dealer_info()
-        self.player.init_count()
         self.player.hands = []
         if self.shoe.n_cards < 52:
             self.shoe = Shoe(6)
+            self.player.init_count()
         hand = self.player.start_new_hand(self.bet)
         self.dealer.init_hand()
         if self.args.dealer_cards is not None:
             self.shoe.arrange(self.args.dealer_cards)
         self.dealer.deal(self.shoe, self.gui.shoe_progress)
         self.dealer.deal(self.shoe, self.gui.shoe_progress)
+        self.dealer.cards[1].visible = False
         self.display_dealer_cards()
         if self.args.cards is not None:
             self.shoe.arrange(self.args.cards)
@@ -92,12 +93,16 @@ class Game:
                 return
         self.player.stack += (self.bet/2)
         self.display_stack()
+        self.player.update_count(self.dealer, self.shoe)
         self.deal()
 
     def even_money(self):
         """Method for Even Money button"""
-        self.dealer.even_money = True
         hand = self.get_hand_in_active_slot()
+        if self.gui.fix_mistakes.get() == 1:
+            if self.check_insurance(hand) is False:
+                return
+        self.dealer.even_money = True
         self.hide(hand)
         self.payout()
 
@@ -128,6 +133,7 @@ class Game:
         self.shoe = self.init_shoe()
         self.clean_dealer_slots()
         self.gui.slider.set(self.initial_bet)
+        self.player.init_count()
         self.deal()
 
     def next(self):
@@ -166,6 +172,9 @@ class Game:
     def insurance(self):
         """Method for Insurance button."""
         hand = self.get_hand_in_active_slot()
+        if self.gui.fix_mistakes.get() == 1:
+            if self.check_insurance(hand) is False:
+                return
         self.dealer.insurance_bet = (hand.bet / 2)
         self.display_insurance_chip()
         self.player.stack -= self.dealer.insurance_bet
@@ -211,6 +220,7 @@ class Game:
             self.clean_info()
             if self.is_all_over() is False or self.dealer.insurance_bet > 0:
                 self.display_dealer_cards(hide_second=False)
+                self.dealer.cards[1].visible = True
                 if self.dealer.is_blackjack and self.dealer.insurance_bet > 0:
                     self.display_insurance_chip(triple=True)
                     self.player.stack += (self.dealer.insurance_bet * 3)
@@ -267,6 +277,7 @@ class Game:
         self.hide_buttons()
         self.show_buttons(('deal',))
         self.gui.slider.configure(state=tkinter.NORMAL)
+        self.player.update_count(self.dealer, self.shoe)
 
     def _resolve_lost_hand(self, hand: Hand):
         self.hide_chips(hand)
@@ -276,6 +287,7 @@ class Game:
     def resolve_blackjack(self):
         """Resolves player blackjack."""
         self.display_dealer_cards(hide_second=False)
+        self.dealer.cards[1].visible = True
         self.payout()
 
     def enable_correct_buttons(self, hand: Hand):
@@ -295,9 +307,18 @@ class Game:
             self.hide_buttons(('hit',))
 
     def check_play(self, hand: Hand, play: str) -> bool:
-        """Verifies player decision."""
+        """Verifies player decision. It won't complain if you stay when you should take insurance because card counting
+        is not expected, just correct basic play."""
         correct_play = get_correct_play(hand, self.dealer.cards[0], len(self.player.hands))
         if correct_play != play:
+            self.display_info(hand, 'Try again!')
+            self.gui.root.after(1000, self.clean_info)
+            return False
+        return True
+
+    def check_insurance(self, hand: Hand) -> bool:
+        """Verifies player decision with insurance / even money. Gives OK when the count is good!"""
+        if self.player.true_count < 3:
             self.display_info(hand, 'Try again!')
             self.gui.root.after(1000, self.clean_info)
             return False

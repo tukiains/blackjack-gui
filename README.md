@@ -5,6 +5,8 @@
 Single-player Blackjack including GUI and CLI interfaces. Can be used to simulate games (with simple card counting) 
 and learn basic strategy.
 
+<img src="https://github.com/tukiains/blackjack-gui/blob/main/blackjack_gui/images/bj-shot.png?raw=true" alt="" width="600"/>
+
 ## Installation
 `blackjack-gui` uses [tkinter](https://en.wikipedia.org/wiki/Tkinter). Make sure it's installed in your system:
 ``` 
@@ -18,8 +20,6 @@ $ python3 -m venv venv
 $ source venv/bin/activate
 $ pip3 install blackjack-gui
 ```
-
-<img src="https://github.com/tukiains/blackjack-gui/blob/main/blackjack_gui/images/bj-shot.png?raw=true" alt="" width="600"/>
 
 ## Usage
 
@@ -68,6 +68,12 @@ Simulate soft 19 starting hand only:
 $ blackjack --n_games=10000 --ai=True --loglevel=INFO --gui=False --cards=A,8
 ```
 
+## Basic strategy chart
+<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart.png" alt="" width="400"/>
+<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-symbols.png" alt="" width="258"/>
+
+* Note that 16 vs 10 with 3 or more cards = Stay
+
 ## Tests
 Install `blackjack-gui` from GitHub and `pytest`:
 ```
@@ -83,12 +89,6 @@ Run unit and integration tests:
 $ pytest-3 tests/unit.py
 $ pytest-3 tests/integration.py
 ```
-
-## Basic strategy chart
-<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart.png" alt="" width="400"/>
-<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-symbols.png" alt="" width="258"/>
-
-* Note that 16 vs 10 with 3 or more cards = Stay
 
 ## Notes
 * Uses 6 decs and shuffles after 5.

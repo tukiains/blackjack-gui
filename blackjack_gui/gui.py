@@ -4,6 +4,7 @@ import tkinter
 from dataclasses import dataclass
 from PIL import Image, ImageTk
 from .lib import Card, Hand, Player, Dealer, Shoe, get_correct_play
+from typing import Union, Any
 
 
 N_CARDS_MAX = 9
@@ -30,7 +31,7 @@ class Gui:
 
 class Game:
 
-    def __init__(self, player: Player, dealer: Dealer, gui: Gui, args: any):
+    def __init__(self, player: Player, dealer: Dealer, gui: Gui, args: Any):
         self.player = player
         self.dealer = dealer
         self.gui = gui
@@ -343,17 +344,19 @@ class Game:
                 return False
         return True
 
-    def get_first_unfinished_hand(self) -> Hand:
+    def get_first_unfinished_hand(self) -> Union[Hand, None]:
         """Finds first unfinished hand."""
         for hand in self.player.hands:
             if hand.is_finished is False:
                 return hand
+        return None
 
     def get_hand_in_active_slot(self) -> Hand:
         """Finds hand in active slot."""
         for hand in self.player.hands:
             if hand.slot == self.active_slot:
                 return hand
+        raise RuntimeError
 
     def show(self):
         """Shows all available hands as active."""
@@ -366,7 +369,7 @@ class Game:
         for n in range(N_CARDS_MAX):
             self.gui.slot_player[f'{str(hand.slot)}{str(n)}'].configure(state=tkinter.DISABLED)
 
-    def hide_buttons(self, buttons: tuple = None):
+    def hide_buttons(self, buttons: Union[tuple, None] = None):
         """Hides menu buttons."""
         if buttons is None:
             for key, button in self.gui.menu.items():
@@ -377,7 +380,7 @@ class Game:
                 if button in self.gui.menu.keys():
                     self.gui.menu[button].configure(state=tkinter.DISABLED)
 
-    def show_buttons(self, buttons: tuple = None):
+    def show_buttons(self, buttons: Union[tuple, None] = None):
         """Shows menu buttons."""
         if buttons is None:
             for key, button in self.gui.menu.items():
@@ -440,7 +443,7 @@ class Game:
             text = str(bet)
         img = get_chip_image(color)
         self.gui.insurance_chip.configure(image=img, compound='center', fg='white', text=text, font='helvetica 10 bold')
-        self.gui.insurance_chip.image = img
+        self.gui.insurance_chip.image = img  # type: ignore
 
     def hide_insurance_chip(self):
         self.gui.insurance_chip.configure(image='', text='')
@@ -490,7 +493,7 @@ class Game:
         return Shoe(6)
 
 
-def get_image(card: Card = None, width: int = 100, height: int = 130, rotate: bool = False):
+def get_image(card: Union[Card, None] = None, width: int = 100, height: int = 130, rotate: bool = False):
     if card is None:
         filename = f'{IMG_PATH}/back.png'
     else:

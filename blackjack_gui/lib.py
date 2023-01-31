@@ -1,5 +1,5 @@
 import random
-from typing import Union
+from typing import Union, List
 import tkinter
 
 
@@ -36,7 +36,7 @@ class Deck:
 
 class Shoe:
     def __init__(self, n_decs: int):
-        self.cards = []
+        self.cards: List[Card] = []
         self.n_cards = 0
         self.n_decs = n_decs
         self._n_cards_total = self.n_decs * 52
@@ -50,7 +50,7 @@ class Shoe:
         random.shuffle(self.cards)
         self.n_cards = len(self.cards)
 
-    def draw(self, progress: tkinter.Label = None) -> Card:
+    def draw(self, progress: Union[tkinter.Label, None] = None) -> Card:
         """Draws a card from shoe."""
         if self.n_cards > 0:
             card = self.cards.pop(0)
@@ -85,7 +85,7 @@ class Hand:
         self.slot = None
         self.is_finished = False  # if True, no more playing for this hand
 
-    def deal(self, source: Union[Shoe, Card], progress: tkinter.Label = None):
+    def deal(self, source: Union[Shoe, Card], progress: Union[tkinter.Label, None] = None):
         if isinstance(source, Shoe):
             self.cards.append(source.draw(progress))
         else:
@@ -122,7 +122,7 @@ class Dealer:
         self.insurance_bet = 0
         self.even_money = False
 
-    def deal(self, shoe: Shoe, progress: tkinter.Label = None):
+    def deal(self, shoe: Shoe, progress: Union[tkinter.Label, None] = None):
         card = shoe.draw(progress)
         self.cards.append(card)
         self.sum, _ = evaluate_hand(self.cards)
@@ -139,7 +139,7 @@ class Dealer:
 
 class Player:
     def __init__(self, stack: float = 1000):
-        self.hands = []
+        self.hands: List[Hand] = []
         self.stack = stack
         self.initial_stack = stack
         self.invested = 0.0
@@ -180,7 +180,7 @@ class Player:
 
     def update_count(self, dealer: Dealer, shoe: Shoe):
         hands = self.hands.copy()
-        hands.append(dealer)
+        hands.append(dealer)  # type: ignore
         for hand in hands:
             for card in hand.cards:
                 if card.visible is False:
@@ -259,7 +259,7 @@ def get_correct_play(hand: Hand,
         if hand.sum == 15:
             if _should_surrender(hand, dealer_card, (10,)) is True:
                 return surrender
-            if dealer_ace is False and dealer_card.value <= 6:
+            if dealer_ace is False and isinstance(dealer_card.value, int) and dealer_card.value <= 6:
                 return stay
             return hit
         if hand.sum == 16:
@@ -267,7 +267,7 @@ def get_correct_play(hand: Hand,
                 return surrender
             if n_cards >= 3 and dealer_card.value == 10:
                 return stay
-            if dealer_ace is False and dealer_card.value <= 6:
+            if dealer_ace is False and isinstance(dealer_card.value, int) and dealer_card.value <= 6:
                 return stay
             return hit
         if hand.sum >= 17:

@@ -11,24 +11,25 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.8, 3.9]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install .
+        pip install .[dev]
     - name: Lint with pylint
       run: |
-        pip install pylint
-        pylint blackjack_gui/*.py --errors-only
+        pylint blackjack_gui/
+    - name: Check type hints
+      run: |
+        mypy blackjack_gui/ --check-untyped-defs --ignore-missing-imports
     - name: Test with pytest
       run: |
-        pip install pytest
-        pytest tests/unit.py
-        pytest tests/integration.py
+        pytest tests/unit.py --flake-finder --flake-runs=2
+        pytest tests/integration.py --flake-finder --flake-runs=2

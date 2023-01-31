@@ -86,20 +86,25 @@ Blackjack rules vary depending on the casino. In this application they follow: h
 
 * Note that 16 vs 10 with 3 or more cards = Stay
 
-## Tests
-Install `blackjack-gui` from GitHub and `pytest`:
-```
-$ git clone https://github.com/tukiains/blackjack-gui
-$ cd blackjack-gui/
-$ python3 -m venv venv
-$ source venv/bin/activate
-$ pip3 install .
-$ pip3 install pytest
+## Development
+Install `blackjack-gui` with dev-dependencies from GitHub:
+``` sh
+git clone https://github.com/tukiains/blackjack-gui
+cd blackjack-gui/
+python3 -m venv venv
+source venv/bin/activate
+pip3 install --upgrade pip
+pip3 install .[dev]
+pre-commit install
 ```
 Run unit and integration tests:
+``` sh
+pytest tests/unit.py
+pytest tests/integration.py
 ```
-$ pytest-3 tests/unit.py
-$ pytest-3 tests/integration.py
+Run `pre-commit` checks:
+```
+pre-commit run --all
 ```
 
 ## Notes

@@ -1,0 +1,29 @@
+[TYPECHECK]
+ignored-modules	= numpy, netCDF4, scipy, torch
+
+[MESSAGES CONTROL]
+disable =
+  exec-used,
+  too-many-return-statements,
+  too-many-public-methods,
+  too-many-branches,
+  too-many-nested-blocks,
+  unnecessary-lambda,
+  missing-module-docstring,
+  missing-function-docstring,
+  missing-class-docstring,
+  logging-fstring-interpolation,
+  invalid-name,
+  too-few-public-methods,
+  too-many-statements,
+  too-many-arguments,
+  too-many-locals,
+  too-many-instance-attributes,
+  duplicate-code,
+
+
+[format]
+max-line-length = 100
+
+[MASTER]
+ignore-paths=^cloudnetpy/model_evaluation/tests/.*$,

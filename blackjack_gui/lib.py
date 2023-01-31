@@ -1,6 +1,6 @@
 import random
-from typing import Union, List
 import tkinter
+from typing import List, Union
 
 
 class Card:
@@ -15,9 +15,9 @@ class Card:
             return int(self.label)
         if self.label in ("J", "Q", "K"):
             return 10
-        elif self.label == 'A':
+        if self.label == "A":
             return 1, 11
-        raise ValueError('Bad label')
+        raise ValueError("Bad label")
 
     def __repr__(self) -> str:
         return f"{self.label} {self.suit} Visible: {self.visible}"
@@ -57,9 +57,9 @@ class Shoe:
             self.n_cards -= 1
             fraction = (self._n_cards_total - self.n_cards) / self._n_cards_total
             if progress is not None:
-                progress.place(x=30, y=150, anchor="se", relheight=fraction, relwidth=1.)
+                progress.place(x=30, y=150, anchor="se", relheight=fraction, relwidth=1.0)
             return card
-        raise ValueError('Empty shoe!')
+        raise ValueError("Empty shoe!")
 
     def arrange(self, cards: list):
         """Arranges shoe so that next cards are the requested ones."""
@@ -73,8 +73,8 @@ class Shoe:
 class Hand:
     def __init__(self):
         self.cards = []
-        self.sum = 0
-        self.bet = 0
+        self.sum = 0.0
+        self.bet = 0.0
         self.is_hard = True
         self.is_hittable = True  # if True, can receive more cards
         self.is_blackjack = False
@@ -84,6 +84,7 @@ class Hand:
         self.is_split_hand = False
         self.slot = None
         self.is_finished = False  # if True, no more playing for this hand
+        self.played = False
 
     def deal(self, source: Union[Shoe, Card], progress: Union[tkinter.Label, None] = None):
         if isinstance(source, Shoe):
@@ -100,17 +101,17 @@ class Hand:
             self.is_blackjack = True
 
     def __repr__(self) -> str:
-        return f'{self.cards}'
+        return f"{self.cards}"
 
 
 class Dealer:
     def __init__(self):
         self.cards = []
-        self.sum = 0
+        self.sum = 0.0
         self.is_blackjack = False
         self.is_finished = False
         self.is_over = False
-        self.insurance_bet = 0
+        self.insurance_bet = 0.0
         self.even_money = False
 
     def init_hand(self):
@@ -134,7 +135,7 @@ class Dealer:
             self.is_over = True
 
     def __repr__(self) -> str:
-        return f'{self.cards}'
+        return f"{self.cards}"
 
 
 class Player:
@@ -159,20 +160,19 @@ class Player:
         return hand
 
     def sort_hands(self):
-        self.hands.sort(key=lambda x: x.slot)
+        self.hands.sort(key=lambda x: x.slot)  # type: ignore
 
     def _get_next_free_slot(self):
         n_hands = len(self.hands)
         if n_hands == 0:
             return 2
-        elif n_hands == 1:
+        if n_hands == 1:
             return 1
-        elif n_hands == 2:
+        if n_hands == 2:
             return 3
-        elif n_hands == 3:
+        if n_hands == 3:
             return 0
-        else:
-            raise RuntimeError('Too many hands')
+        raise RuntimeError("Too many hands")
 
     def init_count(self):
         self.running_count = 0
@@ -185,7 +185,7 @@ class Player:
             for card in hand.cards:
                 if card.visible is False:
                     continue
-                if card.label == 'A' or card.value == 10:
+                if card.label == "A" or card.value == 10:
                     self.running_count -= 1
                 elif card.value <= 6:
                     self.running_count += 1
@@ -198,7 +198,7 @@ def evaluate_hand(cards: list) -> tuple:
     ace_used = False
     is_hard = True
     for card in cards:
-        if card.label == 'A':
+        if card.label == "A":
             is_hard = False
             if ace_used is False:
                 the_sum += 11
@@ -212,7 +212,7 @@ def evaluate_hand(cards: list) -> tuple:
         the_sum = 0
         is_hard = True
         for card in cards:
-            if card.label == 'A':
+            if card.label == "A":
                 the_sum += 1
             else:
                 if isinstance(card.value, int):
@@ -220,17 +220,15 @@ def evaluate_hand(cards: list) -> tuple:
     return the_sum, is_hard
 
 
-def get_correct_play(hand: Hand,
-                     dealer_card: Card,
-                     n_hands: int) -> str:
+def get_correct_play(hand: Hand, dealer_card: Card, n_hands: int) -> str:
     cards = hand.cards
     n_cards = len(cards)
-    split = 'split'
-    hit = 'hit'
-    stay = 'stay'
-    surrender = 'surrender'
-    double = 'double'
-    dealer_ace = dealer_card.label == 'A'
+    split = "split"
+    hit = "hit"
+    stay = "stay"
+    surrender = "surrender"
+    double = "double"
+    dealer_ace = dealer_card.label == "A"
 
     # Hard hands
     if hand.is_hard is True and not (n_cards == 2 and cards[0].value == cards[1].value):
@@ -259,7 +257,11 @@ def get_correct_play(hand: Hand,
         if hand.sum == 15:
             if _should_surrender(hand, dealer_card, (10,)) is True:
                 return surrender
-            if dealer_ace is False and isinstance(dealer_card.value, int) and dealer_card.value <= 6:
+            if (
+                dealer_ace is False
+                and isinstance(dealer_card.value, int)
+                and dealer_card.value <= 6
+            ):
                 return stay
             return hit
         if hand.sum == 16:
@@ -267,7 +269,11 @@ def get_correct_play(hand: Hand,
                 return surrender
             if n_cards >= 3 and dealer_card.value == 10:
                 return stay
-            if dealer_ace is False and isinstance(dealer_card.value, int) and dealer_card.value <= 6:
+            if (
+                dealer_ace is False
+                and isinstance(dealer_card.value, int)
+                and dealer_card.value <= 6
+            ):
                 return stay
             return hit
         if hand.sum >= 17:
@@ -275,12 +281,12 @@ def get_correct_play(hand: Hand,
 
     # Pairs
     if n_cards == 2 and cards[0].value == cards[1].value:
-        if cards[0].label == 'A':
+        if cards[0].label == "A":
             return hit if n_hands == 4 or dealer_ace is True else split
         if cards[0].value == 10:
             return stay
         if cards[0].value == 9:
-            if dealer_card.value in (7, 10) or dealer_card.label == 'A' or n_hands == 4:
+            if dealer_card.value in (7, 10) or dealer_card.label == "A" or n_hands == 4:
                 return stay
             return split
         if cards[0].value == 8:
@@ -318,7 +324,7 @@ def get_correct_play(hand: Hand,
     # Soft hands
     if hand.is_hard is False:
         labels = [card.label for card in cards]
-        assert 'A' in labels
+        assert "A" in labels
         if hand.sum >= 19:
             return stay
         if hand.sum == 18:
@@ -348,7 +354,7 @@ def get_correct_play(hand: Hand,
 
 
 def _should_surrender(hand: Hand, dealer_card: Card, values: tuple) -> bool:
-    if hand.is_split_hand is True or dealer_card.label[0] == 'A' or len(hand.cards) != 2:
+    if hand.is_split_hand is True or dealer_card.label[0] == "A" or len(hand.cards) != 2:
         return False
     if dealer_card.value in values:
         return True

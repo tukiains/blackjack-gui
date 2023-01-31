@@ -2,17 +2,17 @@
 ![](https://github.com/tukiains/blackjack-gui/workflows/tests/badge.svg)
 [![Downloads](https://pepy.tech/badge/blackjack-gui)](https://pepy.tech/project/blackjack-gui)
 
-Single-player Blackjack including GUI and CLI interfaces, written in Python. Can be used to simulate games with or without card counting 
+Single-player Blackjack including GUI and CLI interfaces, written in Python. Can be used to simulate games with or without card counting
 and to practise basic strategy.
 
 <img src="https://github.com/tukiains/blackjack-gui/blob/main/blackjack_gui/images/bj-shot.png?raw=true" alt="" width="600"/>
 
 ## Installation
 `blackjack-gui` requires Python 3.8 or newer and uses [tkinter](https://en.wikipedia.org/wiki/Tkinter). Make sure it's installed in your system:
-``` 
+```
 $ sudo apt install python3-tk
 ```
-or similar (otherwise, you'll see `ModuleNotFoundError: No module named 'tkinter'`). 
+or similar (otherwise, you'll see `ModuleNotFoundError: No module named 'tkinter'`).
 
 Then:
 ```
@@ -35,7 +35,7 @@ blackjack --gui=False [OPTION...]
 
 ### Options
 
-| Name             | Default | CLI only | Description                                                                                 | 
+| Name             | Default | CLI only | Description                                                                                 |
 |:-----------------|:--------|:---------|:--------------------------------------------------------------------------------------------|
 | `--stack`        | 1000    |          | Initial stack.                                                                              |
 | `--bet`          | 1       |          | Initial bet size.                                                                           |

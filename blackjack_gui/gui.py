@@ -514,7 +514,7 @@ def get_image(
         else:
             fix = str(card.value)
         filename = f"{IMG_PATH}/{fix}_of_{card.suit}.png"
-    image = Image.open(filename).resize((width, height), Image.ANTIALIAS)
+    image = Image.open(filename).resize((width, height), Image.Resampling.LANCZOS)
     if rotate is True:
         image = image.resize((height, height))
         image = image.rotate(angle=90)
@@ -526,13 +526,13 @@ def get_image(
 def get_chip_image(color: str = "red"):
     size = 50
     filename = f"{IMG_PATH}/{color}-chip.png"
-    image = Image.open(filename).resize((size, size - 15), Image.ANTIALIAS)
+    image = Image.open(filename).resize((size, size - 15), Image.Resampling.LANCZOS)
     return ImageTk.PhotoImage(image)
 
 
 def get_finger_image():
     filename = f"{IMG_PATH}/finger2.png"
-    image = Image.open(filename).resize((40, 60), Image.ANTIALIAS)
+    image = Image.open(filename).resize((40, 60), Image.Resampling.LANCZOS)
     return ImageTk.PhotoImage(image)
 
 

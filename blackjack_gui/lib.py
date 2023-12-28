@@ -20,7 +20,17 @@ class Card:
         raise ValueError("Bad label")
 
     def __repr__(self) -> str:
-        return f"{self.label} {self.suit} Visible: {self.visible}"
+        if self.suit == "spades":
+            suit = "\u2660"
+        elif self.suit == "clubs":
+            suit = "\u2663"
+        elif self.suit == "diamonds":
+            suit = "\u2666"
+        elif self.suit == "hearts":
+            suit = "\u2665"
+        else:
+            raise ValueError("Bad suit")
+        return f"{self.label}{suit}"
 
 
 class Deck:
@@ -101,7 +111,7 @@ class Hand:
             self.is_blackjack = True
 
     def __repr__(self) -> str:
-        return f"{self.cards}"
+        return format_hand(self.cards)
 
 
 class Dealer:
@@ -135,7 +145,7 @@ class Dealer:
             self.is_over = True
 
     def __repr__(self) -> str:
-        return f"{self.cards}"
+        return format_hand(self.cards)
 
 
 class Player:
@@ -359,3 +369,7 @@ def _should_surrender(hand: Hand, dealer_card: Card, values: tuple) -> bool:
     if dealer_card.value in values:
         return True
     return False
+
+
+def format_hand(cards: list) -> str:
+    return str(cards)[1:-1].replace(",", " ") + " "

@@ -1,7 +1,8 @@
 import logging
 import math
+from time import sleep
 
-from .lib import Dealer, Player, Shoe, get_correct_play
+from .lib import Dealer, Player, Shoe, format_hand, get_correct_play
 
 
 def _is_correct(correct_play: str, action: str, decisions: dict) -> dict:
@@ -25,6 +26,8 @@ def main(args):
         logging.debug("New round starts")
         logging.debug(f"Stack: {player.stack}")
         logging.debug("----------------")
+        if args.ai is False:
+            sleep(1)
         if shoe.n_cards < 52 or args.cards is not None:
             shoe = Shoe(n_decs)
             player.init_count()
@@ -113,7 +116,7 @@ def main(args):
                                 handy.is_blackjack = False
                                 if handy.cards[0].label == "A":
                                     handy.is_hittable = False
-                            logging.debug(f"Player: {player.hands}")
+                            logging.debug(f"Player: {format_hand(player.hands)}")
                         else:
                             hand.is_asked_to_split = True
                         if len(player.hands) == 4:
@@ -264,6 +267,8 @@ def main(args):
 
         n_total_hands += len(player.hands)
         player.update_count(dealer, shoe)
+        if args.ai is False:
+            sleep(1)
         logging.debug("----------------")
 
     profit = player.stack - args.stack

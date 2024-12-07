@@ -50,7 +50,11 @@ class Game:
         self.clean_player_slots()
         self.dealer_info()
         self.player.hands = []
-        if self.shoe.n_cards < 52:
+        if (
+            self.shoe.n_cards < 52
+            or self.args.cards is not None
+            or self.args.subset is not None
+        ):
             self.shoe = Shoe(6)
             self.player.init_count()
         hand = self.player.start_new_hand(self.bet)

@@ -28,7 +28,7 @@ def play(args):
         logging.debug("----------------")
         if args.ai is False:
             sleep(1)
-        if shoe.n_cards < 52 or args.cards is not None:
+        if shoe.n_cards < 52 or args.cards is not None or args.subset is not None:
             shoe = Shoe(n_decs)
             player.init_count()
         player.hands = []

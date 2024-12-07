@@ -239,6 +239,10 @@ class Game:
                 self.player.stack += hand.bet * 2
                 result = "EVEN MONEY"
                 self._display_chips(hand)
+            elif hand.is_triple_seven is True:
+                self.player.stack += hand.bet * 3
+                result = "TRIPLE SEVEN"
+                self._display_chips(hand, triple=True)
             elif hand.is_blackjack is True and self.dealer.is_blackjack is False:
                 self.player.stack += hand.bet * 2.5
                 result = "BLACKJACK"
@@ -327,10 +331,13 @@ class Game:
     def display_stack(self):
         self.gui.label_text.set(f"Stack: {self.player.stack} $")
 
-    def _display_chips(self, hand, bj: bool = False):
+    def _display_chips(self, hand, bj: bool = False, triple: bool = False):
         if bj is True:
             self.display_chip(hand, 1)
             self.display_chip(hand, 4, color="blue")
+        elif triple is True:
+            self.display_chip(hand, 1)
+            self.display_chip(hand, 2)
         elif hand.bet == self.bet:
             self.display_chip(hand, 1)
         elif hand.bet == (2 * self.bet):

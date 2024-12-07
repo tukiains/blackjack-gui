@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1 – 2024-12-07
+
+- Shuffle after every hand if fixed starting hand
+
 ## 1.1.0 – 2024-12-07
 
 - Add option to practise with hard / soft / pairs

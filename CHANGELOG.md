@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0 – 2024-12-07
+
+- Add option to practise with hard / soft / pairs
+
 ## 1.0.1 – 2024-12-07
 
 - Add publish workflow

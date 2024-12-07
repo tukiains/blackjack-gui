@@ -433,3 +433,77 @@ def _should_surrender(hand: Hand, dealer_card: Card, values: tuple) -> bool:
 
 def format_hand(cards: list) -> str:
     return str(cards)[1:-1].replace(",", " ") + " "
+
+
+def get_starting_hand(subset: str) -> list[str]:
+    hard_hands = [
+        "2,3",
+        "2,4",
+        "2,5",
+        "2,6",
+        "2,7",
+        "2,8",
+        "2,9",
+        "2,10",
+        "3,4",
+        "3,5",
+        "3,6",
+        "3,7",
+        "3,8",
+        "3,9",
+        "3,10",
+        "4,5",
+        "4,6",
+        "4,7",
+        "4,8",
+        "4,9",
+        "4,10",
+        "5,6",
+        "5,7",
+        "5,8",
+        "5,9",
+        "5,10",
+        "6,7",
+        "6,8",
+        "6,9",
+        "6,10",
+        "7,8",
+        "7,9",
+        "7,10",
+        "8,9",
+        "8,10",
+        "9,10",
+    ]
+    soft_hands = [
+        "A,2",
+        "A,3",
+        "A,4",
+        "A,5",
+        "A,6",
+        "A,7",
+        "A,8",
+        "A,9",
+        "A,10",
+    ]
+    pairs = [
+        "2,2",
+        "3,3",
+        "4,4",
+        "5,5",
+        "6,6",
+        "7,7",
+        "8,8",
+        "9,9",
+        "10,10",
+        "A,A",
+    ]
+    if subset == "hard":
+        cards = random.choice(hard_hands)
+    elif subset == "soft":
+        cards = random.choice(soft_hands)
+    elif subset == "pairs":
+        cards = random.choice(pairs)
+    else:
+        raise ValueError("Bad subset")
+    card_list = cards.split(",")
+    return card_list if random.choice([True, False]) else card_list[::-1]

@@ -51,6 +51,7 @@ blackjack --gui=False [OPTION...]
 | `--count`        | False   | x        | If True, `ai` uses card counting.                                                           |
 | `--loglevel`     | DEBUG   | x        | Adjust amount of logging: DEBUG or INFO.                                                    |
 | `--cards`        |         |          | Determine the first player cards, e.g. `--cards=A,8,K`. Shuffles the shoe after every hand. |
+| `--subset`       |         |          | Instead of `--cards`, practice with one of the subsets: `hard`, `soft`, or `pairs`.         |
 | `--dealer_cards` |         |          | Determine the first dealer cards. Useful for testing.                                       |
 
 ## Examples
@@ -77,6 +78,12 @@ Simulate soft 19 starting hand only:
 
 ```
 $ blackjack --n_games=10000 --ai=True --loglevel=INFO --gui=False --cards=A,8
+```
+
+Practise to play "hard" starting hands:
+
+```
+$ blackjack --subset hard
 ```
 
 ## Rules

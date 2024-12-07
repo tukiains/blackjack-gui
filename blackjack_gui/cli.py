@@ -2,7 +2,7 @@ import logging
 import math
 from time import sleep
 
-from .lib import Dealer, Player, Shoe, format_hand, get_correct_play
+from .lib import Dealer, Player, Shoe, format_hand, get_correct_play, get_starting_hand
 
 
 def _is_correct(correct_play: str, action: str, decisions: dict) -> dict:
@@ -44,6 +44,9 @@ def play(args):
         logging.debug(f"Dealer: {dealer}")
         if args.cards is not None:
             shoe.arrange(args.cards)
+        elif args.subset is not None:
+            cards = get_starting_hand(args.subset)
+            shoe.arrange(cards)
         hand.deal(shoe)
         hand.deal(shoe)
         logging.debug(f"Player: {hand}")

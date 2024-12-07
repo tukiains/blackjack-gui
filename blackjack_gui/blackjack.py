@@ -44,6 +44,12 @@ def main():
         default=None,
         help="Determine first dealer cards. Useful for tests.",
     )
+    parser.add_argument(
+        "--subset",
+        type=str,
+        choices=["hard", "soft", "pairs"],
+        default=None,
+    )
 
     args = parser.parse_args()
     if args.gui.lower() == "true":

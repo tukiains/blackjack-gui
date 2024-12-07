@@ -5,7 +5,7 @@ from typing import Any, Union
 
 from PIL import Image, ImageTk
 
-from .lib import Card, Dealer, Hand, Player, Shoe, get_correct_play
+from .lib import Card, Dealer, Hand, Player, Shoe, get_correct_play, get_starting_hand
 
 N_CARDS_MAX = 9
 IMG_PATH = f"{os.path.dirname(__file__)}/images/"
@@ -63,6 +63,9 @@ class Game:
         self.display_dealer_cards()
         if self.args.cards is not None:
             self.shoe.arrange(self.args.cards)
+        elif self.args.subset is not None:
+            cards = get_starting_hand(self.args.subset)
+            self.shoe.arrange(cards)
         hand.deal(self.shoe, self.gui.shoe_progress)
         hand.deal(self.shoe, self.gui.shoe_progress)
         self.show_buttons()

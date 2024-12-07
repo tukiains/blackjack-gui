@@ -203,7 +203,9 @@ class Game:
 
         self.player.sort_hands()
         if len(self.player.hands) < 4:
-            self.player.hands.sort(key=lambda x: not x.cards[0].value == x.cards[1].value)
+            self.player.hands.sort(
+                key=lambda x: not x.cards[0].value == x.cards[1].value
+            )
         for hand in self.player.hands:
             rotate = hand.cards[0].label == "A" and hand.cards[1].label != "A"
             self.display_player_cards(hand, rotate_last=rotate)
@@ -301,7 +303,11 @@ class Game:
             self.show_buttons(("double",))
         else:
             self.hide_buttons(("double",))
-        if hand.cards[0].value == hand.cards[1].value and len(hand.cards) == 2 and n_hands < 4:
+        if (
+            hand.cards[0].value == hand.cards[1].value
+            and len(hand.cards) == 2
+            and n_hands < 4
+        ):
             self.show_buttons(("split",))
         else:
             self.hide_buttons(("split",))
@@ -313,7 +319,9 @@ class Game:
     def check_play(self, hand: Hand, play: str) -> bool:
         """Verifies player decision. It won't complain if you stay when you should take
         insurance because card counting is not expected, just correct basic play."""
-        correct_play = get_correct_play(hand, self.dealer.cards[0], len(self.player.hands))
+        correct_play = get_correct_play(
+            hand, self.dealer.cards[0], len(self.player.hands)
+        )
         if correct_play != play:
             self.display_info(hand, "Try again!")
             self.gui.root.after(1000, self.clean_info)
@@ -368,12 +376,16 @@ class Game:
         """Shows all available hands as active."""
         for slot in range(4):
             for n in range(N_CARDS_MAX):
-                self.gui.slot_player[f"{str(slot)}{str(n)}"].configure(state=tkinter.NORMAL)
+                self.gui.slot_player[f"{str(slot)}{str(n)}"].configure(
+                    state=tkinter.NORMAL
+                )
 
     def hide(self, hand: Hand):
         """Hides cards in slot."""
         for n in range(N_CARDS_MAX):
-            self.gui.slot_player[f"{str(hand.slot)}{str(n)}"].configure(state=tkinter.DISABLED)
+            self.gui.slot_player[f"{str(hand.slot)}{str(n)}"].configure(
+                state=tkinter.DISABLED
+            )
 
     def hide_buttons(self, buttons: Union[tuple, None] = None):
         """Hides menu buttons."""
@@ -401,7 +413,9 @@ class Game:
         """Cleans player card slots."""
         for slot in range(4):
             for n in range(N_CARDS_MAX):
-                self.gui.slot_player[f"{str(slot)}{str(n)}"].configure(image="", width=0, height=0)
+                self.gui.slot_player[f"{str(slot)}{str(n)}"].configure(
+                    image="", width=0, height=0
+                )
 
     def clean_dealer_slots(self):
         """Cleans dealer slot."""
@@ -440,7 +454,11 @@ class Game:
             self.display_player_cards(hand)
 
     def display_insurance_chip(self, triple: bool = False):
-        bet = self.dealer.insurance_bet if triple is False else self.dealer.insurance_bet * 3
+        bet = (
+            self.dealer.insurance_bet
+            if triple is False
+            else self.dealer.insurance_bet * 3
+        )
         color = "red"
         if bet == 0.5:
             color = "blue"
@@ -451,7 +469,11 @@ class Game:
             text = str(bet)
         img = get_chip_image(color)
         self.gui.insurance_chip.configure(
-            image=img, compound="center", fg="white", text=text, font="helvetica 10 bold"
+            image=img,
+            compound="center",
+            fg="white",
+            text=text,
+            font="helvetica 10 bold",
         )
         self.gui.insurance_chip.image = img  # type: ignore
 
@@ -466,7 +488,11 @@ class Game:
         else:
             text = ".5" if self.bet == 1 else self.bet / 2
         self.gui.chips[f"{str(hand.slot)}{str(pos)}"].configure(
-            image=img, compound="center", fg="white", text=text, font="helvetica 10 bold"
+            image=img,
+            compound="center",
+            fg="white",
+            text=text,
+            font="helvetica 10 bold",
         )
         self.gui.chips[f"{str(hand.slot)}{str(pos)}"].image = img
 
@@ -505,7 +531,10 @@ class Game:
 
 
 def get_image(
-    card: Union[Card, None] = None, width: int = 100, height: int = 130, rotate: bool = False
+    card: Union[Card, None] = None,
+    width: int = 100,
+    height: int = 130,
+    rotate: bool = False,
 ):
     if card is None:
         filename = f"{IMG_PATH}/back.png"
@@ -577,7 +606,9 @@ def main(args):
         root, bg=bc, height=100, width=80, bd=0, highlightthickness=0, relief="ridge"
     )
     rect.place(x=525, y=485)
-    round_polygon(rect, [5, 75, 75, 5], [5, 5, 90, 90], 10, width=4, outline="#bbb500", fill=bc)
+    round_polygon(
+        rect, [5, 75, 75, 5], [5, 5, 90, 90], 10, width=4, outline="#bbb500", fill=bc
+    )
 
     # Shoe status
     shoe_status_container = tkinter.Label(root, borderwidth=0, background="white")
@@ -622,12 +653,20 @@ def main(args):
 
     # Dealer info
     dealer_info = tkinter.Label(
-        root, text="", font="helvetica 11 bold", borderwidth=0, background=bc, fg="white"
+        root,
+        text="",
+        font="helvetica 11 bold",
+        borderwidth=0,
+        background=bc,
+        fg="white",
     )
     dealer_info.place(x=305, y=180)
 
     # Dealer finger
-    finger = {str(slot): tkinter.Label(root, borderwidth=0, background=bc) for slot in range(4)}
+    finger = {
+        str(slot): tkinter.Label(root, borderwidth=0, background=bc)
+        for slot in range(4)
+    }
     for ind, f in enumerate(finger.values()):
         f.place(x=ind * x_slot + padding_left - 5, y=250)
 
@@ -686,7 +725,12 @@ def main(args):
 
     # Side panel
     panel = tkinter.Label(
-        root, width=200, height=720, background="lightgrey", borderwidth=2, relief="groove"
+        root,
+        width=200,
+        height=720,
+        background="lightgrey",
+        borderwidth=2,
+        relief="groove",
     )
     panel.place(x=1000, y=0)
 
@@ -744,7 +788,9 @@ def main(args):
 
     # Bet selector
     bet_label = tkinter.Label(text="Bet:", background="lightgray")
-    slider = tkinter.Scale(root, from_=1, to=10, orient=tkinter.HORIZONTAL, background="lightgray")
+    slider = tkinter.Scale(
+        root, from_=1, to=10, orient=tkinter.HORIZONTAL, background="lightgray"
+    )
     slider.set(args.bet)
     slider.place(x=x_sidepanel + 40, y=100)
     bet_label.place(x=x_sidepanel, y=120)

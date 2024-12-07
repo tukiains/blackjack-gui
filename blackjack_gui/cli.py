@@ -13,7 +13,7 @@ def _is_correct(correct_play: str, action: str, decisions: dict) -> dict:
     return decisions
 
 
-def main(args):
+def play(args):
     decisions = {"correct": 0, "incorrect": 0}
     n_decs = 6
     n_total_hands = 0
@@ -65,7 +65,11 @@ def main(args):
         elif dealer.cards[0].label == "A" and hand.is_blackjack is True:
             should_take_even_money = "yes" if player.true_count > 3 else "no"
             if args.ai is True:
-                action = "y" if should_take_even_money == "yes" and args.count is True else "n"
+                action = (
+                    "y"
+                    if should_take_even_money == "yes" and args.count is True
+                    else "n"
+                )
             else:
                 action = input("Take even money? y/n [n]")
             if action == "y":
@@ -75,7 +79,9 @@ def main(args):
         if hand.is_blackjack is False:
             # Surrender can be done only here. And not against dealer's Ace.
             if dealer.cards[0].label != "A":
-                correct_play = get_correct_play(hand, dealer.cards[0], len(player.hands))
+                correct_play = get_correct_play(
+                    hand, dealer.cards[0], len(player.hands)
+                )
                 if args.ai is True:
                     action = "y" if correct_play == "surrender" else "n"
                 else:
@@ -98,7 +104,9 @@ def main(args):
                         hand.cards[0].value == hand.cards[1].value
                         and hand.is_asked_to_split is False
                     ):
-                        correct_play = get_correct_play(hand, dealer.cards[0], len(player.hands))
+                        correct_play = get_correct_play(
+                            hand, dealer.cards[0], len(player.hands)
+                        )
                         if args.ai is True:
                             action = "y" if correct_play == "split" else "n"
                         else:
@@ -141,7 +149,9 @@ def main(args):
                     logging.debug(f"You are playing hand: {hand}")
                 if len(hand.cards) == 2 and hand.is_hittable is True:
                     # Doubling
-                    correct_play = get_correct_play(hand, dealer.cards[0], len(player.hands))
+                    correct_play = get_correct_play(
+                        hand, dealer.cards[0], len(player.hands)
+                    )
                     if hand.sum == 21:
                         hand.played = True
                         break
@@ -162,11 +172,15 @@ def main(args):
                         if correct_play != "double":
                             decisions["correct"] += 1
                         else:
-                            logging.info(f"Incorrect play, correct play was {correct_play}")
+                            logging.info(
+                                f"Incorrect play, correct play was {correct_play}"
+                            )
                             decisions["incorrect"] += 1
                 if hand.is_hittable is True:
                     # Hit or stay
-                    correct_play = get_correct_play(hand, dealer.cards[0], len(player.hands))
+                    correct_play = get_correct_play(
+                        hand, dealer.cards[0], len(player.hands)
+                    )
                     if args.ai is True:
                         if correct_play in ("hit", "surrender"):
                             # Can not surrender anymore
@@ -191,7 +205,9 @@ def main(args):
             shoe.arrange(args.dealer_cards[1:])
         hit_dealer = False
         for hand in player.hands:
-            if (hand.is_over is False and hand.surrender is False) or dealer.insurance_bet > 0:
+            if (
+                hand.is_over is False and hand.surrender is False
+            ) or dealer.insurance_bet > 0:
                 hit_dealer = True
         if player.hands[0].is_blackjack is True:
             if dealer.cards[0].label != "A" and dealer.cards[0].value != 10:
@@ -219,7 +235,6 @@ def main(args):
             player.stack += dealer.insurance_bet * 3
 
         for hand in player.hands:
-
             if dealer.even_money is True:
                 continue
 
@@ -246,7 +261,9 @@ def main(args):
                 and dealer.is_blackjack is False
                 and hand.sum == dealer.sum
             ):
-                logging.debug(f"Dealer: {dealer.sum}, Player: {hand.sum}, game is a push.")
+                logging.debug(
+                    f"Dealer: {dealer.sum}, Player: {hand.sum}, game is a push."
+                )
                 player.stack += hand.bet
 
             # Winning hands
@@ -289,7 +306,9 @@ def main(args):
     if args.ai is False:
         try:
             correct_decisions = (
-                decisions["correct"] / (decisions["correct"] + decisions["incorrect"]) * 100
+                decisions["correct"]
+                / (decisions["correct"] + decisions["incorrect"])
+                * 100
             )
         except ZeroDivisionError:
             correct_decisions = 100

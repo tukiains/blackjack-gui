@@ -1,0 +1,64 @@
+[project]
+name = "blackjack-gui"
+description = "A game of Blackjack with graphical user interface."
+authors = [{name = "Simo Tukiainen", email = "tukiains@gmail.com"}]
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT License"}
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.9",
+  "Topic :: Games/Entertainment",
+]
+dependencies = [
+  "pillow",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+test = [
+  "mypy",
+  "pytest",
+  "pytest-flakefinder",
+  "ruff",
+  "types-Pillow",
+]
+dev = ["pre-commit", "release-version"]
+
+[project.scripts]
+blackjack = "blackjack_gui.blackjack:main"
+
+[project.urls]
+Homepage = "https://github.com/tukiains/blackjack-gui"
+Documentation = "https://github.com/tukiains/blackjack-gui"
+Repository = "https://github.com/tukiains/blackjack-gui"
+Changelog = "https://github.com/tukiains/blackjack-gui/CHANGELOG.md"
+
+[tool.mypy]
+check_untyped_defs = true
+
+[tool.release-version]
+filename = "blackjack_gui/version.py"
+pattern = ["MAJOR = (?P<major>\\d+)", "MINOR = (?P<minor>\\d+)", "PATCH = (?P<patch>\\d+)"]
+changelog = "CHANGELOG.md"
+
+[tool.ruff.lint.extend-per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.setuptools.dynamic]
+version = {attr = "blackjack_gui.version.__version__"}
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.tomlsort]
+trailing_comma_inline_array = true
+sort_inline_arrays = true

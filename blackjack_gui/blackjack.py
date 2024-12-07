@@ -1,18 +1,25 @@
-#!/usr/bin/env python3
 import argparse
 import logging
 
 from blackjack_gui import cli, gui
 
-if __name__ == "__main__":
+
+def main():
     parser = argparse.ArgumentParser(description="Blackjack")
-    parser.add_argument("--stack", type=int, default=1000, help="Stack size. Default is 1000.")
     parser.add_argument(
-        "--n_games", type=int, default=10, help="Number of rounds to be played. Default is 10."
+        "--stack", type=int, default=1000, help="Stack size. Default is 1000."
+    )
+    parser.add_argument(
+        "--n_games",
+        type=int,
+        default=10,
+        help="Number of rounds to be played. Default is 10.",
     )
     parser.add_argument("--bet", type=int, default=1, help="Bet size. Default is 1.")
     parser.add_argument("--gui", type=str, default="True", help="Open GUI version.")
-    parser.add_argument("--ai", type=str, default="False", help="Computer play. Default is False.")
+    parser.add_argument(
+        "--ai", type=str, default="False", help="Computer play. Default is False."
+    )
     parser.add_argument(
         "--count",
         type=str,
@@ -46,4 +53,8 @@ if __name__ == "__main__":
         args.count = args.count.lower() == "true"
         args.ai = args.ai.lower() == "true"
         logging.basicConfig(level=args.loglevel)
-        cli.main(args)
+        cli.play(args)
+
+
+if __name__ == "__main__":
+    main()

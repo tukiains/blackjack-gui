@@ -67,7 +67,9 @@ class Shoe:
             self.n_cards -= 1
             fraction = (self._n_cards_total - self.n_cards) / self._n_cards_total
             if progress is not None:
-                progress.place(x=30, y=150, anchor="se", relheight=fraction, relwidth=1.0)
+                progress.place(
+                    x=30, y=150, anchor="se", relheight=fraction, relwidth=1.0
+                )
             return card
         raise ValueError("Empty shoe!")
 
@@ -77,7 +79,10 @@ class Shoe:
         for ind, card in enumerate(cards):
             indices = [i for i, x in enumerate(labels[ind:]) if x == str(card)]
             shoe_ind = random.choice(indices) + ind
-            self.cards[shoe_ind], self.cards[ind] = self.cards[ind], self.cards[shoe_ind]
+            self.cards[shoe_ind], self.cards[ind] = (
+                self.cards[ind],
+                self.cards[shoe_ind],
+            )
             labels[shoe_ind], labels[ind] = labels[ind], labels[shoe_ind]
 
 
@@ -98,7 +103,9 @@ class Hand:
         self.played = False
         self.is_triple_seven = False
 
-    def deal(self, source: Union[Shoe, Card], progress: Union[tkinter.Label, None] = None):
+    def deal(
+        self, source: Union[Shoe, Card], progress: Union[tkinter.Label, None] = None
+    ):
         if isinstance(source, Shoe):
             self.cards.append(source.draw(progress))
         else:
@@ -254,15 +261,27 @@ def get_correct_play(hand: Hand, dealer_card: Card, n_hands: int) -> str:
         if hand.sum <= 8:
             return hit
         if hand.sum == 9:
-            if dealer_card.value in range(3, 7) and n_cards == 2 and hand.is_hittable is True:
+            if (
+                dealer_card.value in range(3, 7)
+                and n_cards == 2
+                and hand.is_hittable is True
+            ):
                 return double
             return hit
         if hand.sum == 10:
-            if dealer_card.value in range(2, 10) and n_cards == 2 and hand.is_hittable is True:
+            if (
+                dealer_card.value in range(2, 10)
+                and n_cards == 2
+                and hand.is_hittable is True
+            ):
                 return double
             return hit
         if hand.sum == 11:
-            if dealer_card.value in range(2, 10) and n_cards == 2 and hand.is_hittable is True:
+            if (
+                dealer_card.value in range(2, 10)
+                and n_cards == 2
+                and hand.is_hittable is True
+            ):
                 return double
             return hit
         if hand.sum == 12:
@@ -315,11 +334,19 @@ def get_correct_play(hand: Hand, dealer_card: Card, n_hands: int) -> str:
                 return hit
             return split
         if cards[0].value == 7:
-            if isinstance(dealer_card.value, int) and dealer_card.value <= 7 and n_hands < 4:
+            if (
+                isinstance(dealer_card.value, int)
+                and dealer_card.value <= 7
+                and n_hands < 4
+            ):
                 return split
             return hit
         if cards[0].value == 6:
-            if isinstance(dealer_card.value, int) and dealer_card.value <= 6 and n_hands < 4:
+            if (
+                isinstance(dealer_card.value, int)
+                and dealer_card.value <= 6
+                and n_hands < 4
+            ):
                 return split
             return hit
         if cards[0].value == 5:
@@ -332,11 +359,19 @@ def get_correct_play(hand: Hand, dealer_card: Card, n_hands: int) -> str:
                 return split
             return hit
         if cards[0].value == 3:
-            if isinstance(dealer_card.value, int) and dealer_card.value <= 7 and n_hands < 4:
+            if (
+                isinstance(dealer_card.value, int)
+                and dealer_card.value <= 7
+                and n_hands < 4
+            ):
                 return split
             return hit
         if cards[0].value == 2:
-            if isinstance(dealer_card.value, int) and dealer_card.value <= 7 and n_hands < 4:
+            if (
+                isinstance(dealer_card.value, int)
+                and dealer_card.value <= 7
+                and n_hands < 4
+            ):
                 return split
             return hit
 
@@ -355,15 +390,27 @@ def get_correct_play(hand: Hand, dealer_card: Card, n_hands: int) -> str:
                 return stay
             return hit
         if hand.sum == 17:
-            if dealer_card.value in range(3, 7) and n_cards == 2 and hand.is_hittable is True:
+            if (
+                dealer_card.value in range(3, 7)
+                and n_cards == 2
+                and hand.is_hittable is True
+            ):
                 return double
             return hit
         if hand.sum in (15, 16):
-            if dealer_card.value in (4, 5, 6) and n_cards == 2 and hand.is_hittable is True:
+            if (
+                dealer_card.value in (4, 5, 6)
+                and n_cards == 2
+                and hand.is_hittable is True
+            ):
                 return double
             return hit
         if hand.sum in (13, 14):
-            if dealer_card.value in (5, 6) and n_cards == 2 and hand.is_hittable is True:
+            if (
+                dealer_card.value in (5, 6)
+                and n_cards == 2
+                and hand.is_hittable is True
+            ):
                 return double
             return hit
         if hand.sum < 13:
@@ -373,7 +420,11 @@ def get_correct_play(hand: Hand, dealer_card: Card, n_hands: int) -> str:
 
 
 def _should_surrender(hand: Hand, dealer_card: Card, values: tuple) -> bool:
-    if hand.is_split_hand is True or dealer_card.label[0] == "A" or len(hand.cards) != 2:
+    if (
+        hand.is_split_hand is True
+        or dealer_card.label[0] == "A"
+        or len(hand.cards) != 2
+    ):
         return False
     if dealer_card.value in values:
         return True

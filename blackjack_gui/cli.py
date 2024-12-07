@@ -250,9 +250,13 @@ def main(args):
                 player.stack += hand.bet
 
             # Winning hands
+            elif hand.is_triple_seven is True:
+                logging.debug("You win with triple seven!")
+                player.stack += hand.bet * 3
+
             elif hand.is_blackjack is True and dealer.is_blackjack is False:
                 logging.debug("You win with BJ!")
-                player.stack += bet * 2.5
+                player.stack += hand.bet * 2.5
 
             elif dealer.sum > 21:
                 logging.debug(f"Dealer: {dealer.sum}, you win!")

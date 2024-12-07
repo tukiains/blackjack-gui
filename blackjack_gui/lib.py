@@ -75,14 +75,15 @@ class Shoe:
         """Arranges shoe so that next cards are the requested ones."""
         labels = [card.label for card in self.cards]
         for ind, card in enumerate(cards):
-            shoe_ind = labels[ind:].index(str(card)) + ind
+            indices = [i for i, x in enumerate(labels) if x == str(card)]
+            shoe_ind = random.choice(indices)
             self.cards[shoe_ind], self.cards[ind] = self.cards[ind], self.cards[shoe_ind]
             labels[shoe_ind], labels[ind] = labels[ind], labels[shoe_ind]
 
 
 class Hand:
     def __init__(self):
-        self.cards = []
+        self.cards: list[Card] = []
         self.sum = 0.0
         self.bet = 0.0
         self.is_hard = True
@@ -95,6 +96,7 @@ class Hand:
         self.slot = None
         self.is_finished = False  # if True, no more playing for this hand
         self.played = False
+        self.is_triple_seven = False
 
     def deal(self, source: Union[Shoe, Card], progress: Union[tkinter.Label, None] = None):
         if isinstance(source, Shoe):
@@ -102,6 +104,7 @@ class Hand:
         else:
             self.cards.append(source)
         self.sum, self.is_hard = evaluate_hand(self.cards)
+
         if self.sum >= 21:
             self.is_finished = True
             self.is_hittable = False
@@ -109,6 +112,12 @@ class Hand:
             self.is_over = True
         if self.sum == 21 and len(self.cards) == 2 and self.is_split_hand is False:
             self.is_blackjack = True
+        if (
+            len(self.cards) == 3
+            and all(card.label == "7" for card in self.cards)
+            and self.is_split_hand is False
+        ):
+            self.is_triple_seven = True
 
     def __repr__(self) -> str:
         return format_hand(self.cards)
@@ -197,7 +206,7 @@ class Player:
                     continue
                 if card.label == "A" or card.value == 10:
                     self.running_count -= 1
-                elif card.value <= 6:
+                elif isinstance(card.value, int) and card.value <= 6:
                     self.running_count += 1
         n_decs_left = shoe.n_cards / 52
         self.true_count = self.running_count / n_decs_left

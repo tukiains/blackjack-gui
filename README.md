@@ -69,7 +69,8 @@ $ blackjack --n_games=10000 --ai=True --loglevel=INFO --gui=False --cards=A,8
 ```
 
 ## Rules
-Blackjack rules vary depending on the casino. In this application they follow: https://casinohelsinki.fi/en/games/blackjack-eng/, i.e.:
+Blackjack rules vary depending on the casino. In this application they follow the rules of Casino Helsinki,
+explained in Finnish [here](http://www.rahapeliopas.fi/kasinopelit/blackjack/), i.e.:
 
 * 6 decs
 * Blackjack pays 3 to 2
@@ -79,6 +80,7 @@ Blackjack rules vary depending on the casino. In this application they follow: h
 * Aces can be split but they receive only one extra card
 * Doubling after splitting is allowed
 * Surrender is allowed but not against Ace
+* A 7-7-7 with the first three cards (not in a split game) pays 3 to 1 directly
 
 ### Optimal basic strategy
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart.png" alt="" width="400"/>

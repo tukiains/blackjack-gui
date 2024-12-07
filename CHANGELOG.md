@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1 – 2024-12-07
+
+- Add publish workflow
+
 ## 1.0.0 – 2024-12-07
 
 - Add triple 7 rule

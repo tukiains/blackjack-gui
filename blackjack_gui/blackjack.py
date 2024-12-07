@@ -9,6 +9,15 @@ def main():
         description="Blackjack", epilog="Play responsibly!"
     )
     parser.add_argument("--no-gui", action="store_true", help="Open CLI version.")
+    parser.add_argument("--ai", action="store_true", help="Computer play.")
+    parser.add_argument(
+        "--count",
+        action="store_true",
+        help="Count cards. Default is False. Can be used with --ai.",
+    )
+    parser.add_argument(
+        "--bet", type=int, default=1, help="Bet size (1-10). Default is 1."
+    )
     parser.add_argument(
         "--stack", type=int, default=1000, help="Stack size. Default is 1000."
     )
@@ -17,15 +26,6 @@ def main():
         type=int,
         default=10,
         help="Number of rounds to be played. Default is 10.",
-    )
-    parser.add_argument(
-        "--bet", type=int, default=1, help="Bet size (1-10). Default is 1."
-    )
-    parser.add_argument("--ai", action="store_true", help="Computer play.")
-    parser.add_argument(
-        "--count",
-        action="store_true",
-        help="Count cards. Default is False. Can be used with --ai.",
     )
     parser.add_argument(
         "--loglevel",

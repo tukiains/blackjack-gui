@@ -3,7 +3,7 @@
 [![Blackjack GUI CI](https://github.com/tukiains/blackjack-gui/actions/workflows/test.yml/badge.svg)](https://github.com/tukiains/blackjack-gui/actions/workflows/test.yml)
 [![Downloads](https://pepy.tech/badge/blackjack-gui)](https://pepy.tech/project/blackjack-gui)
 
-Single-player Blackjack including GUI and CLI interfaces, written in Python. Can be used to simulate games with or without card counting
+Single-player Blackjack including graphical and command line interfaces, written in Python. Can be used to simulate games with or without card counting
 and to practise basic strategy.
 
 <img src="https://github.com/tukiains/blackjack-gui/blob/main/blackjack_gui/images/bj-shot.png?raw=true" alt="" width="600"/>
@@ -28,31 +28,25 @@ $ pip3 install blackjack-gui
 
 ## Usage
 
-### GUI version
-
 ```
-blackjack [OPTION...]
-```
+blackjack [-h] [--stack STACK] [--n_games N_GAMES] [--bet BET] [--no-gui] [--ai] [--count] [--loglevel LOGLEVEL] [--cards CARDS] [--dealer_cards DEALER_CARDS] [--subset {hard,soft,pairs}]
 
-### CLI version
-
-```
-blackjack --gui=False [OPTION...]
 ```
 
 ### Options
 
-| Name             | Default | CLI only | Description                                                                                 |
-| :--------------- | :------ | :------- | :------------------------------------------------------------------------------------------ |
-| `--stack`        | 1000    |          | Initial stack.                                                                              |
-| `--bet`          | 1       |          | Initial bet size.                                                                           |
-| `--n_games`      | 10      | x        | Number of rounds to be played.                                                              |
-| `--ai`           | False   | x        | If True, computer plays instead of you.                                                     |
-| `--count`        | False   | x        | If True, `ai` uses card counting.                                                           |
-| `--loglevel`     | DEBUG   | x        | Adjust amount of logging: DEBUG or INFO.                                                    |
-| `--cards`        |         |          | Determine the first player cards, e.g. `--cards=A,8,K`. Shuffles the shoe after every hand. |
-| `--subset`       |         |          | Instead of `--cards`, practice with one of the subsets: `hard`, `soft`, or `pairs`.         |
-| `--dealer_cards` |         |          | Determine the first dealer cards. Useful for testing.                                       |
+| Name             | Default | Description                                                                                 |
+| :--------------- | :------ | :------------------------------------------------------------------------------------------ |
+| `--no-gui`       | False   | Use command line version.                                                                   |
+| `--stack`        | 1000    | Initial stack.                                                                              |
+| `--bet`          | 1       | Bet size (max 10).                                                                          |
+| `--n_games`      | 10      | Number of rounds to be played. Only with `--no-gui`.                                        |
+| `--ai`           | False   | If True, computer plays instead of you. Only with `--no-gui`.                               |
+| `--count`        | False   | If True, `ai` uses card counting. Only with `--no-gui` and `--ai`.                          |
+| `--loglevel`     | DEBUG   | Adjust amount of logging: DEBUG or INFO. Only with `--no-gui`.                              |
+| `--cards`        |         | Determine the first player cards, e.g. `--cards=A,8,K`. Shuffles the shoe after every hand. |
+| `--subset`       |         | Instead of `--cards`, practice with one of the subsets: `hard`, `soft`, or `pairs`.         |
+| `--dealer_cards` |         | Determine the first dealer cards. Useful for testing.                                       |
 
 ## Examples
 

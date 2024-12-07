@@ -2,7 +2,7 @@ import subprocess
 
 import pytest
 
-prefix = "blackjack --n_games=1 --gui=False --ai=True --loglevel=WARNING --stack=10"
+prefix = "blackjack --n_games=1 --no-gui --ai --loglevel=WARNING --stack=10"
 
 
 @pytest.mark.parametrize(

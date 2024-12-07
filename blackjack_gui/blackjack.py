@@ -5,7 +5,10 @@ from blackjack_gui import cli, gui
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Blackjack")
+    parser = argparse.ArgumentParser(
+        description="Blackjack", epilog="Play responsibly!"
+    )
+    parser.add_argument("--no-gui", action="store_true", help="Open CLI version.")
     parser.add_argument(
         "--stack", type=int, default=1000, help="Stack size. Default is 1000."
     )
@@ -15,16 +18,14 @@ def main():
         default=10,
         help="Number of rounds to be played. Default is 10.",
     )
-    parser.add_argument("--bet", type=int, default=1, help="Bet size. Default is 1.")
-    parser.add_argument("--gui", type=str, default="True", help="Open GUI version.")
     parser.add_argument(
-        "--ai", type=str, default="False", help="Computer play. Default is False."
+        "--bet", type=int, default=1, help="Bet size (1-10). Default is 1."
     )
+    parser.add_argument("--ai", action="store_true", help="Computer play.")
     parser.add_argument(
         "--count",
-        type=str,
-        default="False",
-        help="Count cards. Default is False. Can be used with --ai=True.",
+        action="store_true",
+        help="Count cards. Default is False. Can be used with --ai.",
     )
     parser.add_argument(
         "--loglevel",
@@ -48,18 +49,18 @@ def main():
         "--subset",
         type=str,
         choices=["hard", "soft", "pairs"],
+        help="Subset of hands to be played. Default is all.",
         default=None,
     )
 
     args = parser.parse_args()
-    if args.gui.lower() == "true":
-        logging.basicConfig(level="WARNING")
-        gui.main(args)
-    else:
-        args.count = args.count.lower() == "true"
-        args.ai = args.ai.lower() == "true"
+
+    if args.no_gui:
         logging.basicConfig(level=args.loglevel)
         cli.play(args)
+    else:
+        logging.basicConfig(level="WARNING")
+        gui.main(args)
 
 
 if __name__ == "__main__":

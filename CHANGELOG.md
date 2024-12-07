@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 – 2024-12-07
+
+- Adjust arguments
+
 ## 1.1.1 – 2024-12-07
 
 - Shuffle after every hand if fixed starting hand

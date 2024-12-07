@@ -10,7 +10,7 @@ and to practise basic strategy.
 
 ## Installation
 
-`blackjack-gui` requires Python 3.8 or newer and uses [tkinter](https://en.wikipedia.org/wiki/Tkinter). Make sure it's installed in your system:
+`blackjack-gui` requires Python 3.9 or newer and uses [tkinter](https://en.wikipedia.org/wiki/Tkinter). Make sure it's installed in your system:
 
 ```
 $ sudo apt install python3-tk

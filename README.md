@@ -1,6 +1,6 @@
 # blackjack-gui
 
-![](https://github.com/tukiains/blackjack-gui/actions/workflows/test.yml/badge.svg)
+[![Blackjack GUI CI](https://github.com/tukiains/blackjack-gui/actions/workflows/test.yml/badge.svg)](https://github.com/tukiains/blackjack-gui/actions/workflows/test.yml)
 [![Downloads](https://pepy.tech/badge/blackjack-gui)](https://pepy.tech/project/blackjack-gui)
 
 Single-player Blackjack including GUI and CLI interfaces, written in Python. Can be used to simulate games with or without card counting

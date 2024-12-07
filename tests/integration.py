@@ -2,7 +2,7 @@ import subprocess
 
 import pytest
 
-prefix = "blackjack --n_games=1 --no-gui --ai --loglevel=WARNING --stack=10"
+prefix = "blackjack --n-games=1 --no-gui --ai --loglevel=WARNING --stack=10"
 
 
 @pytest.mark.parametrize(
@@ -80,6 +80,6 @@ def test_insurance():
 
 def call(player: str, dealer: str) -> float:
     result = subprocess.check_output(
-        f"{prefix} " f"--cards={player} " f"--dealer_cards={dealer}", shell=True
+        f"{prefix} " f"--cards={player} " f"--dealer-cards={dealer}", shell=True
     )
     return float(result)

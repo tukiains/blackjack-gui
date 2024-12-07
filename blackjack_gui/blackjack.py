@@ -22,7 +22,7 @@ def main():
         "--stack", type=int, default=1000, help="Stack size. Default is 1000."
     )
     parser.add_argument(
-        "--n_games",
+        "--n-games",
         type=int,
         default=10,
         help="Number of rounds to be played. Default is 10.",
@@ -40,7 +40,7 @@ def main():
         help="Determine first player cards. E.g. --cards=A,7 to simulate soft 18.",
     )
     parser.add_argument(
-        "--dealer_cards",
+        "--dealer-cards",
         type=lambda s: s.split(","),
         default=None,
         help="Determine first dealer cards. Useful for tests.",

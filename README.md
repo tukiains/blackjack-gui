@@ -30,8 +30,8 @@ $ pip3 install blackjack-gui
 
 ```
 blackjack [-h] [--no-gui] [--ai] [--count] [--bet BET] [--stack STACK]
-    [--n_games N_GAMES] [--loglevel LOGLEVEL] [--cards CARDS]
-    [--dealer_cards DEALER_CARDS] [--subset {hard,soft,pairs}]
+    [--n-games N_GAMES] [--loglevel LOGLEVEL] [--cards CARDS]
+    [--dealer-cards DEALER_CARDS] [--subset {hard,soft,pairs}]
 
 ```
 
@@ -44,11 +44,11 @@ blackjack [-h] [--no-gui] [--ai] [--count] [--bet BET] [--stack STACK]
 | `--count`        | `False` | If True, `ai` uses card counting. Only with `--no-gui` and `--ai`.                          |
 | `--bet`          | 1       | Bet size (max 10).                                                                          |
 | `--stack`        | 1000    | Initial stack.                                                                              |
-| `--n_games`      | 10      | Number of rounds to be played. Only with `--no-gui`.                                        |
+| `--n-games`      | 10      | Number of rounds to be played. Only with `--no-gui`.                                        |
 | `--loglevel`     | `DEBUG` | Adjust amount of logging: DEBUG or INFO. Only with `--no-gui`.                              |
 | `--cards`        |         | Determine the first player cards, e.g. `--cards=A,8,K`. Shuffles the shoe after every hand. |
 | `--subset`       |         | Instead of `--cards`, practice with one of the subsets: `hard`, `soft`, or `pairs`.         |
-| `--dealer_cards` |         | Determine the first dealer cards. Useful for testing.                                       |
+| `--dealer-cards` |         | Determine the first dealer cards. Useful for testing.                                       |
 
 ## Examples
 
@@ -67,13 +67,13 @@ $ blackjack --no-gui
 Let the computer play perfect basic game and use card counting technique to bring down the house:
 
 ```
-$ blackjack --no-gui --ai --count --n_games=100000 --loglevel=INFO
+$ blackjack --no-gui --ai --count --n-games=100000 --loglevel=INFO
 ```
 
 Simulate soft 19 starting hand only:
 
 ```
-$ blackjack --no-gui --ai --n_games=10000 --loglevel=INFO --cards=A,8
+$ blackjack --no-gui --ai --n-games=10000 --loglevel=INFO --cards=A,8
 ```
 
 Practise to play "hard" starting hands:

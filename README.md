@@ -58,22 +58,22 @@ Open the GUI version:
 $ blackjack
 ```
 
-With the default settings, play 10 rounds of Blackjack without GUI:
+With the default settings, play 10 rounds of Blackjack with the command line interface:
 
 ```
-$ blackjack --gui=False
+$ blackjack --no-gui
 ```
 
 Let the computer play perfect basic game and use card counting technique to bring down the house:
 
 ```
-$ blackjack --n_games=100000 --ai=True --count=True --loglevel=INFO --gui=False
+$ blackjack --no-gui --ai --count --n_games=100000 --loglevel=INFO
 ```
 
 Simulate soft 19 starting hand only:
 
 ```
-$ blackjack --n_games=10000 --ai=True --loglevel=INFO --gui=False --cards=A,8
+$ blackjack --no-gui --ai --n_games=10000 --loglevel=INFO --cards=A,8
 ```
 
 Practise to play "hard" starting hands:

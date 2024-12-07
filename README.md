@@ -133,6 +133,7 @@ pre-commit run --all
 
 ## Notes
 
+- Deviations from the basic strategy are not yet implemented.
 - Card images taken from [here](https://code.google.com/archive/p/vector-playing-cards/).
 
 ## Licence

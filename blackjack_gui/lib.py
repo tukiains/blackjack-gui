@@ -75,8 +75,8 @@ class Shoe:
         """Arranges shoe so that next cards are the requested ones."""
         labels = [card.label for card in self.cards]
         for ind, card in enumerate(cards):
-            indices = [i for i, x in enumerate(labels) if x == str(card)]
-            shoe_ind = random.choice(indices)
+            indices = [i for i, x in enumerate(labels[ind:]) if x == str(card)]
+            shoe_ind = random.choice(indices) + ind
             self.cards[shoe_ind], self.cards[ind] = self.cards[ind], self.cards[shoe_ind]
             labels[shoe_ind], labels[ind] = labels[ind], labels[shoe_ind]
 

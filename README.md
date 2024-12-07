@@ -29,7 +29,9 @@ $ pip3 install blackjack-gui
 ## Usage
 
 ```
-blackjack [-h] [--no-gui] [--ai] [--count] [--bet BET] [--stack STACK] [--n_games N_GAMES] [--loglevel LOGLEVEL] [--cards CARDS] [--dealer_cards DEALER_CARDS] [--subset {hard,soft,pairs}]
+blackjack [-h] [--no-gui] [--ai] [--count] [--bet BET] [--stack STACK]
+    [--n_games N_GAMES] [--loglevel LOGLEVEL] [--cards CARDS]
+    [--dealer_cards DEALER_CARDS] [--subset {hard,soft,pairs}]
 
 ```
 

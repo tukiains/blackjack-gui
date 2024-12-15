@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1 – 2024-12-15
+
+- Randomize given GUI starting hands
+- Add hard/soft subset
+
 ## 1.2.0 – 2024-12-07
 
 - Adjust arguments

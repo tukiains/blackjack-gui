@@ -505,6 +505,8 @@ def get_starting_hand(subset: str) -> list[str]:
         cards = random.choice(soft_hands)
     elif subset == "pairs":
         cards = random.choice(pairs)
+    elif subset == "hard/soft":
+        cards = random.choice(hard_hands + soft_hands)
     else:
         raise ValueError("Bad subset")
     card_list = cards.split(",")

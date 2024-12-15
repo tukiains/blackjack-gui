@@ -48,7 +48,7 @@ def main():
     parser.add_argument(
         "--subset",
         type=str,
-        choices=["hard", "soft", "pairs"],
+        choices=["hard", "soft", "pairs", "hard/soft"],
         help="Subset of hands to be played. Default is all.",
         default=None,
     )

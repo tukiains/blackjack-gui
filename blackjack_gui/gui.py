@@ -66,7 +66,7 @@ class Game:
         self.dealer.cards[1].visible = False
         self.display_dealer_cards()
         if self.args.cards is not None:
-            self.shoe.arrange(self.args.cards)
+            self.shoe.arrange(self.args.cards, randomize=True)
         elif self.args.subset is not None:
             cards = get_starting_hand(self.args.subset)
             self.shoe.arrange(cards)

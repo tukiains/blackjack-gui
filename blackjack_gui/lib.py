@@ -73,9 +73,11 @@ class Shoe:
             return card
         raise ValueError("Empty shoe!")
 
-    def arrange(self, cards: list):
+    def arrange(self, cards: list, randomize: bool = False):
         """Arranges shoe so that next cards are the requested ones."""
         labels = [card.label for card in self.cards]
+        if randomize:
+            random.shuffle(cards)
         for ind, card in enumerate(cards):
             indices = [i for i, x in enumerate(labels[ind:]) if x == str(card)]
             shoe_ind = random.choice(indices) + ind

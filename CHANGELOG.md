@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2 – 2024-12-19
+
+- Add soft/pairs subset
+
 ## 1.2.1 – 2024-12-15
 
 - Randomize given GUI starting hands

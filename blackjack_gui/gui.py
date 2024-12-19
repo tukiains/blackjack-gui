@@ -744,9 +744,14 @@ def main(args):
     # Advisor button
     fix_mistakes = tkinter.IntVar()
     checkbox_container = tkinter.Checkbutton(
-        root, text="Coach mode", variable=fix_mistakes, background="lightgrey"
+        root,
+        text="Coach mode",
+        variable=fix_mistakes,
+        background="lightgrey",
     )
     checkbox_container.place(x=1040, y=600)
+    if args.subset is not None:
+        fix_mistakes.set(1)
 
     # Buttons
     menu = {

@@ -750,7 +750,7 @@ def main(args):
         background="lightgrey",
     )
     checkbox_container.place(x=1040, y=600)
-    if args.subset is not None:
+    if args.subset is not None or args.cards is not None:
         fix_mistakes.set(1)
 
     # Buttons

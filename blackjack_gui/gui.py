@@ -27,6 +27,7 @@ class Gui:
     slider: tkinter.Scale
     insurance_chip: tkinter.Label
     dealer_info: tkinter.Label
+    accuracy_text: tkinter.StringVar
 
 
 class Game:
@@ -39,6 +40,8 @@ class Game:
         self.shoe = self.init_shoe()
         self.active_slot = None
         self.initial_bet = args.bet
+        self._n_correct_play = 0
+        self._n_mistakes = 0
 
     def deal(self):
         """Starts new round."""
@@ -141,6 +144,7 @@ class Game:
         self.clean_dealer_slots()
         self.gui.slider.set(self.initial_bet)
         self.player.init_count()
+        self.reset_accuracy()
         self.deal()
 
     def next(self):
@@ -332,7 +336,12 @@ class Game:
         if correct_play != play:
             self.display_info(hand, "Try again!")
             self.gui.root.after(1000, self.clean_info)
+            self._n_mistakes += 1
             return False
+        self._n_correct_play += 1
+        if self.gui.fix_mistakes.get() == 1:
+            txt = f"Accuracy: {round(self._n_correct_play / (self._n_correct_play + self._n_mistakes) * 100, 2)}%"
+            self.gui.accuracy_text.set(txt)
         return True
 
     def check_insurance(self, hand: Hand) -> bool:
@@ -532,6 +541,11 @@ class Game:
         """Prints text below hand."""
         self.gui.info_text[str(hand.slot)].set(info)
 
+    def reset_accuracy(self):
+        self._n_correct_play = 0
+        self._n_mistakes = 0
+        self.gui.accuracy_text.set("")
+
     @staticmethod
     def init_shoe():
         return Shoe(6)
@@ -640,6 +654,18 @@ def main(args):
     )
     label.place(x=430, y=670)
 
+    # CORRECT PLAY %
+    accuracy_text = tkinter.StringVar(root)
+    accuracy = tkinter.Label(
+        root,
+        textvariable=accuracy_text,
+        font="Helvetica 10",
+        borderwidth=0,
+        background=bc,
+        fg="white",
+    )
+    accuracy.place(x=10, y=670)
+
     # Hand info
     x_slot = 250
     padding_left = 20
@@ -741,6 +767,12 @@ def main(args):
     )
     panel.place(x=1000, y=0)
 
+    def toggle_accuracy():
+        if fix_mistakes.get() == 1:
+            accuracy.place(x=10, y=670)
+        else:
+            accuracy.place_forget()
+
     # Advisor button
     fix_mistakes = tkinter.IntVar()
     checkbox_container = tkinter.Checkbutton(
@@ -748,7 +780,14 @@ def main(args):
         text="Coach mode",
         variable=fix_mistakes,
         background="lightgrey",
+        command=toggle_accuracy,
     )
+
+    if fix_mistakes.get() == 1:
+        accuracy.place(x=10, y=670)
+    else:
+        accuracy.place_forget()
+
     checkbox_container.place(x=1040, y=600)
     if args.subset is not None or args.cards is not None:
         fix_mistakes.set(1)
@@ -822,6 +861,7 @@ def main(args):
         slider,
         insurance_chip,
         dealer_info,
+        accuracy_text,
     )
 
     dealer = Dealer()

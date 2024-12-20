@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.3 – 2024-12-20
+
+- Activate coach by default with --subset and --cards
+- Add option to select from multiple user-defined hands
+
 ## 1.2.2 – 2024-12-19
 
 - Add soft/pairs subset

@@ -783,14 +783,14 @@ def main(args):
         command=toggle_accuracy,
     )
 
+    checkbox_container.place(x=1040, y=600)
+    if args.subset is not None or args.cards is not None:
+        fix_mistakes.set(1)
+
     if fix_mistakes.get() == 1:
         accuracy.place(x=10, y=670)
     else:
         accuracy.place_forget()
-
-    checkbox_container.place(x=1040, y=600)
-    if args.subset is not None or args.cards is not None:
-        fix_mistakes.set(1)
 
     # Buttons
     menu = {

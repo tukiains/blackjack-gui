@@ -105,6 +105,7 @@ See overview of the most common rule variations [here](rule-variations.md).
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/helsinki-symbols.png" alt="" width="218"/>
 
 - Note that 16 vs 10 with 3 or more cards = Stay
+- 7,7 would be normally Surrender, but not in Helsinki because of the 7-7-7 rule
 
 ### Optimal basic strategy for a typical U.S. casino
 

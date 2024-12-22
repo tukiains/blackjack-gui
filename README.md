@@ -97,6 +97,8 @@ explained in Finnish [here](http://www.rahapeliopas.fi/kasinopelit/blackjack/), 
 - Surrender is allowed but not against Ace
 - A 7-7-7 with the first three cards (not in a split game) pays 3 to 1 directly
 
+See overview of the most common rule variations [here](rule-variations.md).
+
 ### Optimal basic strategy
 
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart.png" alt="" width="400"/>

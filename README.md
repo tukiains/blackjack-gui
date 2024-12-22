@@ -99,12 +99,17 @@ explained in Finnish [here](http://www.rahapeliopas.fi/kasinopelit/blackjack/), 
 
 See overview of the most common rule variations [here](rule-variations.md).
 
-### Optimal basic strategy
+### Optimal basic strategy for Casino Helsinki
 
-<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart.png" alt="" width="400"/>
-<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-symbols.png" alt="" width="258"/>
+<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-casino-helsinki.png" alt="" width="400"/>
+<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/helsinki-symbols.png" alt="" width="258"/>
 
 - Note that 16 vs 10 with 3 or more cards = Stay
+
+### Optimal basic strategy for a typical U.S. casino
+
+<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-usa.png" alt="" width="400"/>
+<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/usa-symbols.png" alt="" width="258"/>
 
 ## Development
 

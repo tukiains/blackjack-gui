@@ -101,15 +101,21 @@ See overview of the most common rule variations [here](rule-variations.md).
 
 ### Optimal basic strategy for Casino Helsinki
 
-<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-casino-helsinki.png" alt="" width="400"/>
-<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/helsinki-symbols.png" alt="" width="258"/>
+<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-helsinki.png" alt="" width="400"/>
+<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/helsinki-symbols.png" alt="" width="218"/>
 
 - Note that 16 vs 10 with 3 or more cards = Stay
 
 ### Optimal basic strategy for a typical U.S. casino
 
+The rules in the U.S. typically include:
+
+- Dealer must hit on soft 17
+- Dealer peek is in use
+- Late surrender is allowed
+
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-usa.png" alt="" width="400"/>
-<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/usa-symbols.png" alt="" width="258"/>
+<img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/usa-symbols.png" alt="" width="320"/>
 
 ## Development
 

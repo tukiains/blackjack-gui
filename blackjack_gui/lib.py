@@ -40,7 +40,21 @@ class Deck:
 
     def _build(self):
         for suit in ["spades", "clubs", "diamonds", "hearts"]:
-            for v in ("2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"):
+            for v in (
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "J",
+                "Q",
+                "K",
+                "A",
+            ):
                 self.cards.append(Card(v, suit))
 
 
@@ -65,7 +79,9 @@ class Shoe:
         if self.n_cards > 0:
             card = self.cards.pop(0)
             self.n_cards -= 1
-            fraction = (self._n_cards_total - self.n_cards) / self._n_cards_total
+            fraction = (
+                self._n_cards_total - self.n_cards
+            ) / self._n_cards_total
             if progress is not None:
                 progress.place(
                     x=30, y=150, anchor="se", relheight=fraction, relwidth=1.0
@@ -115,7 +131,9 @@ class Hand:
         self.is_triple_seven = False
 
     def deal(
-        self, source: Union[Shoe, Card], progress: Union[tkinter.Label, None] = None
+        self,
+        source: Union[Shoe, Card],
+        progress: Union[tkinter.Label, None] = None,
     ):
         if isinstance(source, Shoe):
             self.cards.append(source.draw(progress))
@@ -128,7 +146,11 @@ class Hand:
             self.is_hittable = False
         if self.sum > 21:
             self.is_over = True
-        if self.sum == 21 and len(self.cards) == 2 and self.is_split_hand is False:
+        if (
+            self.sum == 21
+            and len(self.cards) == 2
+            and self.is_split_hand is False
+        ):
             self.is_blackjack = True
         if (
             len(self.cards) == 3
@@ -268,7 +290,9 @@ def get_correct_play(hand: Hand, dealer_card: Card, n_hands: int) -> str:
     dealer_ace = dealer_card.label == "A"
 
     # Hard hands
-    if hand.is_hard is True and not (n_cards == 2 and cards[0].value == cards[1].value):
+    if hand.is_hard is True and not (
+        n_cards == 2 and cards[0].value == cards[1].value
+    ):
         if hand.sum <= 8:
             return hit
         if hand.sum == 9:
@@ -335,7 +359,11 @@ def get_correct_play(hand: Hand, dealer_card: Card, n_hands: int) -> str:
         if cards[0].value == 10:
             return stay
         if cards[0].value == 9:
-            if dealer_card.value in (7, 10) or dealer_card.label == "A" or n_hands == 4:
+            if (
+                dealer_card.value in (7, 10)
+                or dealer_card.label == "A"
+                or n_hands == 4
+            ):
                 return stay
             return split
         if cards[0].value == 8:

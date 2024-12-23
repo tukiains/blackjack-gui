@@ -35,7 +35,11 @@ def play(args):
         logging.debug("----------------")
         if args.ai is False:
             sleep(1)
-        if shoe.n_cards < 52 or args.cards is not None or args.subset is not None:
+        if (
+            shoe.n_cards < 52
+            or args.cards is not None
+            or args.subset is not None
+        ):
             shoe = Shoe(n_decs)
             player.init_count()
         player.hands = []
@@ -62,7 +66,11 @@ def play(args):
         if dealer.cards[0].label == "A" and hand.is_blackjack is False:
             should_insure = "yes" if player.true_count > 3 else "no"
             if args.ai is True:
-                action = "y" if should_insure == "yes" and args.count is True else "n"
+                action = (
+                    "y"
+                    if should_insure == "yes" and args.count is True
+                    else "n"
+                )
             else:
                 action = input("Insure? y/n [n]")
             if action == "y":
@@ -83,7 +91,9 @@ def play(args):
             else:
                 action = input("Take even money? y/n [n]")
             if action == "y":
-                decisions = _is_correct(should_take_even_money, "yes", decisions)
+                decisions = _is_correct(
+                    should_take_even_money, "yes", decisions
+                )
                 dealer.even_money = True
 
         if hand.is_blackjack is False:
@@ -97,7 +107,9 @@ def play(args):
                 else:
                     action = input("Surrender? y/n [n]")
                 if action == "y":
-                    decisions = _is_correct(correct_play, "surrender", decisions)
+                    decisions = _is_correct(
+                        correct_play, "surrender", decisions
+                    )
                     hand.is_hittable = False
                     hand.surrender = True
                     player.stack += bet / 2
@@ -122,7 +134,9 @@ def play(args):
                         else:
                             action = input(f"Split {hand}? y/n [n]")
                         if action == "y":
-                            decisions = _is_correct(correct_play, "split", decisions)
+                            decisions = _is_correct(
+                                correct_play, "split", decisions
+                            )
                             new_hand = player.start_new_hand(bet)
                             split_card = hand.cards.pop()
                             new_hand.deal(split_card)
@@ -134,7 +148,9 @@ def play(args):
                                 handy.is_blackjack = False
                                 if handy.cards[0].label == "A":
                                     handy.is_hittable = False
-                            logging.debug(f"Player: {format_hand(player.hands)}")
+                            logging.debug(
+                                f"Player: {format_hand(player.hands)}"
+                            )
                         else:
                             hand.is_asked_to_split = True
                         if len(player.hands) == 4:
@@ -177,7 +193,9 @@ def play(args):
                         # Hand can't be played anymore after doubling and dealing
                         hand.is_hittable = False
                         hand_played = True
-                        decisions = _is_correct(correct_play, "double", decisions)
+                        decisions = _is_correct(
+                            correct_play, "double", decisions
+                        )
                     else:
                         if correct_play != "double":
                             decisions["correct"] += 1
@@ -230,7 +248,10 @@ def play(args):
             logging.debug(f"Dealer: {dealer}")
             if dealer.sum > 16:
                 hit_dealer = False
-            if player.hands[0].is_blackjack is True and dealer.is_blackjack is False:
+            if (
+                player.hands[0].is_blackjack is True
+                and dealer.is_blackjack is False
+            ):
                 hit_dealer = False
 
         # Payout
@@ -256,10 +277,14 @@ def play(args):
                 logging.debug(f"Player: {hand.sum}, you lose!")
 
             elif dealer.is_blackjack is True and hand.is_blackjack is False:
-                logging.debug(f"Dealer: BJ, Player: {hand.sum}, you lose to dealer BJ!")
+                logging.debug(
+                    f"Dealer: BJ, Player: {hand.sum}, you lose to dealer BJ!"
+                )
 
             elif hand.sum < dealer.sum <= 21:
-                logging.debug(f"Dealer: {dealer.sum}, Player: {hand.sum}, you lose!")
+                logging.debug(
+                    f"Dealer: {dealer.sum}, Player: {hand.sum}, you lose!"
+                )
 
             # Even hands
             elif dealer.is_blackjack is True and hand.is_blackjack is True:
@@ -290,7 +315,9 @@ def play(args):
                 player.stack += hand.bet * 2
 
             elif dealer.sum < hand.sum:
-                logging.debug(f"Dealer: {dealer.sum}, Player: {hand.sum}, you win!")
+                logging.debug(
+                    f"Dealer: {dealer.sum}, Player: {hand.sum}, you win!"
+                )
                 player.stack += hand.bet * 2
 
             else:
@@ -305,7 +332,9 @@ def play(args):
     profit = player.stack - args.stack
     average_bet_per_hand = player.invested / n_total_hands
     average_profit_per_hand = profit / n_total_hands
-    average_return_per_hand = (1 + average_profit_per_hand / average_bet_per_hand) * 100
+    average_return_per_hand = (
+        1 + average_profit_per_hand / average_bet_per_hand
+    ) * 100
     logging.info(f"Number of rounds played: {args.n_games}")
     logging.info(f"Number of hands played (including splits): {n_total_hands}")
     logging.info(f"Initial bet size: {args.bet} $")

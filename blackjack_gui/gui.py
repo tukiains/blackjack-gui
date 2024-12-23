@@ -1,12 +1,12 @@
+from argparse import Namespace
 import os
 import tkinter
 from dataclasses import dataclass
-from typing import Any, Union
+from typing import Any
 
 from PIL import Image, ImageTk
 
 from .lib import (
-    Card,
     Dealer,
     Hand,
     Player,
@@ -15,7 +15,7 @@ from .lib import (
     get_starting_hand,
 )
 
-from . import table_components
+from .table_components import TableComponents, get_image
 
 N_CARDS_MAX = 9
 IMG_PATH = f"{os.path.dirname(__file__)}/images/"
@@ -266,14 +266,18 @@ class Game:
                 self.player.stack += hand.bet * 3
                 result = "TRIPLE SEVEN"
                 self._display_chips(hand, triple=True)
-            elif hand.is_blackjack is True and self.dealer.is_blackjack is False:
+            elif (
+                hand.is_blackjack is True and self.dealer.is_blackjack is False
+            ):
                 self.player.stack += hand.bet * 2.5
                 result = "BLACKJACK"
                 self._display_chips(hand, bj=True)
             elif hand.is_blackjack is True and self.dealer.is_blackjack is True:
                 self.player.stack += hand.bet
                 result = "PUSH"
-            elif self.dealer.is_blackjack is True and hand.is_blackjack is False:
+            elif (
+                self.dealer.is_blackjack is True and hand.is_blackjack is False
+            ):
                 self.dealer_info("BLACKJACK")
                 result = "LOSE"
                 self._resolve_lost_hand(hand)
@@ -384,7 +388,7 @@ class Game:
                 return False
         return True
 
-    def get_first_unfinished_hand(self) -> Union[Hand, None]:
+    def get_first_unfinished_hand(self) -> Hand | None:
         """Finds first unfinished hand."""
         for hand in self.player.hands:
             if hand.is_finished is False:
@@ -413,7 +417,7 @@ class Game:
                 state=tkinter.DISABLED
             )
 
-    def hide_buttons(self, buttons: Union[tuple, None] = None):
+    def hide_buttons(self, buttons: tuple | None = None):
         """Hides menu buttons."""
         if buttons is None:
             for key, button in self.gui.menu.items():
@@ -424,7 +428,7 @@ class Game:
                 if button in self.gui.menu.keys():
                     self.gui.menu[button].configure(state=tkinter.DISABLED)
 
-    def show_buttons(self, buttons: Union[tuple, None] = None):
+    def show_buttons(self, buttons: tuple | None = None):
         """Shows menu buttons."""
         if buttons is None:
             for key, button in self.gui.menu.items():
@@ -535,7 +539,9 @@ class Game:
     def hide_chips(self, hand: Hand):
         """Hides chips of a hand."""
         for pos in range(4):
-            self.gui.chips[f"{str(hand.slot)}{str(pos)}"].configure(image="", text="")
+            self.gui.chips[f"{str(hand.slot)}{str(pos)}"].configure(
+                image="", text=""
+            )
 
     def hide_all_chips(self):
         """Hides chips of all hands."""
@@ -561,39 +567,12 @@ class Game:
         return Shoe(6)
 
 
-def get_image(
-    card: Union[Card, None] = None,
-    width: int = 100,
-    height: int = 130,
-    rotate: bool = False,
-):
-    if card is None:
-        filename = f"{IMG_PATH}/back.png"
-    else:
-        prefix = {
-            "A": "ace",
-            "J": "jack",
-            "Q": "queen",
-            "K": "king",
-        }
-        if card.label in prefix:
-            fix = prefix[card.label]
-        else:
-            fix = str(card.value)
-        filename = f"{IMG_PATH}/{fix}_of_{card.suit}.png"
-    image = Image.open(filename).resize((width, height), Image.Resampling.LANCZOS)
-    if rotate is True:
-        image = image.resize((height, height))
-        image = image.rotate(angle=90)
-        image = image.resize((height, width))
-        width, height = height, width
-    return ImageTk.PhotoImage(image), width, height
-
-
 def get_chip_image(color: str = "red"):
     size = 50
     filename = f"{IMG_PATH}/{color}-chip.png"
-    image = Image.open(filename).resize((size, size - 15), Image.Resampling.LANCZOS)
+    image = Image.open(filename).resize(
+        (size, size - 15), Image.Resampling.LANCZOS
+    )
     return ImageTk.PhotoImage(image)
 
 
@@ -603,155 +582,39 @@ def get_finger_image():
     return ImageTk.PhotoImage(image)
 
 
-def main(args):
-    bc = "#4e9572"
-    root = tkinter.Tk()
-    root.geometry("1200x700")
-    root.title("Blackjack")
-    root.configure(background=bc)
-
-    table_components.setup_canvas(root)
-
-    shoe_progress = table_components.get_shoe_status(root)
-    label_text = table_components.get_label(root)
-
-    # CORRECT PLAY %
-    accuracy_text = tkinter.StringVar(root)
-    accuracy = tkinter.Label(
-        root,
-        textvariable=accuracy_text,
-        font="Helvetica 10",
-        borderwidth=0,
-        background=bc,
-        fg="white",
-    )
-    accuracy.place(x=10, y=670)
-
-    # Hand info
-    x_slot = 250
-    padding_left = 20
-    info_text = {str(slot): tkinter.StringVar(root) for slot in range(4)}
-    info = {
-        str(slot): tkinter.Label(
-            root,
-            textvariable=info_text[str(slot)],
-            font="helvetica 11 bold",
-            borderwidth=0,
-            background=bc,
-            fg="white",
-        )
-        for slot in range(4)
-    }
-    for ind, i in enumerate(info.values()):
-        i.place(x=ind * x_slot + padding_left + 110, y=465)
-
-    # Dealer info
-    dealer_info = tkinter.Label(
-        root,
-        text="",
-        font="helvetica 11 bold",
-        borderwidth=0,
-        background=bc,
-        fg="white",
-    )
-    dealer_info.place(x=305, y=180)
-
-    # Dealer finger
-    finger = {
-        str(slot): tkinter.Label(root, borderwidth=0, background=bc)
-        for slot in range(4)
-    }
-    for ind, f in enumerate(finger.values()):
-        f.place(x=ind * x_slot + padding_left - 5, y=250)
-
-    # Player cards
-    slot_player = {
-        f"{str(slot)}{str(pos)}": tkinter.Label(root, borderwidth=0, background=bc)
-        for slot in range(4)
-        for pos in range(N_CARDS_MAX)
-    }
-    for frame in range(4):
-        for pos in range(N_CARDS_MAX):
-            slot_player[f"{str(frame)}{str(pos)}"].place(
-                x=frame * x_slot + pos * 30 + padding_left, y=350 - pos * 30
-            )
-
-    # Dealer cards
-    n_dealer_cards = 7
-    card_back_img, _, _ = get_image()
-    slot_dealer = {
-        f"{str(pos)}": tkinter.Label(root, borderwidth=0, background=bc)
-        for pos in range(n_dealer_cards)
-    }
-    for pos in range(2):
-        slot_dealer[str(pos)].configure(image=card_back_img)
-        slot_dealer[str(pos)].image = card_back_img  # type: ignore
-        slot_dealer[str(pos)].pack(side=tkinter.LEFT)
-    for pos, slot in enumerate(slot_dealer.values()):
-        slot.place(y=40, x=300 + pos * 105)
-
-    # Chips
-    chips = {
-        f"{str(slot)}{str(pos)}": tkinter.Label(root, borderwidth=0, background=bc)
-        for slot in range(4)
-        for pos in range(5)
-    }
-
-    for a_slot in range(4):
-        for pos in range(5):
-            padx, pady = 0, 0
-            if pos == 1:
-                padx = 50
-            elif pos == 2:
-                padx = -50
-            elif pos == 3:
-                padx = 100
-            elif pos == 4:
-                padx = 25
-                pady = 35
-            chips[f"{str(a_slot)}{str(pos)}"].place(
-                x=a_slot * x_slot + padding_left + padx + 20, y=500 + pady
-            )
-
-    # Insurance chip
-    insurance_chip = tkinter.Label(root, borderwidth=0, background=bc)
-    insurance_chip.place(x=450, y=400)
-
-    # Side panel
-    panel = tkinter.Label(
-        root,
-        width=200,
-        height=720,
-        background="lightgrey",
-        borderwidth=2,
-        relief="groove",
-    )
-    panel.place(x=1000, y=0)
-
-    def toggle_accuracy():
-        if fix_mistakes.get() == 1:
-            accuracy.place(x=10, y=670)
-        else:
-            accuracy.place_forget()
-
-    # Advisor button
-    fix_mistakes = tkinter.IntVar()
-    checkbox_container = tkinter.Checkbutton(
-        root,
-        text="Coach mode",
-        variable=fix_mistakes,
-        background="lightgrey",
-        command=toggle_accuracy,
-    )
-
-    checkbox_container.place(x=1040, y=600)
+def show_accuracy(
+    args: Namespace, accuracy: tkinter.Label, fix_mistakes: tkinter.IntVar
+):
     if args.subset is not None or args.cards is not None:
         fix_mistakes.set(1)
-
     if fix_mistakes.get() == 1:
         accuracy.place(x=10, y=670)
     else:
         accuracy.place_forget()
+
+
+def main(args: Namespace):
+    root = tkinter.Tk()
+    root.geometry("1200x700")
+    root.title("Blackjack")
+    background = "#4e9572"
+    root.configure(background=background)
+
+    components = TableComponents(root, background)
+    components.setup_canvas()
+    shoe_progress = components.get_shoe_status()
+    label_text = components.get_label()
+    accuracy, accuracy_text = components.get_accuracy()
+    dealer_info = components.get_dealer_info()
+    info, info_text = components.get_info()
+    finger = components.get_finger()
+    slot_player = components.get_player_slots(N_CARDS_MAX)
+    chips = components.get_chips()
+    slot_dealer = components.get_dealer_slot()
+    insurance_chip = components.get_insurance_chip()
+    components.set_side_panel()
+    fix_mistakes = components.get_advisor(accuracy)
+    show_accuracy(args, accuracy, fix_mistakes)
 
     # Buttons
     menu = {
@@ -794,18 +657,10 @@ def main(args):
     x_sidepanel = 1025
     for ind, button in enumerate(menu.values()):
         button.place(x=x_sidepanel, y=ind * 33 + 230)
-
     menu["deal"].place(x=x_sidepanel, y=500)
     menu["reset"].place(x=x_sidepanel, y=20)
 
-    # Bet selector
-    bet_label = tkinter.Label(text="Bet:", background="lightgray")
-    slider = tkinter.Scale(
-        root, from_=1, to=10, orient=tkinter.HORIZONTAL, background="lightgray"
-    )
-    slider.set(args.bet)
-    slider.place(x=x_sidepanel + 40, y=100)
-    bet_label.place(x=x_sidepanel, y=120)
+    slider = components.get_slider(x_sidepanel, args.bet)
 
     gui = Gui(
         root,

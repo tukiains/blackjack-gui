@@ -8,7 +8,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Blackjack", epilog="Play responsibly!"
     )
-    parser.add_argument("--no-gui", action="store_true", help="Open CLI version.")
+    parser.add_argument(
+        "--no-gui", action="store_true", help="Open CLI version."
+    )
     parser.add_argument("--ai", action="store_true", help="Computer play.")
     parser.add_argument(
         "--count",

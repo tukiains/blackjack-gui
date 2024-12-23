@@ -5,7 +5,17 @@ from typing import Any, Union
 
 from PIL import Image, ImageTk
 
-from .lib import Card, Dealer, Hand, Player, Shoe, get_correct_play, get_starting_hand
+from .lib import (
+    Card,
+    Dealer,
+    Hand,
+    Player,
+    Shoe,
+    get_correct_play,
+    get_starting_hand,
+)
+
+from . import table_components
 
 N_CARDS_MAX = 9
 IMG_PATH = f"{os.path.dirname(__file__)}/images/"
@@ -593,29 +603,6 @@ def get_finger_image():
     return ImageTk.PhotoImage(image)
 
 
-def round_polygon(canvas, x, y, sharpness, **kwargs):
-    sharpness = max(sharpness, 2)
-    ratio_multiplier = sharpness - 1
-    ratio_divider = sharpness
-    points = []
-    for i, _ in enumerate(x):
-        points.append(x[i])
-        points.append(y[i])
-        if i != (len(x) - 1):
-            points.append((ratio_multiplier * x[i] + x[i + 1]) / ratio_divider)
-            points.append((ratio_multiplier * y[i] + y[i + 1]) / ratio_divider)
-            points.append((ratio_multiplier * x[i + 1] + x[i]) / ratio_divider)
-            points.append((ratio_multiplier * y[i + 1] + y[i]) / ratio_divider)
-        else:
-            points.append((ratio_multiplier * x[i] + x[0]) / ratio_divider)
-            points.append((ratio_multiplier * y[i] + y[0]) / ratio_divider)
-            points.append((ratio_multiplier * x[0] + x[i]) / ratio_divider)
-            points.append((ratio_multiplier * y[0] + y[i]) / ratio_divider)
-            points.append(x[0])
-            points.append(y[0])
-    return canvas.create_polygon(points, **kwargs, smooth=tkinter.TRUE)
-
-
 def main(args):
     bc = "#4e9572"
     root = tkinter.Tk()
@@ -623,36 +610,10 @@ def main(args):
     root.title("Blackjack")
     root.configure(background=bc)
 
-    rect = tkinter.Canvas(
-        root, bg=bc, height=100, width=80, bd=0, highlightthickness=0, relief="ridge"
-    )
-    rect.place(x=525, y=485)
-    round_polygon(
-        rect, [5, 75, 75, 5], [5, 5, 90, 90], 10, width=4, outline="#bbb500", fill=bc
-    )
+    table_components.setup_canvas(root)
 
-    # Shoe status
-    shoe_status_container = tkinter.Label(root, borderwidth=0, background="white")
-    shoe_status_container.place(x=20, y=30, height=150, width=30)
-    shoe_progress = tkinter.Label(
-        shoe_status_container, background="black", borderwidth=0, anchor="e"
-    )
-    shoe_label = tkinter.Label(
-        root, text="Discard", font="12", borderwidth=0, background=bc, fg="white"
-    )
-    shoe_label.place(x=5, y=190)
-
-    # Stack info
-    label_text = tkinter.StringVar(root)
-    label = tkinter.Label(
-        root,
-        textvariable=label_text,
-        font="Helvetica 13 bold",
-        borderwidth=0,
-        background=bc,
-        fg="white",
-    )
-    label.place(x=430, y=670)
+    shoe_progress = table_components.get_shoe_status(root)
+    label_text = table_components.get_label(root)
 
     # CORRECT PLAY %
     accuracy_text = tkinter.StringVar(root)

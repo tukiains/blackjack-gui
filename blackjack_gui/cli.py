@@ -2,7 +2,14 @@ import logging
 import math
 from time import sleep
 
-from .lib import Dealer, Player, Shoe, format_hand, get_correct_play, get_starting_hand
+from .lib import (
+    Dealer,
+    Player,
+    Shoe,
+    format_hand,
+    get_correct_play,
+    get_starting_hand,
+)
 
 
 def _is_correct(correct_play: str, action: str, decisions: dict) -> dict:

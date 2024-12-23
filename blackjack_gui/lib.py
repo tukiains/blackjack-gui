@@ -1,6 +1,6 @@
 import random
 import tkinter
-from typing import List, Union
+from typing import List
 
 
 class Card:
@@ -10,7 +10,7 @@ class Card:
         self.value = self._get_value()
         self.visible = visible  # Only visible cards can be used for counting
 
-    def _get_value(self) -> Union[int, tuple]:
+    def _get_value(self) -> int | tuple:
         if self.label in ("2", "3", "4", "5", "6", "7", "8", "9", "10"):
             return int(self.label)
         if self.label in ("J", "Q", "K"):
@@ -74,7 +74,7 @@ class Shoe:
         random.shuffle(self.cards)
         self.n_cards = len(self.cards)
 
-    def draw(self, progress: Union[tkinter.Label, None] = None) -> Card:
+    def draw(self, progress: tkinter.Label | None = None) -> Card:
         """Draws a card from shoe."""
         if self.n_cards > 0:
             card = self.cards.pop(0)
@@ -132,8 +132,8 @@ class Hand:
 
     def deal(
         self,
-        source: Union[Shoe, Card],
-        progress: Union[tkinter.Label, None] = None,
+        source: Shoe | Card,
+        progress: tkinter.Label | None = None,
     ):
         if isinstance(source, Shoe):
             self.cards.append(source.draw(progress))
@@ -182,7 +182,7 @@ class Dealer:
         self.insurance_bet = 0
         self.even_money = False
 
-    def deal(self, shoe: Shoe, progress: Union[tkinter.Label, None] = None):
+    def deal(self, shoe: Shoe, progress: tkinter.Label | None = None):
         card = shoe.draw(progress)
         self.cards.append(card)
         self.sum, _ = evaluate_hand(self.cards)

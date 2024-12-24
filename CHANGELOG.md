@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0 – 2024-12-24
+
+- Allow adjustment of the bet after surrender
+- Show playing accuracy in coach mode
+- Update README
+- Refactor code
+
 ## 1.2.3 – 2024-12-20
 
 - Activate coach by default with --subset and --cards

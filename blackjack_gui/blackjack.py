@@ -8,9 +8,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Blackjack", epilog="Play responsibly!"
     )
-    parser.add_argument(
-        "--no-gui", action="store_true", help="Open CLI version."
-    )
+    parser.add_argument("--cli", action="store_true", help="Open CLI version.")
     parser.add_argument("--ai", action="store_true", help="Computer play.")
     parser.add_argument(
         "--count",
@@ -57,7 +55,7 @@ def main():
 
     args = parser.parse_args()
 
-    if args.no_gui:
+    if args.cli:
         logging.basicConfig(level=args.loglevel)
         cli.play(args)
     else:

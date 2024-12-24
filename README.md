@@ -29,7 +29,7 @@ $ pip3 install blackjack-gui
 ## Usage
 
 ```
-blackjack [-h] [--no-gui] [--ai] [--count] [--bet BET] [--stack STACK]
+blackjack [-h] [--cli] [--ai] [--count] [--bet BET] [--stack STACK]
     [--n-games N_GAMES] [--loglevel LOGLEVEL] [--cards CARDS]
     [--dealer-cards DEALER_CARDS] [--subset {hard,soft,pairs,hard/soft,soft/pairs}]
 
@@ -39,13 +39,13 @@ blackjack [-h] [--no-gui] [--ai] [--count] [--bet BET] [--stack STACK]
 
 | Name             | Default | Description                                                                                                                                                                              |
 | :--------------- | :------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--no-gui`       | `False` | Use command line version.                                                                                                                                                                |
-| `--ai`           | `False` | If True, computer plays instead of you. Only with `--no-gui`.                                                                                                                            |
-| `--count`        | `False` | If True, `ai` uses card counting. Only with `--no-gui` and `--ai`.                                                                                                                       |
+| `--cli`          | `False` | Use command line version.                                                                                                                                                                |
+| `--ai`           | `False` | If True, computer plays instead of you. Only with `--cli`.                                                                                                                               |
+| `--count`        | `False` | If True, `ai` uses card counting. Only with `--cli` and `--ai`.                                                                                                                          |
 | `--bet`          | 1       | Bet size (max 10).                                                                                                                                                                       |
 | `--stack`        | 1000    | Initial stack.                                                                                                                                                                           |
-| `--n-games`      | 10      | Number of rounds to be played. Only with `--no-gui`.                                                                                                                                     |
-| `--loglevel`     | `DEBUG` | Adjust amount of logging: DEBUG or INFO. Only with `--no-gui`.                                                                                                                           |
+| `--n-games`      | 10      | Number of rounds to be played. Only with `--cli`.                                                                                                                                        |
+| `--loglevel`     | `DEBUG` | Adjust amount of logging: DEBUG or INFO. Only with `--cli`.                                                                                                                              |
 | `--cards`        |         | Determine the first player cards, e.g. `--cards=A,8,K`. Shuffles the shoe after every hand. Multiple options (one will be randomly selected) can be defined like this: `"A,7;9,9;10,2"`. |
 | `--subset`       |         | Instead of `--cards`, practice with one of the subsets: `hard`, `soft`, `pairs`, `hard/soft`, or `soft/pairs`                                                                            |
 | `--dealer-cards` |         | Determine the first dealer cards. Useful for testing.                                                                                                                                    |
@@ -61,19 +61,19 @@ $ blackjack
 With the default settings, play 10 rounds of Blackjack with the command line interface:
 
 ```
-$ blackjack --no-gui
+$ blackjack --cli
 ```
 
 Let the computer play perfect basic game and use card counting technique to bring down the house:
 
 ```
-$ blackjack --no-gui --ai --count --n-games=100000 --loglevel=INFO
+$ blackjack --cli --ai --count --n-games=100000 --loglevel=INFO
 ```
 
 Simulate soft 19 starting hand only:
 
 ```
-$ blackjack --no-gui --ai --n-games=10000 --loglevel=INFO --cards=A,8
+$ blackjack --cli --ai --n-games=10000 --loglevel=INFO --cards=A,8
 ```
 
 Practise to play "hard" starting hands:

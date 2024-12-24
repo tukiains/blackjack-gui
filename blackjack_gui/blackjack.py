@@ -56,7 +56,7 @@ def main():
     args = parser.parse_args()
 
     if args.cli:
-        logging.basicConfig(level=args.loglevel)
+        logging.basicConfig(level=args.loglevel, format="%(message)s")
         cli.play(args)
     else:
         logging.basicConfig(level="WARNING")

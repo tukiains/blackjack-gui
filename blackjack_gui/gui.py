@@ -114,7 +114,12 @@ class Game:
         self.player.stack += self.bet / 2
         self.display_stack()
         self.player.update_count(self.dealer, self.shoe)
-        self.deal()
+        hand = self.get_hand_in_active_slot()
+        self.hide(hand)
+        self.display_info(hand, "SURRENDER")
+        self.hide_buttons()
+        self.show_buttons(("deal",))
+        self.gui.slider.configure(state=tkinter.NORMAL)
 
     def even_money(self):
         """Method for Even Money button"""

@@ -204,7 +204,7 @@ class TableComponents:
         insurance_chip.place(x=450, y=400)
         return insurance_chip
 
-    def get_advisor(self, accuracy: tkinter.Label) -> tkinter.IntVar:
+    def get_accuracy_checkbox(self, accuracy: tkinter.Label) -> tkinter.IntVar:
         def toggle_accuracy():
             if fix_mistakes.get() == 1:
                 accuracy.place(x=10, y=670)

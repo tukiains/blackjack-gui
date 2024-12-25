@@ -618,7 +618,7 @@ def main(args: Namespace):
     slot_dealer = components.get_dealer_slot()
     insurance_chip = components.get_insurance_chip()
     components.set_side_panel()
-    fix_mistakes = components.get_advisor(accuracy)
+    fix_mistakes = components.get_accuracy_checkbox(accuracy)
     show_accuracy(args, accuracy, fix_mistakes)
 
     # Buttons

@@ -1,7 +1,9 @@
+from dataclasses import dataclass
 import tkinter
 from PIL import Image, ImageTk
 import os
 from .lib import Card
+from argparse import Namespace
 
 
 IMG_PATH = f"{os.path.dirname(__file__)}/images/"
@@ -103,19 +105,6 @@ class TableComponents:
             f.place(x=ind * self._x_slot + self._padding_left - 5, y=250)
         return finger
 
-    def get_accuracy(self) -> tuple[tkinter.Label, tkinter.StringVar]:
-        accuracy_text = tkinter.StringVar(self.root)
-        accuracy = tkinter.Label(
-            self.root,
-            textvariable=accuracy_text,
-            font="Helvetica 10",
-            borderwidth=0,
-            background=self.background,
-            fg=FOREGROUND,
-        )
-        accuracy.place(x=10, y=670)
-        return accuracy, accuracy_text
-
     def get_info(
         self,
     ) -> tuple[dict[str, tkinter.Label], dict[str, tkinter.StringVar]]:
@@ -204,24 +193,6 @@ class TableComponents:
         insurance_chip.place(x=450, y=400)
         return insurance_chip
 
-    def get_accuracy_checkbox(self, accuracy: tkinter.Label) -> tkinter.IntVar:
-        def toggle_accuracy():
-            if fix_mistakes.get() == 1:
-                accuracy.place(x=10, y=670)
-            else:
-                accuracy.place_forget()
-
-        fix_mistakes = tkinter.IntVar()
-        checkbox_container = tkinter.Checkbutton(
-            self.root,
-            text="Coach mode",
-            variable=fix_mistakes,
-            background="lightgrey",
-            command=toggle_accuracy,
-        )
-        checkbox_container.place(x=1040, y=600)
-        return fix_mistakes
-
     def get_slider(self, x_sidepanel: int, bet: int) -> tkinter.Scale:
         bet_label = tkinter.Label(text="Bet:", background="lightgray")
         slider = tkinter.Scale(
@@ -235,6 +206,83 @@ class TableComponents:
         slider.place(x=x_sidepanel + 40, y=100)
         bet_label.place(x=x_sidepanel, y=120)
         return slider
+
+
+@dataclass
+class CheckConfig:
+    location: tuple[int, int]
+    txt_location: tuple[int, int]
+    txt: str
+
+
+class CheckButton:
+    def __init__(
+        self, root: tkinter.Tk, args: Namespace, background: str
+    ) -> None:
+        self.root = root
+        self.args = args
+        self.background = background
+
+    def fetch_accuracy(
+        self, checkbox_location: tuple[int, int], txt_location: tuple[int, int]
+    ) -> tuple[tkinter.StringVar, tkinter.IntVar]:
+        checkbox_conf = CheckConfig(
+            location=checkbox_location,
+            txt_location=txt_location,
+            txt="Coach mode",
+        )
+        accuracy, accuracy_text = self._get_table_infotext(txt_location)
+        checkbox = self._get_checkbox(accuracy, checkbox_conf)
+        self._show_accuracy(accuracy, checkbox, txt_location)
+        return accuracy_text, checkbox
+
+    def _get_table_infotext(
+        self, txt_location: tuple[int, int]
+    ) -> tuple[tkinter.Label, tkinter.StringVar]:
+        text_var = tkinter.StringVar(self.root)
+        label = tkinter.Label(
+            self.root,
+            textvariable=text_var,
+            font="Helvetica 10",
+            borderwidth=0,
+            background=self.background,
+            fg=FOREGROUND,
+        )
+        label.place(x=txt_location[0], y=txt_location[1])
+        return label, text_var
+
+    def _get_checkbox(
+        self, label: tkinter.Label, conf: CheckConfig
+    ) -> tkinter.IntVar:
+        def toggle():
+            if var.get() == 1:
+                label.place(x=conf.txt_location[0], y=conf.txt_location[1])
+            else:
+                label.place_forget()
+
+        var = tkinter.IntVar()
+        checkbox_container = tkinter.Checkbutton(
+            self.root,
+            text=conf.txt,
+            variable=var,
+            background="lightgrey",
+            command=toggle,
+        )
+        checkbox_container.place(x=conf.location[0], y=conf.location[1])
+        return var
+
+    def _show_accuracy(
+        self,
+        label: tkinter.Label,
+        var: tkinter.IntVar,
+        txt_location: tuple[int, int],
+    ) -> None:
+        if self.args.subset is not None or self.args.cards is not None:
+            var.set(1)
+        if var.get() == 1:
+            label.place(x=txt_location[0], y=txt_location[1])
+        else:
+            label.place_forget()
 
 
 def get_image(

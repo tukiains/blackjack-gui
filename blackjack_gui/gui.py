@@ -15,7 +15,7 @@ from .lib import (
     get_starting_hand,
 )
 
-from .table_components import TableComponents, get_image
+from .table_components import TableComponents, get_image, CheckButton
 
 N_CARDS_MAX = 9
 IMG_PATH = f"{os.path.dirname(__file__)}/images/"
@@ -587,17 +587,6 @@ def get_finger_image():
     return ImageTk.PhotoImage(image)
 
 
-def show_accuracy(
-    args: Namespace, accuracy: tkinter.Label, fix_mistakes: tkinter.IntVar
-):
-    if args.subset is not None or args.cards is not None:
-        fix_mistakes.set(1)
-    if fix_mistakes.get() == 1:
-        accuracy.place(x=10, y=670)
-    else:
-        accuracy.place_forget()
-
-
 def main(args: Namespace):
     root = tkinter.Tk()
     root.geometry("1200x700")
@@ -609,7 +598,6 @@ def main(args: Namespace):
     components.setup_canvas()
     shoe_progress = components.get_shoe_status()
     label_text = components.get_label()
-    accuracy, accuracy_text = components.get_accuracy()
     dealer_info = components.get_dealer_info()
     info, info_text = components.get_info()
     finger = components.get_finger()
@@ -618,8 +606,11 @@ def main(args: Namespace):
     slot_dealer = components.get_dealer_slot()
     insurance_chip = components.get_insurance_chip()
     components.set_side_panel()
-    fix_mistakes = components.get_accuracy_checkbox(accuracy)
-    show_accuracy(args, accuracy, fix_mistakes)
+
+    check_button = CheckButton(root, args, background)
+    accuracy_text, fix_mistakes = check_button.fetch_accuracy(
+        checkbox_location=(1040, 600), txt_location=(10, 670)
+    )
 
     # Buttons
     menu = {

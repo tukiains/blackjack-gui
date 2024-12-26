@@ -223,18 +223,29 @@ class CheckButton:
         self.args = args
         self.background = background
 
-    def fetch_accuracy(
-        self, checkbox_location: tuple[int, int], txt_location: tuple[int, int]
-    ) -> tuple[tkinter.StringVar, tkinter.IntVar]:
-        checkbox_conf = CheckConfig(
-            location=checkbox_location,
+    def fetch_count(self) -> tuple[tkinter.StringVar, tkinter.IntVar]:
+        txt_location = (10, 620)
+        conf = CheckConfig(
+            location=(1040, 625),
+            txt_location=txt_location,
+            txt="Show count",
+        )
+        label, text = self._get_table_infotext(txt_location)
+        checkbox = self._get_checkbutton(label, conf)
+        self._show_count(label, checkbox, txt_location)
+        return text, checkbox
+
+    def fetch_accuracy(self) -> tuple[tkinter.StringVar, tkinter.IntVar]:
+        txt_location = (10, 670)
+        conf = CheckConfig(
+            location=(1040, 600),
             txt_location=txt_location,
             txt="Coach mode",
         )
-        accuracy, accuracy_text = self._get_table_infotext(txt_location)
-        checkbox = self._get_checkbox(accuracy, checkbox_conf)
-        self._show_accuracy(accuracy, checkbox, txt_location)
-        return accuracy_text, checkbox
+        label, text = self._get_table_infotext(txt_location)
+        checkbox = self._get_checkbutton(label, conf)
+        self._show_accuracy(label, checkbox, txt_location)
+        return text, checkbox
 
     def _get_table_infotext(
         self, txt_location: tuple[int, int]
@@ -251,7 +262,7 @@ class CheckButton:
         label.place(x=txt_location[0], y=txt_location[1])
         return label, text_var
 
-    def _get_checkbox(
+    def _get_checkbutton(
         self, label: tkinter.Label, conf: CheckConfig
     ) -> tkinter.IntVar:
         def toggle():
@@ -261,17 +272,30 @@ class CheckButton:
                 label.place_forget()
 
         var = tkinter.IntVar()
-        checkbox_container = tkinter.Checkbutton(
+        checkbutton = tkinter.Checkbutton(
             self.root,
             text=conf.txt,
             variable=var,
             background="lightgrey",
             command=toggle,
         )
-        checkbox_container.place(x=conf.location[0], y=conf.location[1])
+        checkbutton.place(x=conf.location[0], y=conf.location[1])
         return var
 
     def _show_accuracy(
+        self,
+        label: tkinter.Label,
+        var: tkinter.IntVar,
+        txt_location: tuple[int, int],
+    ) -> None:
+        if self.args.subset is not None or self.args.cards is not None:
+            var.set(1)
+        if var.get() == 1:
+            label.place(x=txt_location[0], y=txt_location[1])
+        else:
+            label.place_forget()
+
+    def _show_count(
         self,
         label: tkinter.Label,
         var: tkinter.IntVar,

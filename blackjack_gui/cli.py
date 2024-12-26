@@ -60,6 +60,8 @@ def play(args):
             shoe.arrange(cards)
         hand.deal(shoe)
         hand.deal(shoe)
+        player.update_counts(hand, shoe)
+        player.update_counts(dealer.cards, shoe)
         logging.debug(f"Player: {hand}")
 
         # Insurance bet
@@ -162,6 +164,7 @@ def play(args):
                         and hand.is_asked_to_split is False
                     ):
                         done_splitting = False
+                    player.update_counts(hand, shoe)
                 if len(player.hands) == 4:
                     done_splitting = True
 
@@ -190,6 +193,7 @@ def play(args):
                         hand.bet += bet
                         player.invested += bet
                         hand.deal(shoe)
+                        player.update_counts(hand, shoe)
                         # Hand can't be played anymore after doubling and dealing
                         hand.is_hittable = False
                         hand_played = True
@@ -222,6 +226,7 @@ def play(args):
                         break
                     decisions = _is_correct(correct_play, "hit", decisions)
                     hand.deal(shoe)
+                    player.update_counts(hand, shoe)
                 else:
                     hand_played = True
                 logging.debug(f"Player: {hand}")
@@ -245,6 +250,7 @@ def play(args):
                 hit_dealer = True
         while hit_dealer is True:
             dealer.deal(shoe)
+            player.update_counts(dealer.cards, shoe)
             logging.debug(f"Dealer: {dealer}")
             if dealer.sum > 16:
                 hit_dealer = False
@@ -324,7 +330,6 @@ def play(args):
                 raise ValueError("Unknown result")
 
         n_total_hands += len(player.hands)
-        player.update_count(dealer, shoe)
         if args.ai is False:
             sleep(1)
         logging.debug("----------------")

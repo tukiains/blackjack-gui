@@ -4,9 +4,11 @@ import tkinter
 from dataclasses import dataclass
 from typing import Any
 
+
 from PIL import Image, ImageTk
 
 from .lib import (
+    Card,
     Dealer,
     Hand,
     Player,
@@ -38,6 +40,8 @@ class Gui:
     insurance_chip: tkinter.Label
     dealer_info: tkinter.Label
     accuracy_text: tkinter.StringVar
+    show_count: tkinter.IntVar
+    count_text: tkinter.StringVar
 
 
 class Game:
@@ -78,6 +82,7 @@ class Game:
         self.dealer.deal(self.shoe, self.gui.shoe_progress)
         self.dealer.cards[1].visible = False
         self.display_dealer_cards()
+        self._handle_counts(self.dealer.cards, self.shoe)
         if self.args.cards is not None:
             self.shoe.arrange(self.args.cards, randomize=True)
         elif self.args.subset is not None:
@@ -85,6 +90,7 @@ class Game:
             self.shoe.arrange(cards)
         hand.deal(self.shoe, self.gui.shoe_progress)
         hand.deal(self.shoe, self.gui.shoe_progress)
+        self._handle_counts(hand, self.shoe)
         self.show_buttons()
         self.hide_buttons(("deal",))
         self.show()
@@ -113,8 +119,8 @@ class Game:
                 return
         self.player.stack += self.bet / 2
         self.display_stack()
-        self.player.update_count(self.dealer, self.shoe)
         hand = self.get_hand_in_active_slot()
+        self._handle_counts(hand, self.shoe)
         self.hide(hand)
         self.display_info(hand, "SURRENDER")
         self.hide_buttons()
@@ -145,6 +151,7 @@ class Game:
         self.display_chip(hand, 1)
         hand.is_finished = True
         self.display_player_cards(hand, rotate_last=True)
+        self._handle_counts(hand, self.shoe)
         if hand.sum > 21:
             self.hide(hand)
             self.hide_chips(hand)
@@ -177,6 +184,7 @@ class Game:
         self.hide_buttons(("surrender", "double"))
         hand.deal(self.shoe, self.gui.shoe_progress)
         self.display_player_cards(hand)
+        self._handle_counts(hand, self.shoe)
         if hand.is_over is True:
             self.hide(hand)
             self.hide_chips(hand)
@@ -235,6 +243,7 @@ class Game:
         for hand in self.player.hands:
             rotate = hand.cards[0].label == "A" and hand.cards[1].label != "A"
             self.display_player_cards(hand, rotate_last=rotate)
+            self._handle_counts(hand, self.shoe)
         self.resolve_next_hand()
 
     def resolve_next_hand(self):
@@ -249,6 +258,7 @@ class Game:
             if self.is_all_over() is False or self.dealer.insurance_bet > 0:
                 self.display_dealer_cards(hide_second=False)
                 self.dealer.cards[1].visible = True
+                self._handle_counts(self.dealer.cards, self.shoe)
                 if self.dealer.is_blackjack and self.dealer.insurance_bet > 0:
                     self.display_insurance_chip(triple=True)
                     self.player.stack += self.dealer.insurance_bet * 3
@@ -257,6 +267,7 @@ class Game:
                 while self.dealer.is_finished is False:
                     self.dealer.deal(self.shoe, self.gui.shoe_progress)
                     self.display_dealer_cards()
+                    self._handle_counts(self.dealer.cards, self.shoe)
             self.payout()
 
     def payout(self):
@@ -310,10 +321,17 @@ class Game:
             else:
                 raise ValueError
             self.display_info(hand, result)
+            self._handle_counts(hand, self.shoe)
         self.hide_buttons()
         self.show_buttons(("deal",))
         self.gui.slider.configure(state=tkinter.NORMAL)
-        self.player.update_count(self.dealer, self.shoe)
+
+    def _handle_counts(self, hand: Hand | list[Card], shoe: Shoe):
+        self.player.update_counts(hand, shoe)
+        true_count = int(self.player.true_count)
+        self.gui.count_text.set(
+            f"Running count: {self.player.running_count}\nTrue count: {true_count}"
+        )
 
     def _resolve_lost_hand(self, hand: Hand):
         self.hide_chips(hand)
@@ -324,6 +342,7 @@ class Game:
         """Resolves player blackjack."""
         self.display_dealer_cards(hide_second=False)
         self.dealer.cards[1].visible = True
+        self._handle_counts(self.dealer.cards, self.shoe)
         self.payout()
 
     def enable_correct_buttons(self, hand: Hand):
@@ -347,8 +366,7 @@ class Game:
             self.hide_buttons(("hit",))
 
     def check_play(self, hand: Hand, play: str) -> bool:
-        """Verifies player decision. It won't complain if you stay when you should take
-        insurance because card counting is not expected, just correct basic play."""
+        """Verifies player decision. Ignores deviations."""
         correct_play = get_correct_play(
             hand, self.dealer.cards[0], len(self.player.hands)
         )
@@ -608,9 +626,8 @@ def main(args: Namespace):
     components.set_side_panel()
 
     check_button = CheckButton(root, args, background)
-    accuracy_text, fix_mistakes = check_button.fetch_accuracy(
-        checkbox_location=(1040, 600), txt_location=(10, 670)
-    )
+    accuracy_text, fix_mistakes = check_button.fetch_accuracy()
+    count_text, fix_count = check_button.fetch_count()
 
     # Buttons
     menu = {
@@ -674,6 +691,8 @@ def main(args: Namespace):
         insurance_chip,
         dealer_info,
         accuracy_text,
+        fix_count,
+        count_text,
     )
 
     dealer = Dealer()

@@ -8,7 +8,8 @@ class Card:
         self.label = label
         self.suit = suit
         self.value = self._get_value()
-        self.visible = visible  # Only visible cards can be used for counting
+        self.visible = visible
+        self.counted = False
 
     def _get_value(self) -> int | tuple:
         if self.label in ("2", "3", "4", "5", "6", "7", "8", "9", "10"):
@@ -237,19 +238,24 @@ class Player:
         self.running_count = 0
         self.true_count = 0.0
 
-    def update_count(self, dealer: Dealer, shoe: Shoe):
-        hands = self.hands.copy()
-        hands.append(dealer)  # type: ignore
-        for hand in hands:
-            for card in hand.cards:
-                if card.visible is False:
-                    continue
-                if card.label == "A" or card.value == 10:
-                    self.running_count -= 1
-                elif isinstance(card.value, int) and card.value <= 6:
-                    self.running_count += 1
+    def update_true_count(self, shoe: Shoe):
         n_decs_left = shoe.n_cards / 52
         self.true_count = self.running_count / n_decs_left
+
+    def update_running_count(self, card: Card):
+        if card.visible is False or card.counted:
+            return
+        if card.label == "A" or card.value == 10:
+            self.running_count -= 1
+        elif isinstance(card.value, int) and card.value <= 6:
+            self.running_count += 1
+        card.counted = True
+
+    def update_counts(self, hand: Hand | list[Card], shoe: Shoe):
+        cards = hand.cards if isinstance(hand, Hand) else hand
+        for card in cards:
+            self.update_running_count(card)
+        self.update_true_count(shoe)
 
 
 def evaluate_hand(cards: list) -> tuple:

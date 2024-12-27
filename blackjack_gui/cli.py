@@ -102,7 +102,7 @@ def play(args):
             # Surrender can be done only here. And not against dealer's Ace.
             if dealer.cards[0].label != "A":
                 correct_play = get_correct_play(
-                    hand, dealer.cards[0], len(player.hands)
+                    hand, dealer.cards[0], len(player.hands), args.rules
                 )
                 if args.ai is True:
                     action = "y" if correct_play == "surrender" else "n"
@@ -129,7 +129,7 @@ def play(args):
                         and hand.is_asked_to_split is False
                     ):
                         correct_play = get_correct_play(
-                            hand, dealer.cards[0], len(player.hands)
+                            hand, dealer.cards[0], len(player.hands), args.rules
                         )
                         if args.ai is True:
                             action = "y" if correct_play == "split" else "n"
@@ -179,7 +179,7 @@ def play(args):
                 if len(hand.cards) == 2 and hand.is_hittable is True:
                     # Doubling
                     correct_play = get_correct_play(
-                        hand, dealer.cards[0], len(player.hands)
+                        hand, dealer.cards[0], len(player.hands), args.rules
                     )
                     if hand.sum == 21:
                         hand.played = True
@@ -211,7 +211,7 @@ def play(args):
                 if hand.is_hittable is True:
                     # Hit or stay
                     correct_play = get_correct_play(
-                        hand, dealer.cards[0], len(player.hands)
+                        hand, dealer.cards[0], len(player.hands), args.rules
                     )
                     if args.ai is True:
                         if correct_play in ("hit", "surrender"):

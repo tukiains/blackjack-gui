@@ -2,6 +2,7 @@ import argparse
 import logging
 
 from blackjack_gui import cli, gui
+from blackjack_gui.lib import get_rules
 
 
 def main():
@@ -52,8 +53,17 @@ def main():
         help="Subset of hands to be played. Default is all.",
         default=None,
     )
+    parser.add_argument(
+        "--rules",
+        type=str,
+        choices=["US", "Helsinki"],
+        help="Rules to be used. US = H17, peek, no surrender. Helsinki = S17, no peek, surrender.",
+        default="Helsinki",
+    )
 
     args = parser.parse_args()
+
+    args.rules = get_rules(args.rules)
 
     if args.cli:
         logging.basicConfig(level=args.loglevel, format="%(message)s")

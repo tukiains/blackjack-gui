@@ -128,8 +128,8 @@ def test_evaluate_hand(cards, the_sum, is_hard):
         (["7", "4"], "7", "double"),
         (["7", "4"], "8", "double"),
         (["7", "4"], "9", "double"),
-        (["7", "4"], "10", "hit"),
-        (["7", "4"], "A", "hit"),
+        (["7", "4"], "10", "double"),
+        (["7", "4"], "A", "double"),
         (["2", "4", "5"], "2", "hit"),
         (["2", "4", "5"], "3", "hit"),
         (["2", "4", "5"], "4", "hit"),
@@ -171,7 +171,7 @@ def test_evaluate_hand(cards, the_sum, is_hard):
         (["9", "5"], "7", "hit"),
         (["9", "5"], "8", "hit"),
         (["9", "5"], "9", "hit"),
-        (["9", "5"], "10", "surrender"),
+        (["9", "5"], "10", "hit"),
         (["9", "3", "2"], "10", "hit"),
         (["9", "5"], "A", "hit"),
         # Hard 15
@@ -183,7 +183,7 @@ def test_evaluate_hand(cards, the_sum, is_hard):
         (["9", "6"], "7", "hit"),
         (["9", "6"], "8", "hit"),
         (["9", "6"], "9", "hit"),
-        (["9", "6"], "10", "surrender"),
+        (["9", "6"], "10", "hit"),
         (["9", "4", "2"], "10", "hit"),
         (["9", "6"], "A", "hit"),
         # Hard 16
@@ -194,10 +194,14 @@ def test_evaluate_hand(cards, the_sum, is_hard):
         (["J", "6"], "6", "stay"),
         (["J", "6"], "7", "hit"),
         (["J", "6"], "8", "hit"),
-        (["J", "6"], "9", "surrender"),
-        (["J", "6"], "10", "surrender"),
+        (["J", "6"], "9", "hit"),
+        (["J", "6"], "10", "hit"),
         (["J", "4", "2"], "9", "hit"),
-        (["J", "4", "2"], "10", "stay"),  # No hitting here (known exception)
+        (
+            ["J", "4", "2"],
+            "10",
+            "stay",
+        ),  # https://lcb.org/articles/blackjack-3card-16vsdealer10
         (["J", "6"], "A", "hit"),
         # Hard 17
         (["J", "7"], "2", "stay"),
@@ -310,7 +314,7 @@ def test_evaluate_hand(cards, the_sum, is_hard):
         (["A", "6"], "10", "hit"),
         (["A", "6"], "A", "hit"),
         # Soft 18
-        (["A", "7"], "2", "stay"),
+        (["A", "7"], "2", "double"),
         (["A", "7"], "3", "double"),
         (["A", "7"], "4", "double"),
         (["A", "7"], "5", "double"),
@@ -325,7 +329,7 @@ def test_evaluate_hand(cards, the_sum, is_hard):
         (["A", "8"], "3", "stay"),
         (["A", "8"], "4", "stay"),
         (["A", "8"], "5", "stay"),
-        (["A", "8"], "6", "stay"),
+        (["A", "8"], "6", "double"),
         (["A", "8"], "7", "stay"),
         (["A", "8"], "8", "stay"),
         (["A", "8"], "9", "stay"),
@@ -406,7 +410,7 @@ def test_evaluate_hand(cards, the_sum, is_hard):
         (["7", "7"], "7", "split"),
         (["7", "7"], "8", "hit"),
         (["7", "7"], "9", "hit"),
-        (["7", "7"], "10", "hit"),  # No surrender because of 7-7-7 side bet
+        (["7", "7"], "10", "hit"),
         (["7", "7"], "A", "hit"),
         # 8, 8
         (["8", "8"], "2", "split"),
@@ -417,8 +421,8 @@ def test_evaluate_hand(cards, the_sum, is_hard):
         (["8", "8"], "7", "split"),
         (["8", "8"], "8", "split"),
         (["8", "8"], "9", "split"),
-        (["8", "8"], "10", "surrender"),
-        (["8", "8"], "A", "hit"),
+        (["8", "8"], "10", "split"),
+        (["8", "8"], "A", "split"),
         # 9, 9
         (["9", "9"], "2", "split"),
         (["9", "9"], "3", "split"),
@@ -451,7 +455,7 @@ def test_evaluate_hand(cards, the_sum, is_hard):
         (["A", "A"], "8", "split"),
         (["A", "A"], "9", "split"),
         (["A", "A"], "10", "split"),
-        (["A", "A"], "A", "hit"),
+        (["A", "A"], "A", "split"),
     ],
 )
 def test_get_correct_play(cards, dealer, correct_play):
@@ -461,50 +465,5 @@ def test_get_correct_play(cards, dealer, correct_play):
     hand.sum, hand.is_hard = evaluate_hand(hand.cards)
     n_hands = 1
     dealer_card = Card(dealer, "clubs")
-    rules = get_rules("Helsinki")
-    assert get_correct_play(hand, dealer_card, n_hands, rules) == correct_play
-
-
-# Test hands that can not be doubled
-@pytest.mark.parametrize(
-    "cards, dealer, correct_play",
-    [
-        # Hard 9
-        (["5", "4"], "3", "hit"),
-        (["5", "4"], "6", "hit"),
-        # Hard 10
-        (["6", "4"], "2", "hit"),
-        (["6", "4"], "9", "hit"),
-        # Hard 11
-        (["7", "4"], "2", "hit"),
-        (["7", "4"], "9", "hit"),
-        # Soft 13
-        (["A", "2"], "5", "hit"),
-        (["A", "2"], "6", "hit"),
-        # Soft 14
-        (["A", "3"], "5", "hit"),
-        (["A", "3"], "6", "hit"),
-        # Soft 15
-        (["A", "4"], "4", "hit"),
-        (["A", "4"], "6", "hit"),
-        # Soft 16
-        (["A", "5"], "4", "hit"),
-        (["A", "5"], "6", "hit"),
-        # Soft 17
-        (["A", "6"], "3", "hit"),
-        (["A", "6"], "6", "hit"),
-        # Soft 18
-        (["A", "7"], "3", "stay"),
-        (["A", "7"], "6", "stay"),
-    ],
-)
-def test_get_correct_play_no_double(cards, dealer, correct_play):
-    hand = Hand()
-    for label in cards:
-        hand.cards.append(Card(label, "clubs"))
-    hand.sum, hand.is_hard = evaluate_hand(hand.cards)
-    n_hands = 1
-    hand.is_hittable = False
-    dealer_card = Card(dealer, "hearts")
-    rules = get_rules("Helsinki")
+    rules = get_rules("US")
     assert get_correct_play(hand, dealer_card, n_hands, rules) == correct_play

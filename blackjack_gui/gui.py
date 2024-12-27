@@ -368,7 +368,7 @@ class Game:
     def check_play(self, hand: Hand, play: str) -> bool:
         """Verifies player decision. Ignores deviations."""
         correct_play = get_correct_play(
-            hand, self.dealer.cards[0], len(self.player.hands)
+            hand, self.dealer.cards[0], len(self.player.hands), self.args.rules
         )
         if correct_play != play:
             self.display_info(hand, "Try again!")

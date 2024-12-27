@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0 – 2024-12-27
+
+- Show counts
+- Simplify options
+- Improve logging
+
 ## 1.3.0 – 2024-12-24
 
 - Allow adjustment of the bet after surrender

@@ -318,17 +318,14 @@ def get_image(
     if card is None:
         filename = f"{IMG_PATH}/back.png"
     else:
-        prefix = {
+        mapping = {
             "A": "ace",
             "J": "jack",
             "Q": "queen",
             "K": "king",
         }
-        if card.label in prefix:
-            fix = prefix[card.label]
-        else:
-            fix = str(card.value)
-        filename = f"{IMG_PATH}/{fix}_of_{card.suit}.png"
+        prefix = mapping.get(card.label, card.value)
+        filename = f"{IMG_PATH}/{prefix}_of_{card.suit}.png"
     image = Image.open(filename).resize(
         (width, height), Image.Resampling.LANCZOS
     )

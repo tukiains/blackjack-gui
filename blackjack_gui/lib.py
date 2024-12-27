@@ -1,6 +1,7 @@
+from dataclasses import dataclass
 import random
 import tkinter
-from typing import List
+from typing import List, Literal
 
 
 class Card:
@@ -285,7 +286,40 @@ def evaluate_hand(cards: list) -> tuple:
     return the_sum, is_hard
 
 
-def get_correct_play(hand: Hand, dealer_card: Card, n_hands: int) -> str:
+@dataclass
+class Rules:
+    game_type: Literal["s17", "h17"]
+    surrender: bool  # with s17 it's early (European), with h17 it's late (US)
+    peek: bool
+    double_after_split: bool = True
+    triple_seven: bool = False
+
+
+def get_rules(region: Literal["US", "Europe", "Helsinki"]):
+    if region == "US":
+        return Rules(
+            game_type="h17",
+            surrender=False,
+            peek=True,
+        )
+    if region == "Europe":
+        return Rules(
+            game_type="s17",
+            surrender=False,
+            peek=False,
+        )
+    if region == "Helsinki":
+        return Rules(
+            game_type="s17",
+            surrender=True,
+            peek=False,
+            triple_seven=True,
+        )
+
+
+def get_correct_play(
+    hand: Hand, dealer_card: Card, n_hands: int, rules: Rules
+) -> str:
     cards = hand.cards
     n_cards = len(cards)
     split = "split"

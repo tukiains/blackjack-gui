@@ -166,14 +166,15 @@ class Hand:
 
 
 class Dealer:
-    def __init__(self):
-        self.cards = []
+    def __init__(self, game_type: Literal["h17", "s17"]):
+        self.cards: list[Card] = []
         self.sum = 0.0
         self.is_blackjack = False
         self.is_finished = False
         self.is_over = False
         self.insurance_bet = 0.0
         self.even_money = False
+        self.game_type = game_type
 
     def init_hand(self):
         self.cards = []
@@ -188,7 +189,10 @@ class Dealer:
         card = shoe.draw(progress)
         self.cards.append(card)
         self.sum, _ = evaluate_hand(self.cards)
-        if self.sum > 16:
+        labels = [c.label for c in self.cards]
+        if self.sum == 17 and self.game_type == "h17" and "A" in labels:
+            pass
+        elif self.sum > 16:
             self.is_finished = True
         if self.sum == 21 and len(self.cards) == 2:
             self.is_blackjack = True

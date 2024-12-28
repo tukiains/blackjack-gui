@@ -24,7 +24,7 @@ def play(args):
     decisions = {"correct": 0, "incorrect": 0}
     n_decs = 6
     n_total_hands = 0
-    dealer = Dealer()
+    dealer = Dealer(args.rules.game_type)
     player = Player()
     player.buy_in(args.stack)
     shoe = Shoe(n_decs)

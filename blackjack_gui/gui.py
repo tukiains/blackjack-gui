@@ -145,7 +145,7 @@ class Game:
         if self.gui.fix_mistakes.get() == 1:
             if self.check_play(hand, "double") is False:
                 return
-        if self.check_dealer_peek():
+        if self._check_dealer_peek():
             return
         self.hide_buttons(("surrender",))
         self.player.stack -= self.bet
@@ -161,14 +161,6 @@ class Game:
             self.hide_chips(hand)
         self.clean_info()
         self.resolve_next_hand()
-
-    def check_dealer_peek(self) -> bool:
-        if self.args.rules.peek and self.dealer.is_blackjack:
-            self.display_dealer_cards(hide_second=False)
-            self.dealer.cards[1].visible = True
-            self.payout()
-            return True
-        return False
 
     def reset(self):
         """Method for Reset button."""
@@ -193,7 +185,7 @@ class Game:
         if self.gui.fix_mistakes.get() == 1:
             if self.check_play(hand, "hit") is False:
                 return
-        if self.check_dealer_peek():
+        if self._check_dealer_peek():
             return
         self.hide_buttons(("surrender", "double"))
         hand.deal(self.shoe, self.gui.shoe_progress)
@@ -361,6 +353,15 @@ class Game:
         self.hide_chips(hand)
         self.hide(hand)
         hand.bet = 0
+
+    def _check_dealer_peek(self) -> bool:
+        """Checks if Dealer has BJ before any hands are played."""
+        if self.args.rules.peek and self.dealer.is_blackjack:
+            self.display_dealer_cards(hide_second=False)
+            self.dealer.cards[1].visible = True
+            self.payout()
+            return True
+        return False
 
     def resolve_blackjack(self):
         """Resolves player blackjack."""
@@ -632,7 +633,12 @@ def get_finger_image():
 def main(args: Namespace):
     root = tkinter.Tk()
     root.geometry("1200x700")
-    root.title("Blackjack")
+    rules = (
+        "H17, DAS, No Surrender"
+        if args.rules.region == "US"
+        else "S17, DAS, Early Surrender"
+    )
+    root.title(f"Blackjack ({rules})")
     background = "#4e9572"
     root.configure(background=background)
 
@@ -719,7 +725,7 @@ def main(args: Namespace):
         count_text,
     )
 
-    dealer = Dealer()
+    dealer = Dealer(args.rules.game_type)
     player = Player(stack=args.stack)
     game = Game(player, dealer, gui, args)
     game.reset()

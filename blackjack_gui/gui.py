@@ -279,6 +279,7 @@ class Game:
                     self.dealer.deal(self.shoe, self.gui.shoe_progress)
                     self.display_dealer_cards()
                     self._handle_counts(self.dealer.cards, self.shoe)
+            self._handle_counts(self.dealer.cards, self.shoe)
             self.payout()
 
     def payout(self):
@@ -338,6 +339,7 @@ class Game:
                 raise ValueError
             self.display_info(hand, result)
             self._handle_counts(hand, self.shoe)
+        self._handle_counts(self.dealer.cards, self.shoe)
         self.hide_buttons()
         self.show_buttons(("deal",))
         self.gui.slider.configure(state=tkinter.NORMAL)
@@ -367,7 +369,6 @@ class Game:
         """Resolves player blackjack."""
         self.display_dealer_cards(hide_second=False)
         self.dealer.cards[1].visible = True
-        self._handle_counts(self.dealer.cards, self.shoe)
         self.payout()
 
     def enable_correct_buttons(self, hand: Hand):
@@ -638,7 +639,7 @@ def main(args: Namespace):
         if args.rules.region == "US"
         else "S17, DAS, Early Surrender"
     )
-    root.title(f"Blackjack ({rules})")
+    root.title(f"Blackjack {args.rules.region} ({rules})")
     background = "#4e9572"
     root.configure(background=background)
 

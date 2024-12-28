@@ -99,6 +99,8 @@ class Game:
         self.enable_correct_buttons(hand)
         self.display_chip(hand, 0)
         self.display_player_cards(hand)
+        if not self.args.rules.surrender:
+            self.hide_buttons(("surrender",))
         if self.dealer.cards[0].label != "A":
             self.hide_buttons(("insurance", "even-money"))
             if hand.is_blackjack:
@@ -143,6 +145,8 @@ class Game:
         if self.gui.fix_mistakes.get() == 1:
             if self.check_play(hand, "double") is False:
                 return
+        if self.check_dealer_peek():
+            return
         self.hide_buttons(("surrender",))
         self.player.stack -= self.bet
         self.display_stack()
@@ -157,6 +161,14 @@ class Game:
             self.hide_chips(hand)
         self.clean_info()
         self.resolve_next_hand()
+
+    def check_dealer_peek(self) -> bool:
+        if self.args.rules.peek and self.dealer.is_blackjack:
+            self.display_dealer_cards(hide_second=False)
+            self.dealer.cards[1].visible = True
+            self.payout()
+            return True
+        return False
 
     def reset(self):
         """Method for Reset button."""
@@ -181,6 +193,8 @@ class Game:
         if self.gui.fix_mistakes.get() == 1:
             if self.check_play(hand, "hit") is False:
                 return
+        if self.check_dealer_peek():
+            return
         self.hide_buttons(("surrender", "double"))
         hand.deal(self.shoe, self.gui.shoe_progress)
         self.display_player_cards(hand)
@@ -214,6 +228,11 @@ class Game:
         self.player.stack -= self.dealer.insurance_bet
         self.display_stack()
         self.hide_buttons(("insurance",))
+        if self.args.rules.peek:
+            if self.dealer.cards[1].value == 10:
+                self.display_dealer_cards(hide_second=False)
+                self.dealer.cards[1].visible = True
+                self.payout()
 
     def split(self):
         """Method for Split button."""
@@ -274,7 +293,12 @@ class Game:
         """Handles payout of all hands."""
         self.hide_fingers()
         for hand in self.player.hands:
-            if self.dealer.even_money is True:
+            if self.dealer.insurance_bet > 0 and self.dealer.is_blackjack:
+                self.player.stack += self.dealer.insurance_bet * 3
+                self.display_insurance_chip(triple=True)
+                self.hide_all_chips()
+                result = "INSURANCE"
+            elif self.dealer.even_money is True:
                 self.player.stack += hand.bet * 2
                 result = "EVEN MONEY"
                 self._display_chips(hand)

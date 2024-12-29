@@ -93,7 +93,6 @@ class Shoe:
 
     def arrange(self, cards: list, randomize: bool = False):
         """Arranges shoe so that next cards are the requested ones."""
-
         if ";" in str(cards):
             # Choose one hand randomly from input like --cards="A,7;7,7;10,10"
             options = [
@@ -103,8 +102,9 @@ class Shoe:
             cards = random.choice(options)
 
         labels = [card.label for card in self.cards]
-        if randomize:
-            random.shuffle(cards)
+        if randomize and len(cards) > 1:
+            # randomize the first two cards
+            cards = random.sample(cards[0:2], 2) + cards[2:]
         for ind, card in enumerate(cards):
             indices = [i for i, x in enumerate(labels[ind:]) if x == str(card)]
             shoe_ind = random.choice(indices) + ind

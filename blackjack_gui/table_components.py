@@ -258,6 +258,7 @@ class CheckButton:
             borderwidth=0,
             background=self.background,
             fg=FOREGROUND,
+            justify="left",
         )
         label.place(x=txt_location[0], y=txt_location[1])
         return label, text_var

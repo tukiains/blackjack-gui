@@ -56,9 +56,12 @@ class Game:
         self.initial_bet = args.bet
         self._n_correct_play = 0
         self._n_mistakes = 0
+        self._n_rounds = 0
 
     def deal(self):
         """Starts new round."""
+        self._n_rounds += 1
+        self.update_accuracy()
         self.bet = self.gui.slider.get()
         self.gui.slider.configure(state=tkinter.DISABLED)
         self.hide_all_chips()
@@ -403,9 +406,17 @@ class Game:
             return False
         self._n_correct_play += 1
         if self.gui.fix_mistakes.get() == 1:
-            txt = f"Accuracy: {round(self._n_correct_play / (self._n_correct_play + self._n_mistakes) * 100, 2)}%"
-            self.gui.accuracy_text.set(txt)
+            self.update_accuracy()
         return True
+
+    def update_accuracy(self):
+        n_decisions = self._n_correct_play + self._n_mistakes
+        if n_decisions != 0:
+            txt = f"Accuracy: {round(self._n_correct_play / (self._n_correct_play + self._n_mistakes) * 100, 2)}%"
+        else:
+            txt = "Accuracy: 0%"
+        txt += f"\nRounds: {self._n_rounds}"
+        self.gui.accuracy_text.set(txt)
 
     def check_insurance(self, hand: Hand) -> bool:
         """Verifies player decision with insurance / even money. Gives OK when the count is good!"""
@@ -609,6 +620,7 @@ class Game:
     def reset_accuracy(self):
         self._n_correct_play = 0
         self._n_mistakes = 0
+        self._n_rounds = 0
         self.gui.accuracy_text.set("")
 
     @staticmethod

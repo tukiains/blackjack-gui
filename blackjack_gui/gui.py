@@ -312,7 +312,9 @@ class Game:
                 self.player.stack += hand.bet
                 result = "PUSH"
             elif (
-                self.dealer.is_blackjack is True and hand.is_blackjack is False
+                self.dealer.is_blackjack is True
+                and hand.is_blackjack is False
+                and hand.is_over is False
             ):
                 self.dealer_info("BLACKJACK")
                 result = "LOSE"

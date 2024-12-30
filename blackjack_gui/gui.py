@@ -126,7 +126,7 @@ class Game:
         self.player.stack += self.bet / 2
         self._display_stack()
         hand = self._get_hand_in_active_slot()
-        self._display_dealer_cards(hide_second=False)
+        self.gui.root.after(TIME_DELAY, self._display_dealer_cards, False)
         self.dealer.cards[1].visible = True
         self._handle_counts(hand, self.shoe)
         self._handle_counts(self.dealer.cards, self.shoe)
@@ -375,7 +375,7 @@ class Game:
             and self.dealer.cards[1].visible is False
         ):
             self.dealer.cards[1].visible = True
-            self._display_dealer_cards(hide_second=False)
+            self.gui.root.after(TIME_DELAY, self._display_dealer_cards, False)
         self._handle_counts(self.dealer.cards, self.shoe)
         self._hide_buttons()
         self._show_buttons(("deal",))

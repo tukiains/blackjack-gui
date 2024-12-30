@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.1 – 2024-12-30
+
+- Add delay to dealing
+
 ## 1.5.0 – 2024-12-30
 
 - Add US rules

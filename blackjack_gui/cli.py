@@ -267,7 +267,13 @@ def play(args):
         while hit_dealer is True:
             player.update_counts(dealer.cards, shoe)
             logging.debug(f"Dealer: {dealer}")
-            if dealer.sum > 16:
+            dealer_labels = [card.label for card in dealer.cards]
+            if dealer.sum == 17:
+                if args.rules.game_type == "h17" and "A" in dealer_labels:
+                    hit_dealer = True
+                else:
+                    hit_dealer = False
+            elif dealer.sum > 17:
                 hit_dealer = False
             if (
                 player.hands[0].is_blackjack is True

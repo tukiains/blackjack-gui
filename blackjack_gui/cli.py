@@ -252,6 +252,8 @@ def play(args):
                     hand_played = True
 
         # Deal Dealer:
+        if args.dealer_cards is not None and len(args.dealer_cards) > 2:
+            shoe.arrange(args.dealer_cards[2:])
         hit_dealer = False
         for hand in player.hands:
             if (

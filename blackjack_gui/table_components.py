@@ -224,7 +224,7 @@ class CheckButton:
         self.background = background
 
     def fetch_count(self) -> tuple[tkinter.StringVar, tkinter.IntVar]:
-        txt_location = (10, 620)
+        txt_location = (10, 610)
         conf = CheckConfig(
             location=(1040, 625),
             txt_location=txt_location,
@@ -236,7 +236,7 @@ class CheckButton:
         return text, checkbox
 
     def fetch_accuracy(self) -> tuple[tkinter.StringVar, tkinter.IntVar]:
-        txt_location = (10, 670)
+        txt_location = (10, 655)
         conf = CheckConfig(
             location=(1040, 600),
             txt_location=txt_location,

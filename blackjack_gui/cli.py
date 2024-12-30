@@ -52,7 +52,9 @@ def play(args):
         if args.dealer_cards is not None:
             shoe.arrange(args.dealer_cards)
         dealer.deal(shoe)
-        logging.debug(f"Dealer: {dealer}")
+        player.update_counts(dealer.cards, shoe)
+        dealer.deal(shoe)  # Hole card
+        logging.debug(f"Dealer: {dealer.cards[0]}")
         if args.cards is not None:
             shoe.arrange(args.cards)
         elif args.subset is not None:
@@ -61,10 +63,9 @@ def play(args):
         hand.deal(shoe)
         hand.deal(shoe)
         player.update_counts(hand, shoe)
-        player.update_counts(dealer.cards, shoe)
         logging.debug(f"Player: {hand}")
 
-        # Insurance bet
+        # Insurance
         if dealer.cards[0].label == "A" and hand.is_blackjack is False:
             should_insure = "yes" if player.true_count > 3 else "no"
             if args.ai is True:
@@ -74,7 +75,7 @@ def play(args):
                     else "n"
                 )
             else:
-                action = input("Insure? y/n [n]")
+                action = input("Take insurance? y/n [n]")
             if action == "y":
                 decisions = _is_correct(should_insure, "yes", decisions)
                 insurance_bet = bet / 2
@@ -98,9 +99,26 @@ def play(args):
                 )
                 dealer.even_money = True
 
+        # Dealer peek
+        if args.rules.region == "US" and dealer.is_blackjack is True:
+            if dealer.insurance_bet > 0:
+                logging.debug("You win insurance bet.")
+                player.stack += dealer.insurance_bet * 3
+            elif dealer.even_money is True:
+                player.stack += hand.bet * 2
+            else:
+                if hand.is_blackjack is True:
+                    logging.debug("Game is a push.")
+                    player.stack += hand.bet
+                else:
+                    logging.debug("Dealer has BJ, you lose!")
+            n_total_hands += 1
+            player.update_counts(dealer.cards, shoe)
+            continue
+
         if hand.is_blackjack is False:
             # Surrender can be done only here. And not against dealer's Ace.
-            if dealer.cards[0].label != "A":
+            if args.rules.surrender is True and dealer.cards[0].label != "A":
                 correct_play = get_correct_play(
                     hand, dealer.cards[0], len(player.hands), args.rules
                 )
@@ -143,7 +161,7 @@ def play(args):
                             split_card = hand.cards.pop()
                             new_hand.deal(split_card)
                             # Only one card more if split card is Ace
-                            # and apparently this hand can not be doubled anymore ?!
+                            # and this hand can not be doubled anymore
                             for handy in (hand, new_hand):
                                 handy.deal(shoe)
                                 handy.is_split_hand = True
@@ -234,8 +252,6 @@ def play(args):
                     hand_played = True
 
         # Deal Dealer:
-        if args.dealer_cards is not None and len(args.dealer_cards) > 1:
-            shoe.arrange(args.dealer_cards[1:])
         hit_dealer = False
         for hand in player.hands:
             if (
@@ -249,7 +265,6 @@ def play(args):
             else:
                 hit_dealer = True
         while hit_dealer is True:
-            dealer.deal(shoe)
             player.update_counts(dealer.cards, shoe)
             logging.debug(f"Dealer: {dealer}")
             if dealer.sum > 16:
@@ -259,6 +274,8 @@ def play(args):
                 and dealer.is_blackjack is False
             ):
                 hit_dealer = False
+            if hit_dealer is True:
+                dealer.deal(shoe)
 
         # Payout
 

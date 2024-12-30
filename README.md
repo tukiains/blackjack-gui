@@ -94,7 +94,8 @@ explained in Finnish [here](http://www.rahapeliopas.fi/kasinopelit/blackjack/), 
 - Max. 4 hands can be achieved by splitting
 - Aces can be split but they receive only one extra card
 - Doubling after splitting is allowed
-- Surrender is allowed but not against Ace
+- Dealer peek not in use
+- Early surrender is allowed but not against Ace
 - A 7-7-7 with the first three cards (not in a split game) pays 3 to 1 directly
 
 See overview of the most common rule variations [here](rule-variations.md).
@@ -113,7 +114,8 @@ The rules in the U.S. typically include:
 
 - Dealer must hit on soft 17
 - Dealer peek is in use
-- Late surrender is allowed
+- Surrender is not allowed
+- Doubling and splitting rules same as above
 
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-usa.png" alt="" width="400"/>
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/usa-symbols.png" alt="" width="320"/>

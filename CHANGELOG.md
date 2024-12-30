@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.2 – 2024-12-30
+
+- Add more delays
+
 ## 1.5.1 – 2024-12-30
 
 - Add delay to dealing

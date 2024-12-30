@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.0 – 2024-12-30
+
+- Add US rules
+- Add number of rounds info
+- Do not show blackjack text if player bust
+- Hide chip in surrender
+
 ## 1.4.0 – 2024-12-27
 
 - Show counts

@@ -591,7 +591,7 @@ class Game:
             text = str(round(bet))
         else:
             text = str(bet)
-        img = get_chip_image(color)
+        img = _get_chip_image(color)
         self.gui.insurance_chip.configure(
             image=img,
             compound="center",
@@ -606,7 +606,7 @@ class Game:
 
     def _display_chip(self, hand: Hand, pos: int, color: str = "red"):
         """Displays chip for certain hand and chip position."""
-        img = get_chip_image(color)
+        img = _get_chip_image(color)
         if color == "red":
             text = self.bet
         else:
@@ -623,7 +623,7 @@ class Game:
     def _display_finger(self, hand: Hand):
         """Displays dealer finger over hand."""
         self._hide_fingers()
-        img = get_finger_image()
+        img = _get_finger_image()
         self.gui.finger[f"{str(hand.slot)}"].configure(image=img)
         self.gui.finger[f"{str(hand.slot)}"].image = img
 
@@ -662,7 +662,7 @@ class Game:
         return Shoe(6)
 
 
-def get_chip_image(color: str = "red"):
+def _get_chip_image(color: str = "red"):
     size = 50
     filename = f"{IMG_PATH}/{color}-chip.png"
     image = Image.open(filename).resize(
@@ -671,7 +671,7 @@ def get_chip_image(color: str = "red"):
     return ImageTk.PhotoImage(image)
 
 
-def get_finger_image():
+def _get_finger_image():
     filename = f"{IMG_PATH}/finger2.png"
     image = Image.open(filename).resize((40, 60), Image.Resampling.LANCZOS)
     return ImageTk.PhotoImage(image)

@@ -127,6 +127,7 @@ class Game:
         hand = self.get_hand_in_active_slot()
         self._handle_counts(hand, self.shoe)
         self.hide(hand)
+        self.hide_chips(hand)
         self.display_info(hand, "SURRENDER")
         self.hide_buttons()
         self.show_buttons(("deal",))

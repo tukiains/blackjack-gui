@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.5 – 2024-12-31
+
+- Fix buttons in surrender
+- Fix counting in bust
+
 ## 1.5.4 – 2024-12-31
 
 - Disable buttons during dealing

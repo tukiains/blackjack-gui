@@ -380,11 +380,13 @@ class Game:
             and self.dealer.cards[1].visible is False
         ):
             self.dealer.is_finished = True
-            self.gui.root.after(TIME_DELAY, self._reveal_dealer_hidden_card)
-        self._handle_counts(self.dealer.cards, self.shoe)
-        self._hide_buttons()
-        self._show_buttons(("deal",))
-        self.gui.slider.configure(state=tkinter.NORMAL)
+            self.gui.root.after(
+                TIME_DELAY, self._reveal_dealer_hidden_card, True
+            )
+        else:
+            self._show_buttons(("deal",))
+            self._handle_counts(self.dealer.cards, self.shoe)
+            self.gui.slider.configure(state=tkinter.NORMAL)
 
     def _handle_counts(self, hand: Hand | list[Card], shoe: Shoe):
         self.player.update_counts(hand, shoe)

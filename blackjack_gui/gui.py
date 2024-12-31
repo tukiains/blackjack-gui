@@ -379,8 +379,8 @@ class Game:
             len(self.dealer.cards) == 2
             and self.dealer.cards[1].visible is False
         ):
-            self.dealer.cards[1].visible = True
-            self.gui.root.after(TIME_DELAY, self._display_dealer_cards, False)
+            self.dealer.is_finished = True
+            self.gui.root.after(TIME_DELAY, self._reveal_dealer_hidden_card)
         self._handle_counts(self.dealer.cards, self.shoe)
         self._hide_buttons()
         self._show_buttons(("deal",))

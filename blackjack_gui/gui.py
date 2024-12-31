@@ -198,6 +198,9 @@ class Game:
         self._hide_buttons(("surrender", "double"))
         hand.deal(self.shoe, self.gui.shoe_progress)
         self._display_player_cards(hand)
+        if hand.is_triple_seven:
+            self.gui.root.after(TIME_DELAY, self._resolve_blackjack)
+            return
         self._handle_counts(hand, self.shoe)
         if hand.is_over is True:
             self._hide(hand)
@@ -317,8 +320,13 @@ class Game:
             if self.dealer.insurance_bet > 0 and self.dealer.is_blackjack:
                 self.player.stack += self.dealer.insurance_bet * 3
                 self._display_insurance_chip(triple=True)
-                self._hide_all_chips()
-                result = "INSURANCE"
+                if hand.is_triple_seven:
+                    result = "TRIPLE SEVEN + INSURANCE"
+                    self.player.stack += hand.bet * 3
+                    self._display_chips(hand, triple=True)
+                else:
+                    self._hide_all_chips()
+                    result = "INSURANCE"
             elif self.dealer.even_money is True:
                 self.player.stack += hand.bet * 2
                 result = "EVEN MONEY"
@@ -773,7 +781,10 @@ def main(args: Namespace):
     )
 
     dealer = Dealer(args.rules.game_type)
-    player = Player(stack=args.stack)
+    player = Player(
+        rules=args.rules,
+        stack=args.stack,
+    )
     game = Game(player, dealer, gui, args)
     game.reset()
     tkinter.mainloop()

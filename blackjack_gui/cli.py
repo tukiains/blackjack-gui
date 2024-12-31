@@ -25,7 +25,7 @@ def play(args):
     n_decs = 6
     n_total_hands = 0
     dealer = Dealer(args.rules.game_type)
-    player = Player()
+    player = Player(args.rules)
     player.buy_in(args.stack)
     shoe = Shoe(n_decs)
     logging.debug("----------------")
@@ -307,7 +307,11 @@ def play(args):
             elif hand.sum > 21:
                 logging.debug(f"Player: {hand.sum}, you lose!")
 
-            elif dealer.is_blackjack is True and hand.is_blackjack is False:
+            elif (
+                dealer.is_blackjack is True
+                and hand.is_blackjack is False
+                and hand.is_triple_seven is False
+            ):
                 logging.debug(
                     f"Dealer: BJ, Player: {hand.sum}, you lose to dealer BJ!"
                 )

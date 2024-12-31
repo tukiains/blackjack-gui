@@ -459,11 +459,11 @@ def test_evaluate_hand(cards, the_sum, is_hard):
     ],
 )
 def test_get_correct_play(cards, dealer, correct_play):
-    hand = Hand()
+    rules = get_rules("US")
+    hand = Hand(rules)
     for label in cards:
         hand.cards.append(Card(label, "clubs"))
     hand.sum, hand.is_hard = evaluate_hand(hand.cards)
     n_hands = 1
     dealer_card = Card(dealer, "clubs")
-    rules = get_rules("US")
     assert get_correct_play(hand, dealer_card, n_hands, rules) == correct_play

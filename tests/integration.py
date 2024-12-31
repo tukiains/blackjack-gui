@@ -21,6 +21,9 @@ prefix = "blackjack --n-games=1 --cli --ai --loglevel=WARNING --stack=10 --rules
         ("6,Q", "4,10,3", 9),
         ("6,Q", "5,10,K", 11),
         ("6,Q", "6,10,4", 9),
+        ("7,7,7", "10,7", 12),
+        ("7,7,7", "A,10", 12),
+        ("7,7,7", "10,A", 12),
     ],
 )
 def test_stay(player, dealer, stack):

@@ -4,6 +4,16 @@ import tkinter
 from typing import List, Literal
 
 
+@dataclass
+class Rules:
+    game_type: Literal["s17", "h17"]
+    surrender: bool
+    peek: bool
+    double_after_split: bool = True
+    triple_seven: bool = False
+    region: Literal["US", "Europe", "Helsinki"] = "US"
+
+
 class Card:
     def __init__(self, label: str, suit: str, visible: bool = True):
         self.label = label
@@ -116,7 +126,8 @@ class Shoe:
 
 
 class Hand:
-    def __init__(self):
+    def __init__(self, rules: Rules):
+        self.rules = rules
         self.cards: list[Card] = []
         self.sum = 0.0
         self.bet = 0.0
@@ -143,6 +154,15 @@ class Hand:
             self.cards.append(source)
         self.sum, self.is_hard = evaluate_hand(self.cards)
 
+        if (
+            len(self.cards) == 3
+            and all(card.label == "7" for card in self.cards)
+            and self.is_split_hand is False
+            and self.rules.triple_seven
+        ):
+            self.is_triple_seven = True
+            self.is_finished = True
+            self.is_hittable = False
         if self.sum >= 22:
             self.is_finished = True
             self.is_hittable = False
@@ -154,12 +174,6 @@ class Hand:
             and self.is_split_hand is False
         ):
             self.is_blackjack = True
-        if (
-            len(self.cards) == 3
-            and all(card.label == "7" for card in self.cards)
-            and self.is_split_hand is False
-        ):
-            self.is_triple_seven = True
 
     def __repr__(self) -> str:
         return format_hand(self.cards)
@@ -204,9 +218,10 @@ class Dealer:
 
 
 class Player:
-    def __init__(self, stack: float = 1000):
-        self.hands: List[Hand] = []
+    def __init__(self, rules: Rules, stack: float = 1000):
+        self.rules = rules
         self.stack = stack
+        self.hands: List[Hand] = []
         self.initial_stack = stack
         self.invested = 0.0
         self.running_count = 0
@@ -216,7 +231,7 @@ class Player:
         self.stack = bet
 
     def start_new_hand(self, bet: float) -> Hand:
-        hand = Hand()
+        hand = Hand(self.rules)
         hand.bet = bet
         self.stack -= bet
         self.invested += bet
@@ -288,16 +303,6 @@ def evaluate_hand(cards: list) -> tuple:
                 if isinstance(card.value, int):
                     the_sum += card.value
     return the_sum, is_hard
-
-
-@dataclass
-class Rules:
-    game_type: Literal["s17", "h17"]
-    surrender: bool  # with s17 it's early (European), with h17 it's late (US)
-    peek: bool
-    double_after_split: bool = True
-    triple_seven: bool = False
-    region: Literal["US", "Europe", "Helsinki"] = "US"
 
 
 def get_rules(region: Literal["US", "Europe", "Helsinki"]):

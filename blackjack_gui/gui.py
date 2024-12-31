@@ -212,6 +212,9 @@ class Game:
             if self._check_play(hand, "stay") is False:
                 return
         hand.is_finished = True
+        if hand.is_blackjack is True:
+            self.dealer.is_finished = True
+            self.gui.root.after(TIME_DELAY, self._resolve_blackjack)
         self._resolve_next_hand()
 
     def insurance(self):

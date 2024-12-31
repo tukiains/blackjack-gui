@@ -61,6 +61,7 @@ class Game:
 
     def deal(self):
         """Starts new round."""
+        self._hide_buttons()
         self._n_rounds += 1
         self._update_accuracy()
         self.bet = self.gui.slider.get()
@@ -95,28 +96,24 @@ class Game:
         hand.deal(self.shoe, self.gui.shoe_progress)
         hand.deal(self.shoe, self.gui.shoe_progress)
         self._handle_counts(hand, self.shoe)
-        self._show_buttons()
-        self._hide_buttons(("deal",))
         self._show()
         self.active_slot = hand.slot
         self._display_stack()
-        self._enable_correct_buttons(hand)
         self._display_chip(hand, 0)
         self._display_player_cards(hand)
-        if not self.args.rules.surrender:
-            self._hide_buttons(("surrender",))
         if self.dealer.cards[0].label != "A":
-            self._hide_buttons(("insurance", "even-money"))
             if hand.is_blackjack:
                 self.gui.root.after(TIME_DELAY, self._resolve_blackjack)
+            else:
+                self._enable_correct_buttons(hand)
+                if self.args.rules.surrender:
+                    self._show_buttons(("surrender",))
         else:
-            self._hide_buttons(("surrender",))
+            self._enable_correct_buttons(hand)
             if hand.is_blackjack is True:
                 self._show_buttons(("even-money",))
-                self._hide_buttons(("insurance",))
             else:
                 self._show_buttons(("insurance",))
-                self._hide_buttons(("even-money",))
 
     def surrender(self):
         """Method for Surrender button."""
@@ -432,9 +429,9 @@ class Game:
         else:
             self._hide_buttons(("split",))
         if hand.is_hittable is True:
-            self._show_buttons(("hit",))
+            self._show_buttons(("hit", "stay"))
         else:
-            self._hide_buttons(("hit",))
+            self._hide_buttons(("hit", "stay"))
 
     def _check_play(self, hand: Hand, play: str) -> bool:
         """Verifies player decision. Ignores deviations."""

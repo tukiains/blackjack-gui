@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.4 – 2024-12-31
+
+- Disable buttons during dealing
+
 ## 1.5.3 – 2024-12-31
 
 - Do not automatically stand on 21

@@ -108,7 +108,7 @@ class Game:
         if self.dealer.cards[0].label != "A":
             self._hide_buttons(("insurance", "even-money"))
             if hand.is_blackjack:
-                self._resolve_blackjack()
+                self.gui.root.after(TIME_DELAY, self._resolve_blackjack)
         else:
             self._hide_buttons(("surrender",))
             if hand.is_blackjack is True:

@@ -101,19 +101,20 @@ class Game:
         self._display_stack()
         self._display_chip(hand, 0)
         self._display_player_cards(hand)
-        if self.dealer.cards[0].label != "A":
+        if self.dealer.has_ace:
+            self._enable_correct_buttons(hand)
+            if hand.is_blackjack is True:
+                self._hide_buttons(("hit", "double"))
+                self._show_buttons(("even-money",))
+            else:
+                self._show_buttons(("insurance",))
+        else:
             if hand.is_blackjack:
                 self.gui.root.after(TIME_DELAY, self._resolve_blackjack)
             else:
                 self._enable_correct_buttons(hand)
                 if self.args.rules.surrender:
                     self._show_buttons(("surrender",))
-        else:
-            self._enable_correct_buttons(hand)
-            if hand.is_blackjack is True:
-                self._show_buttons(("even-money",))
-            else:
-                self._show_buttons(("insurance",))
 
     def surrender(self):
         """Method for Surrender button."""

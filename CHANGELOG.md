@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.3 – 2024-12-31
+
+- Do not automatically stand on 21
+- Add delay to blackjack
+- Fix triple seven
+
 ## 1.5.2 – 2024-12-30
 
 - Add more delays

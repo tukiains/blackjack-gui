@@ -66,7 +66,7 @@ def play(args):
         logging.debug(f"Player: {hand}")
 
         # Insurance
-        if dealer.cards[0].label == "A" and hand.is_blackjack is False:
+        if dealer.has_ace and hand.is_blackjack is False:
             should_insure = "yes" if player.true_count > 3 else "no"
             if args.ai is True:
                 action = (
@@ -83,7 +83,7 @@ def play(args):
                 player.invested += insurance_bet
                 dealer.insurance_bet = insurance_bet
         # Even money
-        elif dealer.cards[0].label == "A" and hand.is_blackjack is True:
+        elif dealer.has_ace and hand.is_blackjack is True:
             should_take_even_money = "yes" if player.true_count > 3 else "no"
             if args.ai is True:
                 action = (
@@ -118,7 +118,7 @@ def play(args):
 
         if hand.is_blackjack is False:
             # Surrender can be done only here. And not against dealer's Ace.
-            if args.rules.surrender is True and dealer.cards[0].label != "A":
+            if args.rules.surrender is True and not dealer.has_ace:
                 correct_play = get_correct_play(
                     hand, dealer.cards[0], len(player.hands), args.rules
                 )
@@ -261,7 +261,7 @@ def play(args):
             ) or dealer.insurance_bet > 0:
                 hit_dealer = True
         if player.hands[0].is_blackjack is True:
-            if dealer.cards[0].label != "A" and dealer.cards[0].value != 10:
+            if not dealer.has_ace and dealer.cards[0].value != 10:
                 # Player already won
                 hit_dealer = False
             else:

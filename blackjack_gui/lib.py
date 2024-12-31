@@ -189,6 +189,7 @@ class Dealer:
         self.insurance_bet = 0.0
         self.even_money = False
         self.game_type = game_type
+        self.has_ace = False
 
     def init_hand(self):
         self.cards = []
@@ -204,6 +205,7 @@ class Dealer:
         self.cards.append(card)
         self.sum, _ = evaluate_hand(self.cards)
         labels = [c.label for c in self.cards]
+        self.has_ace = True if labels[0] == "A" else False
         if self.sum == 17 and self.game_type == "h17" and "A" in labels:
             pass
         elif self.sum > 16:

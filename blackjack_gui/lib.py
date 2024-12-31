@@ -143,7 +143,7 @@ class Hand:
             self.cards.append(source)
         self.sum, self.is_hard = evaluate_hand(self.cards)
 
-        if self.sum >= 21:
+        if self.sum >= 22:
             self.is_finished = True
             self.is_hittable = False
         if self.sum > 21:

@@ -241,6 +241,14 @@ class Game:
             if self._check_play(hand, "split") is False:
                 return
         self._hide_buttons(("surrender",))
+
+        if self.args.rules.peek and self.dealer.is_blackjack:
+            self._hide_buttons()
+            self._display_dealer_cards(hide_second=False)
+            self.dealer.cards[1].visible = True
+            self._payout()
+            return
+
         new_hand = self.player.start_new_hand(self.bet)
         split_card = hand.cards.pop()
         new_hand.deal(split_card, self.gui.shoe_progress)
@@ -407,6 +415,7 @@ class Game:
     def _check_dealer_peek(self) -> bool:
         """Checks if Dealer has BJ before any hands are played."""
         if self.args.rules.peek and self.dealer.is_blackjack:
+            self._hide_buttons()
             self._display_dealer_cards(hide_second=False)
             self.dealer.cards[1].visible = True
             self._payout()

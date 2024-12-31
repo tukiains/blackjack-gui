@@ -182,6 +182,7 @@ class Game:
 
     def hit(self):
         """Method for Hit button."""
+        self._hide_buttons(("insurance",))
         hand = self._get_hand_in_active_slot()
         if self.gui.fix_mistakes.get() == 1:
             if self._check_play(hand, "hit") is False:

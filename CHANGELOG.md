@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.6 – 2024-12-31
+
+- Fix deal button once more
+
 ## 1.5.5 – 2024-12-31
 
 - Fix buttons in surrender

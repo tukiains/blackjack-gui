@@ -121,19 +121,14 @@ class Game:
         if self.gui.fix_mistakes.get() == 1:
             if self._check_play(self.player.hands[0], "surrender") is False:
                 return
+        self._hide_buttons()
         self.player.stack += self.bet / 2
         self._display_stack()
         hand = self._get_hand_in_active_slot()
-        self.gui.root.after(TIME_DELAY, self._display_dealer_cards, False)
-        self.dealer.cards[1].visible = True
-        self._handle_counts(hand, self.shoe)
-        self._handle_counts(self.dealer.cards, self.shoe)
+        self.gui.root.after(TIME_DELAY, self._reveal_dealer_hidden_card, True)
         self._hide(hand)
         self._hide_chips(hand)
         self._display_info(hand, "SURRENDER")
-        self._hide_buttons()
-        self._show_buttons(("deal",))
-        self.gui.slider.configure(state=tkinter.NORMAL)
 
     def even_money(self):
         """Method for Even Money button"""
@@ -282,11 +277,15 @@ class Game:
                 self._handle_counts(self.dealer.cards, self.shoe)
                 self._payout()
 
-    def _reveal_dealer_hidden_card(self):
+    def _reveal_dealer_hidden_card(self, surrender: bool = False):
         self._display_dealer_cards(hide_second=False)
         self.dealer.cards[1].visible = True
         self._handle_counts(self.dealer.cards, self.shoe)
-        self._check_dealer_blackjack()
+        if surrender:
+            self._show_buttons(("deal",))
+            self.gui.slider.configure(state=tkinter.NORMAL)
+        else:
+            self._check_dealer_blackjack()
 
     def _check_dealer_blackjack(self):
         if self.dealer.is_blackjack and self.dealer.insurance_bet > 0:

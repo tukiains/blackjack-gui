@@ -163,6 +163,7 @@ class Game:
         hand.is_finished = True
         self._display_player_cards(hand, rotate_last=True)
         if hand.is_triple_seven:
+            self._hide_buttons()
             self.gui.root.after(TIME_DELAY, self._end_round)
             return
         self._handle_counts(hand, self.shoe)
@@ -204,6 +205,7 @@ class Game:
         hand.deal(self.shoe, self.gui.shoe_progress)
         self._display_player_cards(hand)
         if hand.is_triple_seven:
+            self._hide_buttons()
             self.gui.root.after(TIME_DELAY, self._end_round)
             return
         self._handle_counts(hand, self.shoe)

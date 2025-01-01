@@ -212,9 +212,6 @@ class Game:
             if self._check_play(hand, "stay") is False:
                 return
         hand.is_finished = True
-        if hand.is_blackjack is True:
-            self.dealer.is_finished = True
-            self.gui.root.after(TIME_DELAY, self._end_round)
         self._resolve_next_hand()
 
     def insurance(self):
@@ -589,12 +586,6 @@ class Game:
                 image=img, width=width, height=height
             )
             self.gui.slot_player[f"{str(hand.slot)}{str(ind)}"].image = img
-
-    def _display_player_hands(self):
-        """Displays all player hands on the table."""
-        self._clean_player_slots()
-        for hand in self.player.hands:
-            self._display_player_cards(hand)
 
     def _display_insurance_chip(self, triple: bool = False):
         bet = (

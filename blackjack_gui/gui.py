@@ -162,6 +162,9 @@ class Game:
         self._display_chip(hand, 1)
         hand.is_finished = True
         self._display_player_cards(hand, rotate_last=True)
+        if hand.is_triple_seven:
+            self.gui.root.after(TIME_DELAY, self._end_round)
+            return
         self._handle_counts(hand, self.shoe)
         if hand.sum > 21:
             self._hide(hand)
@@ -354,6 +357,8 @@ class Game:
             elif hand.is_triple_seven is True:
                 self.player.stack += hand.bet * 3
                 result = "TRIPLE SEVEN"
+                if hand.bet == 2 * self.bet:
+                    self.bet = hand.bet
                 self._display_chips(hand, triple=True)
             elif (
                 hand.is_blackjack is True and self.dealer.is_blackjack is False
@@ -498,6 +503,7 @@ class Game:
             self._display_chip(hand, 1)
             self._display_chip(hand, 4, color="blue")
         elif triple is True:
+            self._display_chip(hand, 0)
             self._display_chip(hand, 1)
             self._display_chip(hand, 2)
         elif hand.bet == self.bet:

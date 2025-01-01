@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.8 – 2025-01-02
+
+- Fix triple 7 double payout
+- Fix buttons with triple 7
+
 ## 1.5.7 – 2024-12-31
 
 - Hide insurance button after hit

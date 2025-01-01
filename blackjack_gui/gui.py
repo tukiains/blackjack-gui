@@ -111,16 +111,18 @@ class Game:
         else:
             if hand.is_blackjack:
                 self.gui.root.after(TIME_DELAY, self._end_round)
-            else:
-                self._enable_correct_buttons(hand)
-                if self.args.rules.surrender:
-                    self._show_buttons(("surrender",))
+                return
+            self._enable_correct_buttons(hand)
+            if self.args.rules.surrender:
+                self._show_buttons(("surrender",))
 
     def surrender(self):
         """Method for Surrender button."""
-        if self.gui.fix_mistakes.get() == 1:
-            if self._check_play(self.player.hands[0], "surrender") is False:
-                return
+        if (
+            self.gui.fix_mistakes.get() == 1
+            and self._check_play(self.player.hands[0], "surrender") is False
+        ):
+            return
         self._hide_buttons()
         self.player.stack += self.bet / 2
         self._display_stack()
@@ -133,9 +135,11 @@ class Game:
     def even_money(self):
         """Method for Even Money button"""
         hand = self._get_hand_in_active_slot()
-        if self.gui.fix_mistakes.get() == 1:
-            if self._check_insurance(hand) is False:
-                return
+        if (
+            self.gui.fix_mistakes.get() == 1
+            and self._check_insurance(hand) is False
+        ):
+            return
         self.dealer.even_money = True
         self._hide(hand)
         self._payout()
@@ -143,9 +147,11 @@ class Game:
     def double(self):
         """Method for Double button."""
         hand = self._get_hand_in_active_slot()
-        if self.gui.fix_mistakes.get() == 1:
-            if self._check_play(hand, "double") is False:
-                return
+        if (
+            self.gui.fix_mistakes.get() == 1
+            and self._check_play(hand, "double") is False
+        ):
+            return
         if self._check_dealer_peek():
             return
         self._hide_buttons(("surrender",))
@@ -184,9 +190,11 @@ class Game:
         """Method for Hit button."""
         self._hide_buttons(("insurance",))
         hand = self._get_hand_in_active_slot()
-        if self.gui.fix_mistakes.get() == 1:
-            if self._check_play(hand, "hit") is False:
-                return
+        if (
+            self.gui.fix_mistakes.get() == 1
+            and self._check_play(hand, "hit") is False
+        ):
+            return
         if self._check_dealer_peek():
             return
         self._hide_buttons(("surrender", "double"))
@@ -208,18 +216,22 @@ class Game:
     def stay(self):
         """Method for Stay button."""
         hand = self._get_hand_in_active_slot()
-        if self.gui.fix_mistakes.get() == 1:
-            if self._check_play(hand, "stay") is False:
-                return
+        if (
+            self.gui.fix_mistakes.get() == 1
+            and self._check_play(hand, "stay") is False
+        ):
+            return
         hand.is_finished = True
         self._resolve_next_hand()
 
     def insurance(self):
         """Method for Insurance button."""
         hand = self._get_hand_in_active_slot()
-        if self.gui.fix_mistakes.get() == 1:
-            if self._check_insurance(hand) is False:
-                return
+        if (
+            self.gui.fix_mistakes.get() == 1
+            and self._check_insurance(hand) is False
+        ):
+            return
         self.dealer.insurance_bet = hand.bet / 2
         self._display_insurance_chip()
         self.player.stack -= self.dealer.insurance_bet
@@ -234,9 +246,11 @@ class Game:
     def split(self):
         """Method for Split button."""
         hand = self._get_hand_in_active_slot()
-        if self.gui.fix_mistakes.get() == 1:
-            if self._check_play(hand, "split") is False:
-                return
+        if (
+            self.gui.fix_mistakes.get() == 1
+            and self._check_play(hand, "split") is False
+        ):
+            return
         self._hide_buttons(("surrender",))
 
         if self.args.rules.peek and self.dealer.is_blackjack:

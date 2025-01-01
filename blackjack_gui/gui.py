@@ -110,7 +110,7 @@ class Game:
                 self._show_buttons(("insurance",))
         else:
             if hand.is_blackjack:
-                self.gui.root.after(TIME_DELAY, self._resolve_blackjack)
+                self.gui.root.after(TIME_DELAY, self._end_round)
             else:
                 self._enable_correct_buttons(hand)
                 if self.args.rules.surrender:
@@ -193,7 +193,7 @@ class Game:
         hand.deal(self.shoe, self.gui.shoe_progress)
         self._display_player_cards(hand)
         if hand.is_triple_seven:
-            self.gui.root.after(TIME_DELAY, self._resolve_blackjack)
+            self.gui.root.after(TIME_DELAY, self._end_round)
             return
         self._handle_counts(hand, self.shoe)
         if hand.is_over is True:
@@ -214,7 +214,7 @@ class Game:
         hand.is_finished = True
         if hand.is_blackjack is True:
             self.dealer.is_finished = True
-            self.gui.root.after(TIME_DELAY, self._resolve_blackjack)
+            self.gui.root.after(TIME_DELAY, self._end_round)
         self._resolve_next_hand()
 
     def insurance(self):
@@ -422,8 +422,7 @@ class Game:
             return True
         return False
 
-    def _resolve_blackjack(self):
-        """Resolves player blackjack."""
+    def _end_round(self):
         self._display_dealer_cards(hide_second=False)
         self.dealer.cards[1].visible = True
         self._payout()

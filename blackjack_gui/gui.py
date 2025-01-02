@@ -117,7 +117,7 @@ class Game:
                 self._show_buttons(("surrender",))
 
     def surrender(self):
-        """Method for Surrender button."""
+        """Surrender button."""
         if (
             self.gui.fix_mistakes.get() == 1
             and self._check_play(self.player.hands[0], "surrender") is False
@@ -133,7 +133,7 @@ class Game:
         self._display_info(hand, "SURRENDER")
 
     def even_money(self):
-        """Method for Even Money button"""
+        """Even Money button"""
         hand = self._get_hand_in_active_slot()
         if (
             self.gui.fix_mistakes.get() == 1
@@ -145,7 +145,7 @@ class Game:
         self._payout()
 
     def double(self):
-        """Method for Double button."""
+        """Double button."""
         hand = self._get_hand_in_active_slot()
         if (
             self.gui.fix_mistakes.get() == 1
@@ -174,7 +174,7 @@ class Game:
         self._resolve_next_hand()
 
     def reset(self):
-        """Method for Reset button."""
+        """Reset button."""
         self._clean_info()
         self.player.buy_in(self.player.initial_stack)
         self.shoe = Shoe(6)
@@ -185,13 +185,13 @@ class Game:
         self.start_new_round()
 
     def deal(self):
-        """Methods for Deal button."""
+        """Deal button."""
         self._clean_info()
         self._clean_dealer_slots()
         self.start_new_round()
 
     def hit(self):
-        """Method for Hit button."""
+        """Hit button."""
         self._hide_buttons(("insurance",))
         hand = self._get_hand_in_active_slot()
         if (
@@ -219,7 +219,7 @@ class Game:
             self._resolve_next_hand()
 
     def stay(self):
-        """Method for Stay button."""
+        """Stay button."""
         hand = self._get_hand_in_active_slot()
         if (
             self.gui.fix_mistakes.get() == 1
@@ -230,7 +230,7 @@ class Game:
         self._resolve_next_hand()
 
     def insurance(self):
-        """Method for Insurance button."""
+        """Insurance button."""
         hand = self._get_hand_in_active_slot()
         if (
             self.gui.fix_mistakes.get() == 1
@@ -245,7 +245,7 @@ class Game:
         self._check_dealer_peek()
 
     def split(self):
-        """Method for Split button."""
+        """Split button."""
         hand = self._get_hand_in_active_slot()
         if (
             self.gui.fix_mistakes.get() == 1
@@ -280,7 +280,6 @@ class Game:
         self._resolve_next_hand()
 
     def _resolve_next_hand(self):
-        """Moves to next unfinished hand."""
         hand = self._get_first_unfinished_hand()
         if hand is not None:
             self.active_slot = hand.slot
@@ -426,7 +425,6 @@ class Game:
         hand.bet = 0
 
     def _check_dealer_peek(self) -> bool:
-        """Checks if Dealer has BJ before any action."""
         if self.args.rules.peek and self.dealer.is_blackjack:
             self._hide_buttons()
             self.gui.root.after(TIME_DELAY, self._reveal_dealer_hidden_card)
@@ -439,7 +437,6 @@ class Game:
         self._payout()
 
     def _enable_correct_buttons(self, hand: Hand):
-        """Enables buttons that are OK to press with certain hand."""
         n_hands = len(self.player.hands)
         if len(hand.cards) == 2 and hand.is_hittable is True:
             self._show_buttons(("double",))
@@ -483,7 +480,6 @@ class Game:
         self.gui.accuracy_text.set(txt)
 
     def _check_insurance(self, hand: Hand) -> bool:
-        """Verifies player decision with insurance / even money. Gives OK when the count is good!"""
         if self.player.true_count < 3:
             self._display_info(hand, "Try again!")
             self.gui.root.after(1000, self._clean_info)
@@ -515,21 +511,18 @@ class Game:
         return True
 
     def _get_first_unfinished_hand(self) -> Hand | None:
-        """Finds first unfinished hand."""
         for hand in self.player.hands:
             if hand.is_finished is False:
                 return hand
         return None
 
     def _get_hand_in_active_slot(self) -> Hand:
-        """Finds hand in active slot."""
         for hand in self.player.hands:
             if hand.slot == self.active_slot:
                 return hand
         raise RuntimeError
 
     def _show(self):
-        """Shows all available hands as active."""
         for slot in range(4):
             for n in range(N_CARDS_MAX):
                 self.gui.slot_player[f"{str(slot)}{str(n)}"].configure(
@@ -537,14 +530,12 @@ class Game:
                 )
 
     def _hide(self, hand: Hand):
-        """Hides cards in slot."""
         for n in range(N_CARDS_MAX):
             self.gui.slot_player[f"{str(hand.slot)}{str(n)}"].configure(
                 state=tkinter.DISABLED
             )
 
     def _hide_buttons(self, buttons: tuple | None = None):
-        """Hides menu buttons."""
         if buttons is None:
             for key, button in self.gui.menu.items():
                 if key != "reset":
@@ -555,7 +546,6 @@ class Game:
                     self.gui.menu[button].configure(state=tkinter.DISABLED)
 
     def _show_buttons(self, buttons: tuple | None = None):
-        """Shows menu buttons."""
         if buttons is None:
             for key, button in self.gui.menu.items():
                 if key not in ("insurance", "even-money"):
@@ -566,7 +556,6 @@ class Game:
                     self.gui.menu[button].configure(state=tkinter.NORMAL)
 
     def _clean_player_slots(self):
-        """Cleans player card slots."""
         for slot in range(4):
             for n in range(N_CARDS_MAX):
                 self.gui.slot_player[f"{str(slot)}{str(n)}"].configure(
@@ -574,17 +563,14 @@ class Game:
                 )
 
     def _clean_dealer_slots(self):
-        """Cleans dealer slot."""
         for pos in self.gui.slot_dealer.values():
             pos.configure(image="", width=0)
 
     def _clean_info(self):
-        """Removes info text behind all slots."""
         for slot in range(4):
             self.gui.info_text[str(slot)].set("")
 
     def _display_dealer_cards(self, hide_second: bool = True):
-        """Displays dealer cards."""
         for ind, card in enumerate(self.dealer.cards):
             if ind == 1 and hide_second is True and len(self.dealer.cards) == 2:
                 img, width, _ = get_image()
@@ -594,7 +580,6 @@ class Game:
             self.gui.slot_dealer[str(ind)].image = img
 
     def _display_player_cards(self, hand: Hand, rotate_last: bool = False):
-        """Displays cards of one hand."""
         for ind, card in enumerate(hand.cards):
             rotate = ind == len(hand.cards) - 1 and rotate_last is True
             img, width, height = get_image(card, rotate=rotate)
@@ -631,7 +616,6 @@ class Game:
         self.gui.insurance_chip.configure(image="", text="")
 
     def _display_chip(self, hand: Hand, pos: int, color: str = "red"):
-        """Displays chip for certain hand and chip position."""
         img = _get_chip_image(color)
         if color == "red":
             text = self.bet
@@ -647,7 +631,6 @@ class Game:
         self.gui.chips[f"{str(hand.slot)}{str(pos)}"].image = img
 
     def _display_finger(self, hand: Hand):
-        """Displays dealer finger over hand."""
         self._hide_fingers()
         img = _get_finger_image()
         self.gui.finger[f"{str(hand.slot)}"].configure(image=img)
@@ -657,24 +640,20 @@ class Game:
         self.gui.dealer_info.configure(text=text)
 
     def _hide_chips(self, hand: Hand):
-        """Hides chips of a hand."""
         for pos in range(4):
             self.gui.chips[f"{str(hand.slot)}{str(pos)}"].configure(
                 image="", text=""
             )
 
     def _hide_all_chips(self):
-        """Hides chips of all hands."""
         for chip in self.gui.chips.values():
             chip.configure(image="", text="")
 
     def _hide_fingers(self):
-        """Hides all dealer fingers."""
         for finger in self.gui.finger.values():
             finger.configure(image="")
 
     def _display_info(self, hand: Hand, info: str):
-        """Prints text below hand."""
         self.gui.info_text[str(hand.slot)].set(info)
 
     def _reset_accuracy(self):

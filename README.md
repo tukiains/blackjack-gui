@@ -122,7 +122,7 @@ The rules in the U.S. typically include:
 
 - Dealer must hit on soft 17
 - Dealer peek is in use
-- Surrender is not allowed
+- Late surrender is not available
 - Doubling and splitting rules same as above
 
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-usa.png" alt="" width="400"/>

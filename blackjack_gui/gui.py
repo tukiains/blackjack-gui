@@ -341,7 +341,11 @@ class Game:
         """Handles payout of all hands."""
         self._hide_fingers()
         for hand in self.player.hands:
-            if self.dealer.insurance_bet > 0 and self.dealer.is_blackjack:
+            if (
+                self.dealer.insurance_bet > 0
+                and self.dealer.is_blackjack
+                and hand.slot == 2
+            ):
                 self.player.stack += self.dealer.insurance_bet * 3
                 self._display_insurance_chip(triple=True)
                 if hand.is_triple_seven:

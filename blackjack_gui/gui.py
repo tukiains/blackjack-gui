@@ -318,7 +318,6 @@ class Game:
     def _check_dealer_blackjack(self):
         if self.dealer.is_blackjack and self.dealer.insurance_bet > 0:
             self._display_insurance_chip(triple=True)
-            self.player.stack += self.dealer.insurance_bet * 3
         else:
             self._hide_insurance_chip()
 

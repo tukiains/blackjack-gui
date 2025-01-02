@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.10 – 2025-01-02
+
+- Fix currency unit
+
 ## 1.5.9 – 2025-01-02
 
 - Change max bet to 100

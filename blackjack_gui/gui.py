@@ -256,7 +256,7 @@ class Game:
             and self._check_play(hand, "split") is False
         ):
             return
-        self._hide_buttons(("surrender",))
+        self._hide_buttons(("surrender", "insurance"))
 
         if self.args.rules.peek and self.dealer.is_blackjack:
             self._hide_buttons()

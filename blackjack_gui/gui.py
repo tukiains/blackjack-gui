@@ -59,7 +59,7 @@ class Game:
         self._n_mistakes = 0
         self._n_rounds = 0
 
-    def deal(self):
+    def start_new_round(self):
         """Starts new round."""
         self._hide_buttons()
         self._n_rounds += 1
@@ -182,13 +182,13 @@ class Game:
         self.gui.slider.set(self.initial_bet)
         self.player.init_count()
         self._reset_accuracy()
-        self.deal()
+        self.start_new_round()
 
-    def next(self):
-        """Methods for Next button."""
+    def deal(self):
+        """Methods for Deal button."""
         self._clean_info()
         self._clean_dealer_slots()
-        self.deal()
+        self.start_new_round()
 
     def hit(self):
         """Method for Hit button."""
@@ -756,7 +756,7 @@ def main(args: Namespace):
         elif name == "double":
             button.configure(command=lambda: game.double())
         elif name == "deal":
-            button.configure(command=lambda: game.next())
+            button.configure(command=lambda: game.deal())
         elif name == "reset":
             button.configure(command=lambda: game.reset())
         elif name == "insurance":

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.9 – 2025-01-02
+
+- Change max bet to 100
+- Fix many insurance and triple 7 bugs
+
 ## 1.5.8 – 2025-01-02
 
 - Fix triple 7 double payout

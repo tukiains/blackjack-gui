@@ -345,8 +345,10 @@ class Game:
                 self.player.stack += self.dealer.insurance_bet * 3
                 self._display_insurance_chip(triple=True)
                 if hand.is_triple_seven:
-                    result = "TRIPLE SEVEN + INSURANCE"
                     self.player.stack += hand.bet * 3
+                    result = "TRIPLE SEVEN + INSURANCE"
+                    if hand.bet == 2 * self.bet:
+                        self.bet = hand.bet
                     self._display_chips(hand, triple=True)
                 else:
                     self._hide_all_chips()

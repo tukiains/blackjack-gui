@@ -17,7 +17,7 @@ def main():
         help="Count cards. Default is False. Can be used with --ai.",
     )
     parser.add_argument(
-        "--bet", type=int, default=1, help="Bet size (1-10). Default is 1."
+        "--bet", type=int, default=1, help="Bet size (1-100). Default is 1."
     )
     parser.add_argument(
         "--stack", type=int, default=1000, help="Stack size. Default is 1000."

@@ -198,7 +198,7 @@ class TableComponents:
         slider = tkinter.Scale(
             self.root,
             from_=1,
-            to=10,
+            to=100,
             orient=tkinter.HORIZONTAL,
             background="lightgray",
         )

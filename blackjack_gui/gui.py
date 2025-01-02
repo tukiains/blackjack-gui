@@ -718,9 +718,9 @@ def main(args: Namespace):
     root = tkinter.Tk()
     root.geometry("1200x700")
     rules = (
-        "H17, DAS, No Surrender"
+        "H17, Peek, No Surrender, DAS"
         if args.rules.region == "US"
-        else "S17, DAS, Early Surrender"
+        else "S17, No Peek, Surrender, DAS, 7-7-7 pays 3:1"
     )
     root.title(f"Blackjack {args.rules.region} ({rules})")
     background = "#4e9572"

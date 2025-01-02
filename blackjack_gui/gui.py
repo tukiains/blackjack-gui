@@ -20,7 +20,7 @@ from .lib import (
 from .table_components import TableComponents, get_image, CheckButton
 
 TIME_DELAY = 800
-N_CARDS_MAX = 9
+N_CARDS_MAX = 11
 IMG_PATH = f"{os.path.dirname(__file__)}/images/"
 
 

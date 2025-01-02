@@ -126,16 +126,16 @@ class TableComponents:
             i.place(x=ind * self._x_slot + self._padding_left + 110, y=465)
         return info, info_text
 
-    def get_player_slots(self, N_CARDS_MAX: int) -> dict[str, tkinter.Label]:
+    def get_player_slots(self, n_cards_max: int) -> dict[str, tkinter.Label]:
         slot_player = {
             f"{str(slot)}{str(pos)}": tkinter.Label(
                 self.root, borderwidth=0, background=self.background
             )
             for slot in range(4)
-            for pos in range(N_CARDS_MAX)
+            for pos in range(n_cards_max)
         }
         for frame in range(4):
-            for pos in range(N_CARDS_MAX):
+            for pos in range(n_cards_max):
                 slot_player[f"{str(frame)}{str(pos)}"].place(
                     x=frame * self._x_slot + pos * 30 + self._padding_left,
                     y=350 - pos * 30,
@@ -143,13 +143,13 @@ class TableComponents:
         return slot_player
 
     def get_dealer_slot(self) -> dict[str, tkinter.Label]:
-        n_dealer_cards = 7
+        n_cards_max = 11
         card_back_img, _, _ = get_image()
         slot_dealer = {
             f"{str(pos)}": tkinter.Label(
                 self.root, borderwidth=0, background=self.background
             )
-            for pos in range(n_dealer_cards)
+            for pos in range(n_cards_max)
         }
         for pos in range(2):
             slot_dealer[str(pos)].configure(image=card_back_img)

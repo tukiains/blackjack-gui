@@ -52,7 +52,7 @@ class Game:
         self.gui = gui
         self.args = args
         self.bet = args.bet
-        self.shoe = self.init_shoe()
+        self.shoe = Shoe(6)
         self.active_slot = None
         self.initial_bet = args.bet
         self._n_correct_play = 0
@@ -177,7 +177,7 @@ class Game:
         """Method for Reset button."""
         self._clean_info()
         self.player.buy_in(self.player.initial_stack)
-        self.shoe = self.init_shoe()
+        self.shoe = Shoe(6)
         self._clean_dealer_slots()
         self.gui.slider.set(self.initial_bet)
         self.player.init_count()
@@ -242,11 +242,7 @@ class Game:
         self.player.stack -= self.dealer.insurance_bet
         self._display_stack()
         self._hide_buttons(("insurance",))
-        if self.args.rules.peek:
-            if self.dealer.cards[1].value == 10:
-                self._display_dealer_cards(hide_second=False)
-                self.dealer.cards[1].visible = True
-                self._payout()
+        self._check_dealer_peek()
 
     def split(self):
         """Method for Split button."""
@@ -256,15 +252,9 @@ class Game:
             and self._check_play(hand, "split") is False
         ):
             return
-        self._hide_buttons(("surrender", "insurance"))
-
-        if self.args.rules.peek and self.dealer.is_blackjack:
-            self._hide_buttons()
-            self._display_dealer_cards(hide_second=False)
-            self.dealer.cards[1].visible = True
-            self._payout()
+        if self._check_dealer_peek():
             return
-
+        self._hide_buttons(("surrender", "insurance"))
         new_hand = self.player.start_new_hand(self.bet)
         split_card = hand.cards.pop()
         new_hand.deal(split_card, self.gui.shoe_progress)
@@ -436,12 +426,10 @@ class Game:
         hand.bet = 0
 
     def _check_dealer_peek(self) -> bool:
-        """Checks if Dealer has BJ before any hands are played."""
+        """Checks if Dealer has BJ before any action."""
         if self.args.rules.peek and self.dealer.is_blackjack:
             self._hide_buttons()
-            self._display_dealer_cards(hide_second=False)
-            self.dealer.cards[1].visible = True
-            self._payout()
+            self.gui.root.after(TIME_DELAY, self._reveal_dealer_hidden_card)
             return True
         return False
 
@@ -694,12 +682,8 @@ class Game:
         self._n_rounds = 0
         self.gui.accuracy_text.set("")
 
-    @staticmethod
-    def init_shoe():
-        return Shoe(6)
 
-
-def _get_chip_image(color: str = "red"):
+def _get_chip_image(color: str = "red") -> ImageTk.PhotoImage:
     size = 50
     filename = f"{IMG_PATH}/{color}-chip.png"
     image = Image.open(filename).resize(
@@ -708,7 +692,7 @@ def _get_chip_image(color: str = "red"):
     return ImageTk.PhotoImage(image)
 
 
-def _get_finger_image():
+def _get_finger_image() -> ImageTk.PhotoImage:
     filename = f"{IMG_PATH}/finger2.png"
     image = Image.open(filename).resize((40, 60), Image.Resampling.LANCZOS)
     return ImageTk.PhotoImage(image)

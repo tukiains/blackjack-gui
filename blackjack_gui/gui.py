@@ -491,7 +491,8 @@ class Game:
         return True
 
     def _display_stack(self):
-        self.gui.label_text.set(f"Stack: {self.player.stack} $")
+        unit = "$" if self.args.rules.region == "US" else "€"
+        self.gui.label_text.set(f"Stack: {self.player.stack} {unit}")
 
     def _display_chips(self, hand, bj: bool = False, triple: bool = False):
         if bj is True:

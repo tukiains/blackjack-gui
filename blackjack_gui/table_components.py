@@ -216,6 +216,10 @@ class CheckConfig:
 
 
 class CheckButton:
+    x = 1020
+    y = 580
+    y_offset = 25
+
     def __init__(
         self, root: tkinter.Tk, args: Namespace, background: str
     ) -> None:
@@ -226,7 +230,7 @@ class CheckButton:
     def fetch_count(self) -> tuple[tkinter.StringVar, tkinter.IntVar]:
         txt_location = (10, 610)
         conf = CheckConfig(
-            location=(1040, 625),
+            location=(CheckButton.x, CheckButton.y + CheckButton.y_offset),
             txt_location=txt_location,
             txt="Show count",
         )
@@ -238,7 +242,7 @@ class CheckButton:
     def fetch_accuracy(self) -> tuple[tkinter.StringVar, tkinter.IntVar]:
         txt_location = (10, 655)
         conf = CheckConfig(
-            location=(1040, 600),
+            location=(CheckButton.x, CheckButton.y),
             txt_location=txt_location,
             txt="Coach mode",
         )
@@ -246,6 +250,21 @@ class CheckButton:
         checkbox = self._get_checkbutton(label, conf)
         self._show_accuracy(label, checkbox, txt_location)
         return text, checkbox
+
+    def fetch_csm(self) -> tkinter.IntVar:
+        var = tkinter.IntVar()
+        if self.args.rules.region == "Helsinki":
+            var.set(1)
+        checkbutton = tkinter.Checkbutton(
+            self.root,
+            text="Continuous shuffle",
+            variable=var,
+            background="lightgrey",
+        )
+        checkbutton.place(
+            x=CheckButton.x, y=CheckButton.y + 2 * CheckButton.y_offset
+        )
+        return var
 
     def _get_table_infotext(
         self, txt_location: tuple[int, int]

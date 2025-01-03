@@ -43,6 +43,7 @@ class Gui:
     accuracy_text: tkinter.StringVar
     show_count: tkinter.IntVar
     count_text: tkinter.StringVar
+    use_csm: tkinter.IntVar
 
 
 class Game:
@@ -73,12 +74,14 @@ class Game:
         self._dealer_info()
         self.player.hands = []
         if (
-            self.shoe.n_cards < 52
+            (self.gui.use_csm.get() == 1)
+            or self.shoe.n_cards < 52
             or self.args.cards is not None
             or self.args.subset is not None
         ):
             self.shoe = Shoe(6)
             self.player.init_count()
+
         hand = self.player.start_new_hand(self.bet)
         self.dealer.init_hand()
         if self.args.dealer_cards is not None:
@@ -706,6 +709,7 @@ def main(args: Namespace):
     check_button = CheckButton(root, args, background)
     accuracy_text, fix_mistakes = check_button.fetch_accuracy()
     count_text, fix_count = check_button.fetch_count()
+    use_csm = check_button.fetch_csm()
 
     # Buttons
     menu = {
@@ -771,6 +775,7 @@ def main(args: Namespace):
         accuracy_text,
         fix_count,
         count_text,
+        use_csm,
     )
 
     dealer = Dealer(args.rules.game_type)

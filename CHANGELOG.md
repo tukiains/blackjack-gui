@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.0 – 2025-01-03
+
+- Increase max number of cards
+- Add continuous shuffle to gui
+
 ## 1.5.10 – 2025-01-02
 
 - Fix currency unit

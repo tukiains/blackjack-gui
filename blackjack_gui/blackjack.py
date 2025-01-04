@@ -70,7 +70,7 @@ def main():
         cli.play(args)
     else:
         logging.basicConfig(level="WARNING")
-        gui.main(args)
+        gui.settings(args)
 
 
 if __name__ == "__main__":

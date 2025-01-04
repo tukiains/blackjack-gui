@@ -118,7 +118,7 @@ def play(args):
 
         if hand.is_blackjack is False:
             # Surrender can be done only here. And not against dealer's Ace.
-            if args.rules.surrender is True and not dealer.has_ace:
+            if args.rules.surrender == "2-10" and not dealer.has_ace:
                 correct_play = get_correct_play(
                     hand, dealer.cards[0], len(player.hands), args.rules
                 )

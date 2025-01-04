@@ -50,11 +50,13 @@ class TableComponents:
         )
         panel.place(x=1000, y=0)
 
-    def get_shoe_status(self) -> tkinter.Label:
+    def get_shoe_progress(self, n_decks: int) -> tkinter.Label:
         shoe_status_container = tkinter.Label(
             self.root, borderwidth=0, background="white"
         )
-        shoe_status_container.place(x=20, y=30, height=150, width=30)
+        height = n_decks * 20
+        y = 200 - height
+        shoe_status_container.place(x=20, y=y, height=height, width=30)
         shoe_progress = tkinter.Label(
             shoe_status_container, background="black", borderwidth=0, anchor="e"
         )
@@ -66,7 +68,7 @@ class TableComponents:
             background=self.background,
             fg=FOREGROUND,
         )
-        shoe_label.place(x=5, y=190)
+        shoe_label.place(x=5, y=210)
         return shoe_progress
 
     def get_label(self) -> tkinter.StringVar:
@@ -216,8 +218,8 @@ class CheckConfig:
 
 
 class CheckButton:
-    x = 1020
-    y = 580
+    x = 1030
+    y = 560
     y_offset = 25
 
     def __init__(
@@ -250,21 +252,6 @@ class CheckButton:
         checkbox = self._get_checkbutton(label, conf)
         self._show_accuracy(label, checkbox, txt_location)
         return text, checkbox
-
-    def fetch_csm(self) -> tkinter.IntVar:
-        var = tkinter.IntVar()
-        if self.args.rules.region == "Helsinki":
-            var.set(1)
-        checkbutton = tkinter.Checkbutton(
-            self.root,
-            text="Continuous shuffle",
-            variable=var,
-            background="lightgrey",
-        )
-        checkbutton.place(
-            x=CheckButton.x, y=CheckButton.y + 2 * CheckButton.y_offset
-        )
-        return var
 
     def _get_table_infotext(
         self, txt_location: tuple[int, int]

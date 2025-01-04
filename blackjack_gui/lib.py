@@ -7,11 +7,14 @@ from typing import List, Literal
 @dataclass
 class Rules:
     game_type: Literal["s17", "h17"]
-    surrender: bool
+    surrender: Literal["no", "2-10"]
     peek: bool
     double_after_split: bool = True
+    resplit_aces: bool = True
     triple_seven: bool = False
     region: Literal["US", "Europe", "Helsinki"] = "US"
+    number_of_decks: int = 6
+    csm: bool = False
 
 
 class Card:
@@ -86,20 +89,21 @@ class Shoe:
         random.shuffle(self.cards)
         self.n_cards = len(self.cards)
 
-    def draw(self, progress: tkinter.Label | None = None) -> Card:
+    def draw(self) -> Card:
         """Draws a card from shoe."""
         if self.n_cards > 0:
             card = self.cards.pop(0)
             self.n_cards -= 1
-            fraction = (
-                self._n_cards_total - self.n_cards
-            ) / self._n_cards_total
-            if progress is not None:
-                progress.place(
-                    x=30, y=150, anchor="se", relheight=fraction, relwidth=1.0
-                )
             return card
         raise ValueError("Empty shoe!")
+
+    def fill_discard_tray(self, progress: tkinter.Label) -> None:
+        fraction = (self._n_cards_total - self.n_cards) / self._n_cards_total
+        y = self.n_decs * 20
+        if progress is not None:
+            progress.place(
+                x=30, y=y, anchor="se", relheight=fraction, relwidth=1.0
+            )
 
     def arrange(self, cards: list, randomize: bool = False):
         """Arranges shoe so that next cards are the requested ones."""
@@ -146,10 +150,9 @@ class Hand:
     def deal(
         self,
         source: Shoe | Card,
-        progress: tkinter.Label | None = None,
     ):
         if isinstance(source, Shoe):
-            self.cards.append(source.draw(progress))
+            self.cards.append(source.draw())
         else:
             self.cards.append(source)
         self.sum, self.is_hard = evaluate_hand(self.cards)
@@ -157,7 +160,7 @@ class Hand:
         if (
             len(self.cards) == 3
             and all(card.label == "7" for card in self.cards)
-            and self.is_split_hand is False
+            and not self.is_split_hand
             and self.rules.triple_seven
         ):
             self.is_triple_seven = True
@@ -168,11 +171,7 @@ class Hand:
             self.is_hittable = False
         if self.sum > 21:
             self.is_over = True
-        if (
-            self.sum == 21
-            and len(self.cards) == 2
-            and self.is_split_hand is False
-        ):
+        if self.sum == 21 and len(self.cards) == 2 and not self.is_split_hand:
             self.is_blackjack = True
 
     def __repr__(self) -> str:
@@ -200,8 +199,8 @@ class Dealer:
         self.insurance_bet = 0
         self.even_money = False
 
-    def deal(self, shoe: Shoe, progress: tkinter.Label | None = None):
-        card = shoe.draw(progress)
+    def deal(self, shoe: Shoe):
+        card = shoe.draw()
         self.cards.append(card)
         self.sum, _ = evaluate_hand(self.cards)
         labels = [c.label for c in self.cards]
@@ -265,7 +264,7 @@ class Player:
         self.true_count = self.running_count / n_decs_left
 
     def update_running_count(self, card: Card):
-        if card.visible is False or card.counted:
+        if not card.visible or card.counted:
             return
         if card.label == "A" or card.value == 10:
             self.running_count -= 1
@@ -287,7 +286,7 @@ def evaluate_hand(cards: list) -> tuple:
     for card in cards:
         if card.label == "A":
             is_hard = False
-            if ace_used is False:
+            if not ace_used:
                 the_sum += 11
                 ace_used = True
             else:
@@ -311,19 +310,19 @@ def get_rules(region: Literal["US", "Europe", "Helsinki"]):
     if region == "US":
         rules = Rules(
             game_type="h17",
-            surrender=False,
+            surrender="no",
             peek=True,
         )
     if region == "Europe":
         rules = Rules(
             game_type="s17",
-            surrender=False,
+            surrender="no",
             peek=False,
         )
     if region == "Helsinki":
         rules = Rules(
             game_type="s17",
-            surrender=True,
+            surrender="2-10",
             peek=False,
             triple_seven=True,
         )
@@ -342,41 +341,28 @@ def get_correct_play(
     surrender = "surrender"
     double = "double"
     dealer_ace = dealer_card.label == "A"
+    can_be_doubled = (
+        n_cards == 2
+        and hand.is_hittable
+        and not (hand.is_split_hand and not rules.double_after_split)
+    )
 
     # Hard hands
-    if hand.is_hard is True and not (
-        n_cards == 2 and cards[0].value == cards[1].value
-    ):
+    if hand.is_hard and not (n_cards == 2 and cards[0].value == cards[1].value):
         if hand.sum <= 8:
             return hit
         if hand.sum == 9:
-            if (
-                dealer_card.value in range(3, 7)
-                and n_cards == 2
-                and hand.is_hittable is True
-            ):
+            if dealer_card.value in range(3, 7) and can_be_doubled:
                 return double
             return hit
         if hand.sum == 10:
-            if (
-                dealer_card.value in range(2, 10)
-                and n_cards == 2
-                and hand.is_hittable is True
-            ):
+            if dealer_card.value in range(2, 10) and can_be_doubled:
                 return double
             return hit
         if hand.sum == 11:
-            if (
-                rules.region == "US"
-                and n_cards == 2
-                and hand.is_hittable is True
-            ):
+            if rules.game_type == "h17" and can_be_doubled:
                 return double
-            if (
-                dealer_card.value in range(2, 10)
-                and n_cards == 2
-                and hand.is_hittable is True
-            ):
+            if dealer_card.value in range(2, 10) and can_be_doubled:
                 return double
             return hit
         if hand.sum == 12:
@@ -384,35 +370,32 @@ def get_correct_play(
         if hand.sum == 13:
             return stay if dealer_card.value in range(2, 7) else hit
         if hand.sum == 14:
-            if (
-                _should_surrender(hand, dealer_card, (10,)) is True
-                and rules.region == "Helsinki"
+            if rules.surrender != "no" and _should_surrender(
+                hand, dealer_card, (10,)
             ):
                 return surrender
             return stay if dealer_card.value in range(2, 7) else hit
         if hand.sum == 15:
-            if (
-                _should_surrender(hand, dealer_card, (10,)) is True
-                and rules.region == "Helsinki"
+            if rules.surrender != "no" and _should_surrender(
+                hand, dealer_card, (10,)
             ):
                 return surrender
             if (
-                dealer_ace is False
+                not dealer_ace
                 and isinstance(dealer_card.value, int)
                 and dealer_card.value <= 6
             ):
                 return stay
             return hit
         if hand.sum == 16:
-            if (
-                _should_surrender(hand, dealer_card, (9, 10)) is True
-                and rules.surrender
+            if rules.surrender != "no" and _should_surrender(
+                hand, dealer_card, (9, 10)
             ):
                 return surrender
             if n_cards >= 3 and dealer_card.value == 10:
                 return stay
             if (
-                dealer_ace is False
+                not dealer_ace
                 and isinstance(dealer_card.value, int)
                 and dealer_card.value <= 6
             ):
@@ -426,9 +409,9 @@ def get_correct_play(
         if cards[0].label == "A":
             if n_hands == 4:
                 return hit
-            if rules.region == "US":
+            if rules.game_type == "h17":
                 return split
-            return hit if dealer_ace is True else split
+            return hit if dealer_ace else split
         if cards[0].value == 10:
             return stay
         if cards[0].value == 9:
@@ -440,11 +423,11 @@ def get_correct_play(
                 return stay
             return split
         if cards[0].value == 8:
-            if rules.region == "US":
+            if rules.game_type == "h17":
                 return split
-            if _should_surrender(hand, dealer_card, (10,)) is True:
+            if _should_surrender(hand, dealer_card, (10,)):
                 return surrender
-            if n_hands == 4 or dealer_ace is True:
+            if n_hands == 4 or dealer_ace:
                 return hit
             return split
         if cards[0].value == 7:
@@ -458,18 +441,29 @@ def get_correct_play(
         if cards[0].value == 6:
             if (
                 isinstance(dealer_card.value, int)
+                and dealer_card.value == 2
+                and rules.game_type == "h17"
+            ):
+                return split if rules.double_after_split else hit
+            if (
+                isinstance(dealer_card.value, int)
                 and dealer_card.value <= 6
                 and n_hands < 4
             ):
                 return split
             return hit
         if cards[0].value == 5:
-            if isinstance(dealer_card.value, int) and dealer_card.value <= 9:
-                if len(cards) == 2:
-                    return double
+            if (
+                isinstance(dealer_card.value, int)
+                and dealer_card.value <= 9
+                and can_be_doubled
+            ):
+                return double
             return hit
         if cards[0].value == 4:
             if dealer_card.value in (5, 6) and n_hands < 4:
+                if rules.game_type == "h17" and not rules.double_after_split:
+                    return hit
                 return split
             return hit
         if cards[0].value == 3:
@@ -490,60 +484,49 @@ def get_correct_play(
             return hit
 
     # Soft hands
-    if hand.is_hard is False:
+    if not hand.is_hard:
         labels = [card.label for card in cards]
         assert "A" in labels
         if hand.sum > 19:
             return stay
         if hand.sum == 19:
             if (
-                rules.region == "US"
+                rules.game_type == "h17"
                 and dealer_card.value == 6
-                and n_cards == 2
-                and hand.is_hittable is True
+                and can_be_doubled
             ):
                 return double
             return stay
         if hand.sum == 18:
-            if rules.region == "US":
+            if rules.game_type == "h17":
                 if dealer_card.value in range(2, 7):
-                    if n_cards == 2 and hand.is_hittable is True:
-                        return double
-                    return stay
+                    return double if can_be_doubled else stay
                 if dealer_card.value in (7, 8):
                     return stay
                 return hit
             if dealer_card.value in range(3, 7):
-                if n_cards == 2 and hand.is_hittable is True:
-                    return double
-                return stay
+                return double if can_be_doubled else stay
             if dealer_card.value in (2, 7, 8):
                 return stay
             return hit
         if hand.sum == 17:
-            if (
-                dealer_card.value in range(3, 7)
-                and n_cards == 2
-                and hand.is_hittable is True
-            ):
-                return double
-            return hit
+            return (
+                double
+                if dealer_card.value in range(3, 7) and can_be_doubled
+                else hit
+            )
         if hand.sum in (15, 16):
-            if (
-                dealer_card.value in (4, 5, 6)
-                and n_cards == 2
-                and hand.is_hittable is True
-            ):
-                return double
-            return hit
+            return (
+                double
+                if dealer_card.value in (4, 5, 6) and can_be_doubled
+                else hit
+            )
         if hand.sum in (13, 14):
-            if (
-                dealer_card.value in (5, 6)
-                and n_cards == 2
-                and hand.is_hittable is True
-            ):
-                return double
-            return hit
+            return (
+                double
+                if dealer_card.value in (5, 6) and can_be_doubled
+                else hit
+            )
         if hand.sum < 13:
             return hit
 
@@ -551,11 +534,7 @@ def get_correct_play(
 
 
 def _should_surrender(hand: Hand, dealer_card: Card, values: tuple) -> bool:
-    if (
-        hand.is_split_hand is True
-        or dealer_card.label[0] == "A"
-        or len(hand.cards) != 2
-    ):
+    if hand.is_split_hand or len(hand.cards) != 2:
         return False
     if dealer_card.value in values:
         return True

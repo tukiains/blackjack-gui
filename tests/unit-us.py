@@ -467,3 +467,64 @@ def test_get_correct_play(cards, dealer, correct_play):
     n_hands = 1
     dealer_card = Card(dealer, "clubs")
     assert get_correct_play(hand, dealer_card, n_hands, rules) == correct_play
+
+
+# Test h17 hands when DAS is not allowed
+@pytest.mark.parametrize(
+    "cards, dealer, correct_play",
+    [
+        # 4, 4
+        (["4", "4"], "2", "hit"),
+        (["4", "4"], "3", "hit"),
+        (["4", "4"], "4", "hit"),
+        (["4", "4"], "5", "hit"),
+        (["4", "4"], "6", "hit"),
+        (["4", "4"], "7", "hit"),
+        (["4", "4"], "8", "hit"),
+        (["4", "4"], "9", "hit"),
+        (["4", "4"], "10", "hit"),
+        (["4", "4"], "A", "hit"),
+        # 6, 6
+        (["6", "6"], "2", "hit"),
+        (["6", "6"], "3", "split"),
+        (["6", "6"], "4", "split"),
+        (["6", "6"], "5", "split"),
+        (["6", "6"], "6", "split"),
+        (["6", "6"], "7", "hit"),
+        (["6", "6"], "8", "hit"),
+        (["6", "6"], "9", "hit"),
+        (["6", "6"], "10", "hit"),
+        (["6", "6"], "A", "hit"),
+    ],
+)
+def test_get_correct_play_with_das(cards, dealer, correct_play):
+    rules = get_rules("US")
+    rules.double_after_split = False
+    hand = Hand(rules)
+    for label in cards:
+        hand.cards.append(Card(label, "clubs"))
+    hand.sum, hand.is_hard = evaluate_hand(hand.cards)
+    n_hands = 1
+    dealer_card = Card(dealer, "clubs")
+    assert get_correct_play(hand, dealer_card, n_hands, rules) == correct_play
+
+
+# Test h17 hands when surrender is allowed
+@pytest.mark.parametrize(
+    "cards, dealer, correct_play",
+    [
+        (["7", "8"], "9", "hit"),
+        (["7", "8"], "10", "surrender"),
+        (["7", "8"], "A", "hit"),
+    ],
+)
+def test_h17_with_surrender(cards, dealer, correct_play):
+    rules = get_rules("US")
+    rules.surrender = "2-10"
+    hand = Hand(rules)
+    for label in cards:
+        hand.cards.append(Card(label, "clubs"))
+    hand.sum, hand.is_hard = evaluate_hand(hand.cards)
+    n_hands = 1
+    dealer_card = Card(dealer, "clubs")
+    assert get_correct_play(hand, dealer_card, n_hands, rules) == correct_play

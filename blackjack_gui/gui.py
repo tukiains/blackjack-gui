@@ -317,6 +317,9 @@ class Game:
         else:
             self._hide_insurance_chip()
 
+        if self.player.hands[0].is_blackjack:
+            self.dealer.is_finished = True
+
         if not self.dealer.is_finished:
             self.gui.root.after(TIME_DELAY, self._dealer_draw_one_card)
         else:

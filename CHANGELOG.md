@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.1 – 2025-01-05
+
+- Hide buttons in even money
+- Finish hand in case of BJ
+
 ## 1.7.0 – 2025-01-05
 
 - Implement settings window

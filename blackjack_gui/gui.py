@@ -147,6 +147,7 @@ class Game:
         ):
             return
         self.dealer.even_money = True
+        self._hide_buttons()
         self._hide(hand)
         self._payout()
 

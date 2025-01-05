@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.2 – 2025-01-05
+
+- Improve button locations
+
 ## 1.7.1 – 2025-01-05
 
 - Hide buttons in even money

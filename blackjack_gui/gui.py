@@ -878,8 +878,8 @@ def main(args: Namespace):
     x_sidepanel = 1025
     for ind, button in enumerate(menu.values()):
         button.place(x=x_sidepanel, y=ind * 33 + 230)
-    menu["deal"].place(x=x_sidepanel, y=480)
-    menu["reset"].place(x=x_sidepanel, y=650)
+    menu["deal"].place(x=x_sidepanel, y=500)
+    menu["reset"].place(x=x_sidepanel, y=65)
 
     slider = components.get_slider(x_sidepanel, args.bet)
 

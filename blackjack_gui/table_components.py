@@ -205,8 +205,8 @@ class TableComponents:
             background="lightgray",
         )
         slider.set(bet)
-        slider.place(x=x_sidepanel + 40, y=100)
-        bet_label.place(x=x_sidepanel, y=120)
+        slider.place(x=x_sidepanel + 40, y=140)
+        bet_label.place(x=x_sidepanel, y=160)
         return slider
 
 
@@ -219,7 +219,7 @@ class CheckConfig:
 
 class CheckButton:
     x = 1030
-    y = 560
+    y = 600
     y_offset = 25
 
     def __init__(

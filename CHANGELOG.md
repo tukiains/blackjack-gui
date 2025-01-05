@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.0 – 2025-01-05
+
+- Implement settings window
+
 ## 1.6.0 – 2025-01-03
 
 - Increase max number of cards

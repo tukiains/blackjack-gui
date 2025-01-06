@@ -38,19 +38,19 @@ blackjack [-h] [--cli] [--ai] [--count] [--bet BET] [--stack STACK]
 
 ### Options
 
-| Name             | Default    | Description                                                                                                                                                                              |
-| :--------------- | :--------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--cli`          | `False`    | Use command line version.                                                                                                                                                                |
-| `--ai`           | `False`    | If True, computer plays instead of you. Only with `--cli`.                                                                                                                               |
-| `--count`        | `False`    | If True, `ai` uses card counting. Only with `--cli` and `--ai`.                                                                                                                          |
-| `--bet`          | 1          | Bet size (max 100).                                                                                                                                                                      |
-| `--stack`        | 1000       | Initial stack.                                                                                                                                                                           |
-| `--n-games`      | 10         | Number of rounds to be played. Only with `--cli`.                                                                                                                                        |
-| `--loglevel`     | `DEBUG`    | Adjust amount of logging: DEBUG or INFO. Only with `--cli`.                                                                                                                              |
-| `--cards`        |            | Determine the first player cards, e.g. `--cards=A,8,K`. Shuffles the shoe after every hand. Multiple options (one will be randomly selected) can be defined like this: `"A,7;9,9;10,2"`. |
-| `--subset`       |            | Instead of `--cards`, practice with one of the subsets: `hard`, `soft`, `pairs`, `hard/soft`, or `soft/pairs`                                                                            |
-| `--dealer-cards` |            | Determine the first dealer cards. Useful for testing.                                                                                                                                    |
-| `--rules`        | `Helsinki` | Rules to be used. Can be `Helsinki` or `US`. See the basic strategy charts below.                                                                                                        |
+| Name             | Default | Description                                                                                                                                                                              |
+| :--------------- | :------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--cli`          | `False` | Use command line version.                                                                                                                                                                |
+| `--ai`           | `False` | If True, computer plays instead of you. Only with `--cli`.                                                                                                                               |
+| `--count`        | `False` | If True, `ai` uses card counting. Only with `--cli` and `--ai`.                                                                                                                          |
+| `--bet`          | 10      | Bet size (max 100).                                                                                                                                                                      |
+| `--stack`        | 200     | Initial stack.                                                                                                                                                                           |
+| `--n-games`      | 10      | Number of rounds to be played. Only with `--cli`.                                                                                                                                        |
+| `--loglevel`     | `DEBUG` | Adjust amount of logging: DEBUG or INFO. Only with `--cli`.                                                                                                                              |
+| `--cards`        |         | Determine the first player cards, e.g. `--cards=A,8,K`. Shuffles the shoe after every hand. Multiple options (one will be randomly selected) can be defined like this: `"A,7;9,9;10,2"`. |
+| `--subset`       |         | Instead of `--cards`, practice with one of the subsets: `hard`, `soft`, `pairs`, `hard/soft`, or `soft/pairs`                                                                            |
+| `--dealer-cards` |         | Determine the first dealer cards. Useful for testing.                                                                                                                                    |
+| `--rules`        | `US`    | Rules to be used. Can be `Helsinki` or `US`. See the basic strategy charts below.                                                                                                        |
 
 ## Examples
 

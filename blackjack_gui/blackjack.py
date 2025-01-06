@@ -17,10 +17,10 @@ def main():
         help="Count cards. Default is False. Can be used with --ai.",
     )
     parser.add_argument(
-        "--bet", type=int, default=1, help="Bet size (1-100). Default is 1."
+        "--bet", type=int, default=10, help="Bet size (1-100). Default is 10."
     )
     parser.add_argument(
-        "--stack", type=int, default=1000, help="Stack size. Default is 1000."
+        "--stack", type=int, default=200, help="Stack size. Default is 200."
     )
     parser.add_argument(
         "--n-games",
@@ -58,7 +58,7 @@ def main():
         type=str,
         choices=["US", "Helsinki"],
         help="Rules to be used. US = H17, peek, no surrender. Helsinki = S17, no peek, surrender.",
-        default="Helsinki",
+        default="US",
     )
 
     args = parser.parse_args()

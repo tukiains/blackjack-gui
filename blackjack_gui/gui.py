@@ -719,6 +719,8 @@ def _get_finger_image() -> ImageTk.PhotoImage:
 
 
 def settings(args: Namespace):
+    print(args.rules.region)
+
     def close_settings():
         args.rules = Rules(
             game_type=cast(Literal["h17", "s17"], game_type.get()),

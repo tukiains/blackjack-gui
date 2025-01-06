@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.3 – 2025-01-06
+
+- Fix split with RSA
+- Hide finger
+
 ## 1.7.2 – 2025-01-05
 
 - Improve button locations

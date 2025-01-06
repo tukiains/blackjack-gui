@@ -798,7 +798,7 @@ def settings(args: Namespace):
     )
     link2 = tkinter.Label(
         root,
-        text="Typical rules in US",
+        text="Typical rules in the US",
         fg="white",
         cursor="hand2",
         background=background,

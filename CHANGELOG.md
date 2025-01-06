@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.5 – 2025-01-06
+
+- Adjust default options
+- Fix typo
+
 ## 1.7.4 – 2025-01-06
 
 - Fix unit

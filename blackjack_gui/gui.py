@@ -261,29 +261,45 @@ class Game:
             return
         if self._check_dealer_peek():
             return
+
         self._hide_buttons(("surrender", "insurance"))
         new_hand = self.player.start_new_hand(self.bet)
         split_card = hand.cards.pop()
         new_hand.deal(split_card)
         self._display_chip(new_hand, 0)
         self._display_stack()
-        for handy in (hand, new_hand):
-            handy.is_split_hand = True
-            handy.deal(self.shoe)
-            if handy.cards[0].label == "A":
+
+        for split_hand in (hand, new_hand):
+            split_hand.is_split_hand = True
+            split_hand.deal(self.shoe)
+            if split_hand.cards[0].label == "A":
                 # Split Aces receive only one card more
-                handy.is_hittable = False
-                handy.is_finished = True
+                split_hand.is_hittable = False
+                if split_hand.cards[1].label != "A":
+                    split_hand.is_finished = True
+                if (
+                    split_hand.cards[1].label == "A"
+                    and not self.rules.resplit_aces
+                ):
+                    split_hand.is_finished = True
 
         self.player.sort_hands()
+
         if len(self.player.hands) < 4:
             self.player.hands.sort(
                 key=lambda x: not x.cards[0].value == x.cards[1].value
             )
+
         for hand in self.player.hands:
+            two_aces = hand.cards[0].label == "A" and hand.cards[1].label == "A"
+            if two_aces and len(self.player.hands) == 4:
+                hand.is_finished = True
             rotate = hand.cards[0].label == "A" and hand.cards[1].label != "A"
+            if two_aces and not self.rules.resplit_aces:
+                rotate = True
             self._display_player_cards(hand, rotate_last=rotate)
             self._handle_counts(hand, self.shoe)
+
         self._resolve_next_hand()
 
     def _resolve_next_hand(self):
@@ -468,6 +484,15 @@ class Game:
             self._show_buttons(("hit", "stay"))
         else:
             self._hide_buttons(("hit", "stay"))
+        if hand.is_split_hand and hand.cards[0].label == "A":
+            self._show_buttons(("stay",))
+        if (
+            hand.is_split_hand
+            and hand.cards[0].label == "A"
+            and hand.cards[1].label == "A"
+            and not self.rules.resplit_aces
+        ):
+            self._hide_buttons(("split",))
 
     def _check_play(self, hand: Hand, play: str) -> bool:
         """Verifies player decision. Ignores deviations."""

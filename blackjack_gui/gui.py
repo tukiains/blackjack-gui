@@ -311,6 +311,7 @@ class Game:
         else:
             self._clean_info()
             self._hide_buttons()
+            self._hide_fingers()
             if not self._is_all_over() or self.dealer.insurance_bet > 0:
                 self.gui.root.after(TIME_DELAY, self._reveal_dealer_hidden_card)
             else:

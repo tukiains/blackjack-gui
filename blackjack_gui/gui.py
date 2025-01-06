@@ -729,6 +729,7 @@ def settings(args: Namespace):
             triple_seven=triple_seven.get(),
             peek=peek.get(),
             number_of_decks=n_decks.get(),
+            region=args.rules.region,
         )
         root.destroy()
         main(args)
@@ -743,6 +744,8 @@ def settings(args: Namespace):
             triple_seven.set(True)
             peek.set(False)
             n_decks.set(6)
+            args.rules.region = "Helsinki"
+
         elif region == "US":
             game_type.set("h17")
             surrender.set("no")
@@ -752,6 +755,7 @@ def settings(args: Namespace):
             triple_seven.set(False)
             peek.set(True)
             n_decks.set(6)
+            args.rules.region = "US"
 
     root = tkinter.Tk()
     root.title("Select rules for the game")

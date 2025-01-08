@@ -508,3 +508,29 @@ def test_get_correct_play_no_double(cards, dealer, correct_play):
     hand.is_hittable = False
     dealer_card = Card(dealer, "hearts")
     assert get_correct_play(hand, dealer_card, n_hands, rules) == correct_play
+
+
+@pytest.mark.parametrize(
+    "cards, dealer, correct_play, n_hands",
+    [
+        (["2", "2"], "2", "hit", 3),
+        (["2", "2"], "3", "hit", 3),
+        (["2", "2"], "4", "split", 3),
+        (["2", "2"], "4", "hit", 4),
+        (["3", "3"], "2", "hit", 3),
+        (["3", "3"], "3", "hit", 3),
+        (["2", "2"], "4", "split", 3),
+        (["2", "2"], "4", "hit", 4),
+        (["6", "6"], "2", "hit", 3),
+    ],
+)
+def test_get_correct_play_no_das(cards, dealer, correct_play, n_hands):
+    rules = get_rules("Helsinki")
+    rules.double_after_split = False
+    hand = Hand(rules)
+    for label in cards:
+        hand.cards.append(Card(label, "clubs"))
+    hand.sum, hand.is_hard = evaluate_hand(hand.cards)
+    hand.is_hittable = False
+    dealer_card = Card(dealer, "hearts")
+    assert get_correct_play(hand, dealer_card, n_hands, rules) == correct_play

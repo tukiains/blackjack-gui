@@ -439,17 +439,15 @@ def get_correct_play(
                 return split
             return hit
         if cards[0].value == 6:
+            if n_hands == 4:
+                return hit
             if (
                 isinstance(dealer_card.value, int)
                 and dealer_card.value == 2
-                and rules.game_type == "h17"
+                and not rules.double_after_split
             ):
-                return split if rules.double_after_split else hit
-            if (
-                isinstance(dealer_card.value, int)
-                and dealer_card.value <= 6
-                and n_hands < 4
-            ):
+                return hit
+            if isinstance(dealer_card.value, int) and dealer_card.value <= 6:
                 return split
             return hit
         if cards[0].value == 5:
@@ -467,19 +465,27 @@ def get_correct_play(
                 return split
             return hit
         if cards[0].value == 3:
+            if n_hands == 4:
+                return hit
             if (
                 isinstance(dealer_card.value, int)
-                and dealer_card.value <= 7
-                and n_hands < 4
+                and dealer_card.value in (2, 3)
+                and not rules.double_after_split
             ):
+                return hit
+            if isinstance(dealer_card.value, int) and dealer_card.value <= 7:
                 return split
             return hit
         if cards[0].value == 2:
+            if n_hands == 4:
+                return hit
             if (
                 isinstance(dealer_card.value, int)
-                and dealer_card.value <= 7
-                and n_hands < 4
+                and dealer_card.value in (2, 3)
+                and not rules.double_after_split
             ):
+                return hit
+            if isinstance(dealer_card.value, int) and dealer_card.value <= 7:
                 return split
             return hit
 

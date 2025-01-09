@@ -536,3 +536,21 @@ def test_get_correct_play_no_das(cards, dealer, correct_play, n_hands):
     hand.is_hittable = False
     dealer_card = Card(dealer, "hearts")
     assert get_correct_play(hand, dealer_card, n_hands, rules) == correct_play
+
+
+@pytest.mark.parametrize(
+    "cards, dealer, correct_play",
+    [
+        (["7", "2"], "2", "double"),
+    ],
+)
+def test_get_correct_play_with_2_decks(cards, dealer, correct_play):
+    rules = get_rules("US")
+    rules.number_of_decks = 2
+    hand = Hand(rules)
+    for label in cards:
+        hand.cards.append(Card(label, "clubs"))
+    hand.sum, hand.is_hard = evaluate_hand(hand.cards)
+    hand.is_hittable = False
+    dealer_card = Card(dealer, "hearts")
+    assert get_correct_play(hand, dealer_card, 1, rules) == correct_play

@@ -352,6 +352,8 @@ def get_correct_play(
         if hand.sum <= 8:
             return hit
         if hand.sum == 9:
+            if dealer_card.value == 2 and rules.number_of_decks == 2:
+                return double
             if dealer_card.value in range(3, 7) and can_be_doubled:
                 return double
             return hit

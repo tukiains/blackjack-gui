@@ -382,11 +382,7 @@ def get_correct_play(
                 hand, dealer_card, (10,)
             ):
                 return surrender
-            if (
-                not dealer_ace
-                and isinstance(dealer_card.value, int)
-                and dealer_card.value <= 6
-            ):
+            if not dealer_ace and dealer_card.value in range(2, 7):
                 return stay
             return hit
         if hand.sum == 16:
@@ -396,11 +392,7 @@ def get_correct_play(
                 return surrender
             if n_cards >= 3 and dealer_card.value == 10:
                 return stay
-            if (
-                not dealer_ace
-                and isinstance(dealer_card.value, int)
-                and dealer_card.value <= 6
-            ):
+            if not dealer_ace and dealer_card.value in (2, 3, 4, 5, 6):
                 return stay
             return hit
         if hand.sum >= 17:
@@ -417,11 +409,7 @@ def get_correct_play(
         if cards[0].value == 10:
             return stay
         if cards[0].value == 9:
-            if (
-                dealer_card.value in (7, 10)
-                or dealer_card.label == "A"
-                or n_hands == 4
-            ):
+            if dealer_card.value in (7, 10) or dealer_ace or n_hands == 4:
                 return stay
             return split
         if cards[0].value == 8:
@@ -433,61 +421,35 @@ def get_correct_play(
                 return hit
             return split
         if cards[0].value == 7:
-            if (
-                isinstance(dealer_card.value, int)
-                and dealer_card.value <= 7
-                and n_hands < 4
-            ):
+            if dealer_card.value in (2, 3, 4, 5, 6, 7) and n_hands < 4:
                 return split
             return hit
         if cards[0].value == 6:
-            if n_hands == 4:
-                return hit
             if (
                 dealer_card.value == 2
                 and not rules.double_after_split
                 and rules.number_of_decks >= 4
             ):
                 return hit
-            if dealer_card.value in (2, 3, 4, 5, 6):
+            if dealer_card.value in (2, 3, 4, 5, 6) and n_hands < 4:
                 return split
             return hit
         if cards[0].value == 5:
-            if (
-                isinstance(dealer_card.value, int)
-                and dealer_card.value <= 9
-                and can_be_doubled
-            ):
+            if dealer_card.value in range(2, 10) and can_be_doubled:
                 return double
             return hit
         if cards[0].value == 4:
             if n_hands == 4:
                 return hit
-            if dealer_card.value in (5, 6):
-                return split if rules.double_after_split else hit
-            return hit
-        if cards[0].value == 3:
-            if n_hands == 4:
-                return hit
-            if (
-                isinstance(dealer_card.value, int)
-                and dealer_card.value in (2, 3)
-                and not rules.double_after_split
-            ):
-                return hit
-            if isinstance(dealer_card.value, int) and dealer_card.value <= 7:
+            if dealer_card.value in (5, 6) and rules.double_after_split:
                 return split
             return hit
-        if cards[0].value == 2:
+        if cards[0].value in (2, 3):
             if n_hands == 4:
                 return hit
-            if (
-                isinstance(dealer_card.value, int)
-                and dealer_card.value in (2, 3)
-                and not rules.double_after_split
-            ):
+            if dealer_card.value in (2, 3) and not rules.double_after_split:
                 return hit
-            if isinstance(dealer_card.value, int) and dealer_card.value <= 7:
+            if dealer_card.value in (2, 3, 4, 5, 6, 7):
                 return split
             return hit
 

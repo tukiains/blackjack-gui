@@ -444,12 +444,12 @@ def get_correct_play(
             if n_hands == 4:
                 return hit
             if (
-                isinstance(dealer_card.value, int)
-                and dealer_card.value == 2
+                dealer_card.value == 2
                 and not rules.double_after_split
+                and rules.number_of_decks >= 4
             ):
                 return hit
-            if isinstance(dealer_card.value, int) and dealer_card.value <= 6:
+            if dealer_card.value in (2, 3, 4, 5, 6):
                 return split
             return hit
         if cards[0].value == 5:

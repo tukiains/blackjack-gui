@@ -542,6 +542,8 @@ def test_h17_with_surrender(cards, dealer, correct_play):
         (["2", "2"], "4", "split", 3),
         (["2", "2"], "4", "hit", 4),
         (["6", "6"], "2", "hit", 3),
+        (["4", "4"], "5", "hit", 3),
+        (["4", "4"], "6", "hit", 3),
     ],
 )
 def test_get_correct_play_no_das(cards, dealer, correct_play, n_hands):

@@ -459,10 +459,10 @@ def get_correct_play(
                 return double
             return hit
         if cards[0].value == 4:
-            if dealer_card.value in (5, 6) and n_hands < 4:
-                if rules.game_type == "h17" and not rules.double_after_split:
-                    return hit
-                return split
+            if n_hands == 4:
+                return hit
+            if dealer_card.value in (5, 6):
+                return split if rules.double_after_split else hit
             return hit
         if cards[0].value == 3:
             if n_hands == 4:

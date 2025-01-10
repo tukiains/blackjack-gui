@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.6 – 2025-01-10
+
+- Fix correct play for 2,2 and 3,3 when no DAS
+- Fix 4,4 play when no DAS
+- Fix hard 9 correct play with 2 decks
+- Fix correct play of 6,6
+
 ## 1.7.5 – 2025-01-06
 
 - Adjust default options

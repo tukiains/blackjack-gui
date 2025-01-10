@@ -124,10 +124,7 @@ class Game:
 
     def surrender(self):
         """Surrender button."""
-        if (
-            self.gui.fix_mistakes.get() == 1
-            and self._check_play(self.player.hands[0], "surrender") is False
-        ):
+        if self._check_play(self.player.hands[0], "surrender") is False:
             return
         self._hide_buttons()
         self.player.stack += self.bet / 2
@@ -154,10 +151,7 @@ class Game:
     def double(self):
         """Double button."""
         hand = self._get_hand_in_active_slot()
-        if (
-            self.gui.fix_mistakes.get() == 1
-            and self._check_play(hand, "double") is False
-        ):
+        if self._check_play(hand, "double") is False:
             return
         if self._check_dealer_peek():
             return
@@ -201,10 +195,7 @@ class Game:
         """Hit button."""
         self._hide_buttons(("insurance",))
         hand = self._get_hand_in_active_slot()
-        if (
-            self.gui.fix_mistakes.get() == 1
-            and self._check_play(hand, "hit") is False
-        ):
+        if self._check_play(hand, "hit") is False:
             return
         if self._check_dealer_peek():
             return
@@ -228,10 +219,7 @@ class Game:
     def stay(self):
         """Stay button."""
         hand = self._get_hand_in_active_slot()
-        if (
-            self.gui.fix_mistakes.get() == 1
-            and self._check_play(hand, "stay") is False
-        ):
+        if self._check_play(hand, "stay") is False:
             return
         hand.is_finished = True
         self._resolve_next_hand()
@@ -254,10 +242,7 @@ class Game:
     def split(self):
         """Split button."""
         hand = self._get_hand_in_active_slot()
-        if (
-            self.gui.fix_mistakes.get() == 1
-            and self._check_play(hand, "split") is False
-        ):
+        if self._check_play(hand, "split") is False:
             return
         if self._check_dealer_peek():
             return
@@ -497,6 +482,8 @@ class Game:
 
     def _check_play(self, hand: Hand, play: str) -> bool:
         """Verifies player decision. Ignores deviations."""
+        if self.gui.fix_mistakes.get() == 0:
+            return True
         correct_play = get_correct_play(
             hand, self.dealer.cards[0], len(self.player.hands), self.rules
         )

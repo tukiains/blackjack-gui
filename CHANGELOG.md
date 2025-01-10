@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.7 – 2025-01-10
+
+- Adjust button locations
+
 ## 1.7.6 – 2025-01-10
 
 - Fix correct play for 2,2 and 3,3 when no DAS

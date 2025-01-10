@@ -169,7 +169,6 @@ class Hand:
         if self.sum >= 22:
             self.is_finished = True
             self.is_hittable = False
-        if self.sum > 21:
             self.is_over = True
         if self.sum == 21 and len(self.cards) == 2 and not self.is_split_hand:
             self.is_blackjack = True

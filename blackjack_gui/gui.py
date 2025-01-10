@@ -776,7 +776,7 @@ def settings(args: Namespace):
         background=background,
         font="helvetica 10",
     )
-    link1.place(x=40, y=395)
+    link1.place(x=40, y=420)
     link1.bind(
         "<Button-1>",
         lambda _: set_rules("Helsinki"),
@@ -789,7 +789,7 @@ def settings(args: Namespace):
         background=background,
         font="helvetica 10",
     )
-    link2.place(x=40, y=420)
+    link2.place(x=40, y=395)
     link2.bind(
         "<Button-1>",
         lambda _: set_rules("US"),
@@ -862,9 +862,9 @@ def main(args: Namespace):
             "Insurance",
             "Surrender",
             "Double up",
+            "Split",
             "Hit",
             "Stay",
-            "Split",
             "Deal",
             "Reset",
         )

@@ -128,6 +128,15 @@ The rules in the U.S. typically include:
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-usa.png" alt="" width="400"/>
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/usa-symbols.png" alt="" width="320"/>
 
+### Notes
+
+Here are minor deviations from the basic strategy charts presented above, which depend on your
+specific table rules—such as the number of decks, whether the dealer hits or stands on soft 17 (H17/S17),
+whether the dealer peeks for blackjack, whether you can double after splitting (DAS),
+and whether surrender is available. For a detailed, rule-specific strategy,
+consult the [Wizard of Odds Blackjack Strategy Calculator](https://wizardofodds.com/games/blackjack/strategy/calculator/)
+to identify the optimal basic strategy for each game configuration.
+
 ## Development
 
 Install `blackjack-gui` with dev-dependencies from GitHub:

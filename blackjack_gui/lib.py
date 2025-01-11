@@ -345,13 +345,18 @@ def get_correct_play(
         and hand.is_hittable
         and not (hand.is_split_hand and not rules.double_after_split)
     )
+    is_pair = n_cards == 2 and cards[0].value == cards[1].value
 
     # Hard hands
-    if hand.is_hard and not (n_cards == 2 and cards[0].value == cards[1].value):
+    if hand.is_hard and not is_pair:
         if hand.sum <= 8:
             return hit
         if hand.sum == 9:
-            if dealer_card.value == 2 and rules.number_of_decks == 2:
+            if (
+                dealer_card.value == 2
+                and rules.number_of_decks == 2
+                and can_be_doubled
+            ):
                 return double
             if dealer_card.value in range(3, 7) and can_be_doubled:
                 return double
@@ -361,8 +366,10 @@ def get_correct_play(
                 return double
             return hit
         if hand.sum == 11:
-            if rules.game_type == "h17" and can_be_doubled:
+            if rules.game_type == "h17" and rules.peek and can_be_doubled:
                 return double
+            if dealer_card.value == 10:
+                return double if rules.peek and can_be_doubled else hit
             if dealer_card.value in range(2, 10) and can_be_doubled:
                 return double
             return hit
@@ -398,11 +405,11 @@ def get_correct_play(
             return stay
 
     # Pairs
-    if n_cards == 2 and cards[0].value == cards[1].value:
+    if is_pair:
         if cards[0].label == "A":
             if n_hands == 4:
                 return hit
-            if rules.game_type == "h17":
+            if rules.peek:
                 return split
             return hit if dealer_ace else split
         if cards[0].value == 10:
@@ -412,14 +419,25 @@ def get_correct_play(
                 return stay
             return split
         if cards[0].value == 8:
-            if rules.game_type == "h17":
+            if rules.peek:
                 return split
-            if _should_surrender(hand, dealer_card, (10,)):
+            if rules.surrender != "no" and _should_surrender(
+                hand, dealer_card, (10,)
+            ):
                 return surrender
+            if dealer_card.value == 10 and not rules.peek:
+                return hit
             if n_hands == 4 or dealer_ace:
                 return hit
             return split
         if cards[0].value == 7:
+            if (
+                dealer_card.value == 8
+                and rules.number_of_decks == 2
+                and rules.double_after_split
+                and n_hands < 4
+            ):
+                return split
             if dealer_card.value in (2, 3, 4, 5, 6, 7) and n_hands < 4:
                 return split
             return hit
@@ -430,6 +448,13 @@ def get_correct_play(
                 and rules.number_of_decks >= 4
             ):
                 return hit
+            if (
+                dealer_card.value == 7
+                and rules.number_of_decks == 2
+                and rules.double_after_split
+                and n_hands < 4
+            ):
+                return split
             if dealer_card.value in (2, 3, 4, 5, 6) and n_hands < 4:
                 return split
             return hit
@@ -490,7 +515,20 @@ def get_correct_play(
                 if dealer_card.value in (4, 5, 6) and can_be_doubled
                 else hit
             )
-        if hand.sum in (13, 14):
+        if hand.sum == 14:
+            if (
+                dealer_card.value == 4
+                and rules.number_of_decks == 2
+                and can_be_doubled
+                and rules.game_type == "h17"
+            ):
+                return double
+            return (
+                double
+                if dealer_card.value in (5, 6) and can_be_doubled
+                else hit
+            )
+        if hand.sum == 13:
             return (
                 double
                 if dealer_card.value in (5, 6) and can_be_doubled

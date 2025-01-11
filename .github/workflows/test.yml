@@ -25,5 +25,5 @@ jobs:
           pre-commit run --all-files --show-diff-on-failure
       - name: Run tests
         run: |
-          pytest tests/unit.py --flake-finder --flake-runs=2
-          pytest tests/integration.py --flake-finder --flake-runs=2
+          pytest tests/unit/*.py --flake-finder --flake-runs=2
+          pytest tests/integration/*.py --flake-finder --flake-runs=2

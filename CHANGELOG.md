@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.8 – 2025-01-11
+
+- Improve tests and fix many basic strategy errors
+
 ## 1.7.7 – 2025-01-10
 
 - Adjust button locations

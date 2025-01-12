@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.10 – 2025-01-12
+
+- Make bet spread more realistic
+
 ## 1.7.9 – 2025-01-12
 
 - Add shuffle label

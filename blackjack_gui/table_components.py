@@ -215,8 +215,9 @@ class TableComponents:
         bet_label = tkinter.Label(text="Bet:", background="lightgray")
         slider = tkinter.Scale(
             self.root,
-            from_=1,
+            from_=10,
             to=100,
+            resolution=5,
             orient=tkinter.HORIZONTAL,
             background="lightgray",
         )

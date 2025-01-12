@@ -50,6 +50,22 @@ class TableComponents:
         )
         panel.place(x=1000, y=0)
 
+    def add_shuffle_box(self) -> tkinter.Label:
+        label = tkinter.Label(
+            self.root,
+            text="Shuffling...",
+            font=("Helvetica", 24, "bold"),
+            bg="lightgrey",
+            fg="black",
+            width=15,
+            height=2,
+            borderwidth=2,
+            relief="solid",
+        )
+        label.place(relx=0.45, rely=0.5, anchor="center")
+        label.place_forget()  # Initially hidden
+        return label
+
     def get_shoe_progress(self, n_decks: int) -> tkinter.Label:
         shoe_status_container = tkinter.Label(
             self.root, borderwidth=0, background="white"

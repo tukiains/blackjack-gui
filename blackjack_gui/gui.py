@@ -45,6 +45,7 @@ class Gui:
     accuracy_text: tkinter.StringVar
     show_count: tkinter.IntVar
     count_text: tkinter.StringVar
+    shuffle: tkinter.Label
 
 
 class Game:
@@ -75,52 +76,17 @@ class Game:
         self._clean_player_slots()
         self._dealer_info()
         self.player.hands = []
-        self.shoe.fill_discard_tray(self.gui.shoe_progress)
-        if (
-            self.rules.csm
-            or self.shoe.n_cards < 52
-            or self.args.cards is not None
+        shuffle_limit = 52  # How many cards left in the shoe before shuffle
+        is_end_of_shoe = self.shoe.n_cards < shuffle_limit
+        is_user_given_cards = (
+            self.args.cards is not None
             or self.args.subset is not None
-        ):
+            or self.args.dealer_cards is not None
+        )
+        if self.rules.csm or is_end_of_shoe or is_user_given_cards:
             self.shoe = Shoe(self.rules.number_of_decks)
             self.player.init_count()
-
-        hand = self.player.start_new_hand(self.bet)
-        self.dealer.init_hand()
-        if self.args.dealer_cards is not None:
-            self.shoe.arrange(self.args.dealer_cards)
-        self.dealer.deal(self.shoe)
-        self.dealer.deal(self.shoe)
-        self.dealer.cards[1].visible = False
-        self._display_dealer_cards()
-        self._handle_counts(self.dealer.cards, self.shoe)
-        if self.args.cards is not None:
-            self.shoe.arrange(self.args.cards, randomize=True)
-        elif self.args.subset is not None:
-            cards = get_starting_hand(self.args.subset)
-            self.shoe.arrange(cards)
-        hand.deal(self.shoe)
-        hand.deal(self.shoe)
-        self._handle_counts(hand, self.shoe)
-        self._show()
-        self.active_slot = hand.slot
-        self._display_stack()
-        self._display_chip(hand, 0)
-        self._display_player_cards(hand)
-        if self.dealer.has_ace:
-            self._enable_correct_buttons(hand)
-            if hand.is_blackjack is True:
-                self._hide_buttons(("hit", "double"))
-                self._show_buttons(("even-money",))
-            else:
-                self._show_buttons(("insurance",))
-        else:
-            if hand.is_blackjack:
-                self.gui.root.after(TIME_DELAY, self._end_round)
-                return
-            self._enable_correct_buttons(hand)
-            if self.rules.surrender != "no":
-                self._show_buttons(("surrender",))
+        self._shuffle_shoe() if is_end_of_shoe else self._finish_round()
 
     def surrender(self):
         """Surrender button."""
@@ -286,6 +252,55 @@ class Game:
             self._handle_counts(hand, self.shoe)
 
         self._resolve_next_hand()
+
+    def _shuffle_shoe(self):
+        self.shoe.fill_discard_tray(self.gui.shoe_progress)
+        self.gui.shuffle.place(relx=0.45, rely=0.5, anchor="center")
+        self.gui.root.update_idletasks()
+        self.gui.root.after(TIME_DELAY * 2, self._hide_shuffle)
+
+    def _hide_shuffle(self):
+        self.gui.shuffle.place_forget()
+        self._finish_round()
+
+    def _finish_round(self):
+        self.shoe.fill_discard_tray(self.gui.shoe_progress)
+        hand = self.player.start_new_hand(self.bet)
+        self.dealer.init_hand()
+        if self.args.dealer_cards is not None:
+            self.shoe.arrange(self.args.dealer_cards)
+        self.dealer.deal(self.shoe)
+        self.dealer.deal(self.shoe)
+        self.dealer.cards[1].visible = False
+        self._display_dealer_cards()
+        self._handle_counts(self.dealer.cards, self.shoe)
+        if self.args.cards is not None:
+            self.shoe.arrange(self.args.cards, randomize=True)
+        elif self.args.subset is not None:
+            cards = get_starting_hand(self.args.subset)
+            self.shoe.arrange(cards)
+        hand.deal(self.shoe)
+        hand.deal(self.shoe)
+        self._handle_counts(hand, self.shoe)
+        self._show()
+        self.active_slot = hand.slot
+        self._display_stack()
+        self._display_chip(hand, 0)
+        self._display_player_cards(hand)
+        if self.dealer.has_ace:
+            self._enable_correct_buttons(hand)
+            if hand.is_blackjack is True:
+                self._hide_buttons(("hit", "double"))
+                self._show_buttons(("even-money",))
+            else:
+                self._show_buttons(("insurance",))
+        else:
+            if hand.is_blackjack:
+                self.gui.root.after(TIME_DELAY, self._end_round)
+                return
+            self._enable_correct_buttons(hand)
+            if self.rules.surrender != "no":
+                self._show_buttons(("surrender",))
 
     def _resolve_next_hand(self):
         hand = self._get_first_unfinished_hand()
@@ -847,7 +862,7 @@ def main(args: Namespace):
     slot_dealer = components.get_dealer_slot()
     insurance_chip = components.get_insurance_chip()
     components.set_side_panel()
-
+    shuffle = components.add_shuffle_box()
     check_button = CheckButton(root, args, background)
     accuracy_text, fix_mistakes = check_button.fetch_accuracy()
     count_text, fix_count = check_button.fetch_count()
@@ -931,6 +946,7 @@ def main(args: Namespace):
         accuracy_text,
         fix_count,
         count_text,
+        shuffle,
     )
 
     dealer = Dealer(args.rules.game_type)

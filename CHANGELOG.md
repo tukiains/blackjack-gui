@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.9 – 2025-01-12
+
+- Add shuffle label
+- Switch checkbox places
+
 ## 1.7.8 – 2025-01-11
 
 - Improve tests and fix many basic strategy errors

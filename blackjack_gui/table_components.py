@@ -248,7 +248,7 @@ class CheckButton:
     def fetch_count(self) -> tuple[tkinter.StringVar, tkinter.IntVar]:
         txt_location = (10, 610)
         conf = CheckConfig(
-            location=(CheckButton.x, CheckButton.y + CheckButton.y_offset),
+            location=(CheckButton.x, CheckButton.y),
             txt_location=txt_location,
             txt="Show count",
         )
@@ -260,7 +260,7 @@ class CheckButton:
     def fetch_accuracy(self) -> tuple[tkinter.StringVar, tkinter.IntVar]:
         txt_location = (10, 655)
         conf = CheckConfig(
-            location=(CheckButton.x, CheckButton.y),
+            location=(CheckButton.x, CheckButton.y + CheckButton.y_offset),
             txt_location=txt_location,
             txt="Coach mode",
         )

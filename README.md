@@ -3,7 +3,7 @@
 [![Blackjack GUI CI](https://github.com/tukiains/blackjack-gui/actions/workflows/test.yml/badge.svg)](https://github.com/tukiains/blackjack-gui/actions/workflows/test.yml)
 [![Downloads](https://pepy.tech/badge/blackjack-gui)](https://pepy.tech/project/blackjack-gui)
 
-Single-player Blackjack including graphical and command line interfaces, written in Python. Can be used to simulate games
+Single-player blackjack including graphical and command line interfaces, written in Python. Can be used to simulate games
 and to practise basic strategy and card counting.
 
 <img src="https://github.com/tukiains/blackjack-gui/blob/main/blackjack_gui/images/bj-shot.png?raw=true" alt="" width="600"/>
@@ -66,7 +66,7 @@ With US rules:
 $ blackjack --rules US
 ```
 
-With the default settings, play 10 rounds of Blackjack with the command line interface:
+With the default settings, play 10 rounds of blackjack with the command line interface:
 
 ```
 $ blackjack --cli

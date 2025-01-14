@@ -17,6 +17,22 @@ class TableComponents:
         self.background = background
         self._x_slot = 250
         self._padding_left = 20
+        self.dealer_info: tkinter.Label
+        self.finger: dict[str, tkinter.Label]
+        self.insurance_chip: tkinter.Label
+        self.slot_player: dict[str, tkinter.Label]
+        self.slot_dealer: dict[str, tkinter.Label]
+        self.shuffle: tkinter.Label
+        self.chips: dict[str, tkinter.Label]
+        self.info: dict[str, tkinter.Label]
+        self.info_text: dict[str, tkinter.StringVar]
+        self.slider: tkinter.Scale
+        self.label_text: tkinter.StringVar
+        self.shoe_progress: tkinter.Label
+        self.fix_mistakes: tkinter.IntVar
+        self.accuracy_text: tkinter.StringVar
+        self.fix_count: tkinter.IntVar
+        self.count_text: tkinter.StringVar
 
     def setup_canvas(self) -> None:
         rect = tkinter.Canvas(
@@ -50,8 +66,8 @@ class TableComponents:
         )
         panel.place(x=1000, y=0)
 
-    def add_shuffle_box(self) -> tkinter.Label:
-        label = tkinter.Label(
+    def get_shuffle_indicator(self):
+        shuffle = tkinter.Label(
             self.root,
             text="Shuffling...",
             font=("Helvetica", 24, "bold"),
@@ -62,11 +78,11 @@ class TableComponents:
             borderwidth=2,
             relief="solid",
         )
-        label.place(relx=0.45, rely=0.5, anchor="center")
-        label.place_forget()  # Initially hidden
-        return label
+        shuffle.place(relx=0.45, rely=0.5, anchor="center")
+        shuffle.place_forget()  # Initially hidden
+        self.shuffle = shuffle
 
-    def get_shoe_progress(self, n_decks: int) -> tkinter.Label:
+    def get_shoe_progress(self, n_decks: int):
         shoe_status_container = tkinter.Label(
             self.root, borderwidth=0, background="white"
         )
@@ -85,9 +101,9 @@ class TableComponents:
             fg=FOREGROUND,
         )
         shoe_label.place(x=5, y=210)
-        return shoe_progress
+        self.shoe_progress = shoe_progress
 
-    def get_label(self) -> tkinter.StringVar:
+    def get_label(self):
         label_text = tkinter.StringVar(self.root)
         label = tkinter.Label(
             self.root,
@@ -98,9 +114,9 @@ class TableComponents:
             fg=FOREGROUND,
         )
         label.place(x=430, y=670)
-        return label_text
+        self.label_text = label_text
 
-    def get_dealer_info(self) -> tkinter.Label:
+    def get_dealer_info(self):
         dealer_info = tkinter.Label(
             self.root,
             text="",
@@ -110,9 +126,9 @@ class TableComponents:
             fg=FOREGROUND,
         )
         dealer_info.place(x=305, y=180)
-        return dealer_info
+        self.dealer_info = dealer_info
 
-    def get_finger(self) -> dict[str, tkinter.Label]:
+    def get_finger(self):
         finger = {
             str(slot): tkinter.Label(
                 self.root, borderwidth=0, background=self.background
@@ -121,11 +137,11 @@ class TableComponents:
         }
         for ind, f in enumerate(finger.values()):
             f.place(x=ind * self._x_slot + self._padding_left - 5, y=250)
-        return finger
+        self.finger = finger
 
     def get_info(
         self,
-    ) -> tuple[dict[str, tkinter.Label], dict[str, tkinter.StringVar]]:
+    ):
         info_text = {
             str(slot): tkinter.StringVar(self.root) for slot in range(4)
         }
@@ -142,9 +158,10 @@ class TableComponents:
         }
         for ind, i in enumerate(info.values()):
             i.place(x=ind * self._x_slot + self._padding_left + 110, y=465)
-        return info, info_text
+        self.info = info
+        self.info_text = info_text
 
-    def get_player_slots(self, n_cards_max: int) -> dict[str, tkinter.Label]:
+    def get_player_slots(self, n_cards_max: int):
         slot_player = {
             f"{str(slot)}{str(pos)}": tkinter.Label(
                 self.root, borderwidth=0, background=self.background
@@ -158,9 +175,9 @@ class TableComponents:
                     x=frame * self._x_slot + pos * 30 + self._padding_left,
                     y=350 - pos * 30,
                 )
-        return slot_player
+        self.slot_player = slot_player
 
-    def get_dealer_slot(self) -> dict[str, tkinter.Label]:
+    def get_dealer_slot(self):
         n_cards_max = 11
         card_back_img, _, _ = get_image()
         slot_dealer = {
@@ -175,9 +192,9 @@ class TableComponents:
             slot_dealer[str(pos)].pack(side=tkinter.LEFT)
         for pos, slot in enumerate(slot_dealer.values()):
             slot.place(y=40, x=300 + pos * 105)
-        return slot_dealer
+        self.slot_dealer = slot_dealer
 
-    def get_chips(self) -> dict[str, tkinter.Label]:
+    def get_chips(self):
         chips = {
             f"{str(slot)}{str(pos)}": tkinter.Label(
                 self.root, borderwidth=0, background=self.background
@@ -202,16 +219,16 @@ class TableComponents:
                     x=a_slot * self._x_slot + self._padding_left + padx + 20,
                     y=500 + pady,
                 )
-        return chips
+        self.chips = chips
 
-    def get_insurance_chip(self) -> tkinter.Label:
+    def get_insurance_chip(self):
         insurance_chip = tkinter.Label(
             self.root, borderwidth=0, background=self.background
         )
         insurance_chip.place(x=450, y=400)
-        return insurance_chip
+        self.insurance_chip = insurance_chip
 
-    def get_slider(self, x_sidepanel: int, bet: int) -> tkinter.Scale:
+    def get_slider(self, side_panel_position: int, bet: int):
         bet_label = tkinter.Label(text="Bet:", background="lightgray")
         slider = tkinter.Scale(
             self.root,
@@ -222,9 +239,9 @@ class TableComponents:
             background="lightgray",
         )
         slider.set(bet)
-        slider.place(x=x_sidepanel + 40, y=140)
-        bet_label.place(x=x_sidepanel, y=160)
-        return slider
+        slider.place(x=side_panel_position + 40, y=140)
+        bet_label.place(x=side_panel_position, y=160)
+        self.slider = slider
 
 
 @dataclass
@@ -246,7 +263,7 @@ class CheckButton:
         self.args = args
         self.background = background
 
-    def fetch_count(self) -> tuple[tkinter.StringVar, tkinter.IntVar]:
+    def fetch_count(self):
         txt_location = (10, 610)
         conf = CheckConfig(
             location=(CheckButton.x, CheckButton.y),
@@ -256,9 +273,10 @@ class CheckButton:
         label, text = self._get_table_infotext(txt_location)
         checkbox = self._get_checkbutton(label, conf)
         self._show_count(label, checkbox, txt_location)
-        return text, checkbox
+        self.count_text = text
+        self.fix_count = checkbox
 
-    def fetch_accuracy(self) -> tuple[tkinter.StringVar, tkinter.IntVar]:
+    def fetch_accuracy(self):
         txt_location = (10, 655)
         conf = CheckConfig(
             location=(CheckButton.x, CheckButton.y + CheckButton.y_offset),
@@ -268,7 +286,8 @@ class CheckButton:
         label, text = self._get_table_infotext(txt_location)
         checkbox = self._get_checkbutton(label, conf)
         self._show_accuracy(label, checkbox, txt_location)
-        return text, checkbox
+        self.fix_mistakes = checkbox
+        self.accuracy_text = text
 
     def _get_table_infotext(
         self, txt_location: tuple[int, int]

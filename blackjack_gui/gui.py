@@ -1,7 +1,6 @@
 from argparse import Namespace
 import os
 import tkinter
-from dataclasses import dataclass
 from typing import Any, Literal, cast
 
 
@@ -26,34 +25,23 @@ N_CARDS_MAX = 11
 IMG_PATH = f"{os.path.dirname(__file__)}/images/"
 
 
-@dataclass
-class Gui:
-    root: tkinter.Tk
-    menu: dict
-    label_text: tkinter.StringVar
-    slot_player: dict
-    slot_dealer: dict
-    info_text: dict
-    info: dict
-    chips: dict
-    finger: dict
-    shoe_progress: tkinter.Label
-    fix_mistakes: tkinter.IntVar
-    slider: tkinter.Scale
-    insurance_chip: tkinter.Label
-    dealer_info: tkinter.Label
-    accuracy_text: tkinter.StringVar
-    show_count: tkinter.IntVar
-    count_text: tkinter.StringVar
-    shuffle: tkinter.Label
-
-
 class Game:
-    def __init__(self, player: Player, dealer: Dealer, gui: Gui, args: Any):
+    def __init__(
+        self,
+        player: Player,
+        dealer: Dealer,
+        args: Any,
+        menu: dict,
+        components: TableComponents,
+        check_button: CheckButton,
+    ):
         self.player = player
         self.dealer = dealer
-        self.gui: Gui = gui
         self.args = args
+        self.root = components.root
+        self.menu = menu
+        self.components = components
+        self.check_button = check_button
         self.bet = args.bet
         self.rules: Rules = args.rules
         self.shoe = Shoe(self.rules.number_of_decks)
@@ -68,8 +56,8 @@ class Game:
         self._hide_buttons()
         self._n_rounds += 1
         self._update_accuracy()
-        self.bet = self.gui.slider.get()
-        self.gui.slider.configure(state=tkinter.DISABLED)
+        self.bet = self.components.slider.get()
+        self.components.slider.configure(state=tkinter.DISABLED)
         self._hide_all_chips()
         self._hide_insurance_chip()
         self._hide_fingers()
@@ -96,7 +84,7 @@ class Game:
         self.player.stack += self.bet / 2
         self._display_stack()
         hand = self._get_hand_in_active_slot()
-        self.gui.root.after(TIME_DELAY, self._reveal_dealer_hidden_card, True)
+        self.root.after(TIME_DELAY, self._reveal_dealer_hidden_card, True)
         self._hide(hand)
         self._hide_chips(hand)
         self._display_info(hand, "SURRENDER")
@@ -105,7 +93,7 @@ class Game:
         """Even Money button"""
         hand = self._get_hand_in_active_slot()
         if (
-            self.gui.fix_mistakes.get() == 1
+            self.check_button.fix_mistakes.get() == 1
             and self._check_insurance(hand) is False
         ):
             return
@@ -131,7 +119,7 @@ class Game:
         self._display_player_cards(hand, rotate_last=True)
         if hand.is_triple_seven:
             self._hide_buttons()
-            self.gui.root.after(TIME_DELAY, self._end_round)
+            self.root.after(TIME_DELAY, self._end_round)
             return
         self._handle_counts(hand, self.shoe)
         if hand.sum > 21:
@@ -146,7 +134,7 @@ class Game:
         self.player.buy_in(self.player.initial_stack)
         self.shoe = Shoe(self.rules.number_of_decks)
         self._clean_dealer_slots()
-        self.gui.slider.set(self.initial_bet)
+        self.components.slider.set(self.initial_bet)
         self.player.init_count()
         self._reset_accuracy()
         self.start_new_round()
@@ -170,7 +158,7 @@ class Game:
         self._display_player_cards(hand)
         if hand.is_triple_seven:
             self._hide_buttons()
-            self.gui.root.after(TIME_DELAY, self._end_round)
+            self.root.after(TIME_DELAY, self._end_round)
             return
         self._handle_counts(hand, self.shoe)
         if hand.is_over is True:
@@ -194,7 +182,7 @@ class Game:
         """Insurance button."""
         hand = self._get_hand_in_active_slot()
         if (
-            self.gui.fix_mistakes.get() == 1
+            self.check_button.fix_mistakes.get() == 1
             and self._check_insurance(hand) is False
         ):
             return
@@ -254,17 +242,17 @@ class Game:
         self._resolve_next_hand()
 
     def _shuffle_shoe(self):
-        self.shoe.fill_discard_tray(self.gui.shoe_progress)
-        self.gui.shuffle.place(relx=0.45, rely=0.5, anchor="center")
-        self.gui.root.update_idletasks()
-        self.gui.root.after(TIME_DELAY * 2, self._hide_shuffle)
+        self.shoe.fill_discard_tray(self.components.shoe_progress)
+        self.components.shuffle.place(relx=0.45, rely=0.5, anchor="center")
+        self.root.update_idletasks()
+        self.root.after(TIME_DELAY * 2, self._hide_shuffle)
 
     def _hide_shuffle(self):
-        self.gui.shuffle.place_forget()
+        self.components.shuffle.place_forget()
         self._finish_round()
 
     def _finish_round(self):
-        self.shoe.fill_discard_tray(self.gui.shoe_progress)
+        self.shoe.fill_discard_tray(self.components.shoe_progress)
         hand = self.player.start_new_hand(self.bet)
         self.dealer.init_hand()
         if self.args.dealer_cards is not None:
@@ -296,7 +284,7 @@ class Game:
                 self._show_buttons(("insurance",))
         else:
             if hand.is_blackjack:
-                self.gui.root.after(TIME_DELAY, self._end_round)
+                self.root.after(TIME_DELAY, self._end_round)
                 return
             self._enable_correct_buttons(hand)
             if self.rules.surrender != "no":
@@ -313,7 +301,7 @@ class Game:
             self._hide_buttons()
             self._hide_fingers()
             if not self._is_all_over() or self.dealer.insurance_bet > 0:
-                self.gui.root.after(TIME_DELAY, self._reveal_dealer_hidden_card)
+                self.root.after(TIME_DELAY, self._reveal_dealer_hidden_card)
             else:
                 self._handle_counts(self.dealer.cards, self.shoe)
                 self._payout()
@@ -324,7 +312,7 @@ class Game:
         self._handle_counts(self.dealer.cards, self.shoe)
         if surrender:
             self._show_buttons(("deal",))
-            self.gui.slider.configure(state=tkinter.NORMAL)
+            self.components.slider.configure(state=tkinter.NORMAL)
         else:
             self._check_dealer_blackjack()
 
@@ -338,7 +326,7 @@ class Game:
             self.dealer.is_finished = True
 
         if not self.dealer.is_finished:
-            self.gui.root.after(TIME_DELAY, self._dealer_draw_one_card)
+            self.root.after(TIME_DELAY, self._dealer_draw_one_card)
         else:
             self._handle_counts(self.dealer.cards, self.shoe)
             self._payout()
@@ -348,7 +336,7 @@ class Game:
         self._display_dealer_cards()
         self._handle_counts(self.dealer.cards, self.shoe)
         if not self.dealer.is_finished:
-            self.gui.root.after(TIME_DELAY, self._dealer_draw_one_card)
+            self.root.after(TIME_DELAY, self._dealer_draw_one_card)
         else:
             self._handle_counts(self.dealer.cards, self.shoe)
             self._payout()
@@ -431,18 +419,16 @@ class Game:
             and self.dealer.cards[1].visible is False
         ):
             self.dealer.is_finished = True
-            self.gui.root.after(
-                TIME_DELAY, self._reveal_dealer_hidden_card, True
-            )
+            self.root.after(TIME_DELAY, self._reveal_dealer_hidden_card, True)
         else:
             self._show_buttons(("deal",))
             self._handle_counts(self.dealer.cards, self.shoe)
-            self.gui.slider.configure(state=tkinter.NORMAL)
+            self.components.slider.configure(state=tkinter.NORMAL)
 
     def _handle_counts(self, hand: Hand | list[Card], shoe: Shoe):
         self.player.update_counts(hand, shoe)
         true_count = int(self.player.true_count)
-        self.gui.count_text.set(
+        self.check_button.count_text.set(
             f"Running count: {self.player.running_count}\nTrue count: {true_count}"
         )
 
@@ -454,7 +440,7 @@ class Game:
     def _check_dealer_peek(self) -> bool:
         if self.rules.peek and self.dealer.is_blackjack:
             self._hide_buttons()
-            self.gui.root.after(TIME_DELAY, self._reveal_dealer_hidden_card)
+            self.root.after(TIME_DELAY, self._reveal_dealer_hidden_card)
             return True
         return False
 
@@ -497,18 +483,18 @@ class Game:
 
     def _check_play(self, hand: Hand, play: str) -> bool:
         """Verifies player decision. Ignores deviations."""
-        if self.gui.fix_mistakes.get() == 0:
+        if self.check_button.fix_mistakes.get() == 0:
             return True
         correct_play = get_correct_play(
             hand, self.dealer.cards[0], len(self.player.hands), self.rules
         )
         if correct_play != play:
             self._display_info(hand, "Try again!")
-            self.gui.root.after(1000, self._clean_info)
+            self.root.after(1000, self._clean_info)
             self._n_mistakes += 1
             return False
         self._n_correct_play += 1
-        if self.gui.fix_mistakes.get() == 1:
+        if self.check_button.fix_mistakes.get() == 1:
             self._update_accuracy()
         return True
 
@@ -519,18 +505,18 @@ class Game:
         else:
             txt = "Accuracy: 0%"
         txt += f"\nRounds: {self._n_rounds}"
-        self.gui.accuracy_text.set(txt)
+        self.check_button.accuracy_text.set(txt)
 
     def _check_insurance(self, hand: Hand) -> bool:
         if self.player.true_count < 3:
             self._display_info(hand, "Try again!")
-            self.gui.root.after(1000, self._clean_info)
+            self.root.after(1000, self._clean_info)
             return False
         return True
 
     def _display_stack(self):
         unit = "$" if self.rules.region == "US" else "€"
-        self.gui.label_text.set(f"Stack: {self.player.stack} {unit}")
+        self.components.label_text.set(f"Stack: {self.player.stack} {unit}")
 
     def _display_chips(self, hand, bj: bool = False, triple: bool = False):
         if bj is True:
@@ -567,50 +553,50 @@ class Game:
     def _show(self):
         for slot in range(4):
             for n in range(N_CARDS_MAX):
-                self.gui.slot_player[f"{str(slot)}{str(n)}"].configure(
+                self.components.slot_player[f"{str(slot)}{str(n)}"].configure(
                     state=tkinter.NORMAL
                 )
 
     def _hide(self, hand: Hand):
         for n in range(N_CARDS_MAX):
-            self.gui.slot_player[f"{str(hand.slot)}{str(n)}"].configure(
+            self.components.slot_player[f"{str(hand.slot)}{str(n)}"].configure(
                 state=tkinter.DISABLED
             )
 
     def _hide_buttons(self, buttons: tuple | None = None):
         if buttons is None:
-            for key, button in self.gui.menu.items():
+            for key, button in self.menu.items():
                 if key != "reset":
                     button.configure(state=tkinter.DISABLED)
         else:
             for button in buttons:
-                if button in self.gui.menu.keys():
-                    self.gui.menu[button].configure(state=tkinter.DISABLED)
+                if button in self.menu.keys():
+                    self.menu[button].configure(state=tkinter.DISABLED)
 
     def _show_buttons(self, buttons: tuple | None = None):
         if buttons is None:
-            for key, button in self.gui.menu.items():
+            for key, button in self.menu.items():
                 if key not in ("insurance", "even-money"):
                     button.configure(state=tkinter.NORMAL)
         else:
             for button in buttons:
-                if button in self.gui.menu.keys():
-                    self.gui.menu[button].configure(state=tkinter.NORMAL)
+                if button in self.menu.keys():
+                    self.menu[button].configure(state=tkinter.NORMAL)
 
     def _clean_player_slots(self):
         for slot in range(4):
             for n in range(N_CARDS_MAX):
-                self.gui.slot_player[f"{str(slot)}{str(n)}"].configure(
+                self.components.slot_player[f"{str(slot)}{str(n)}"].configure(
                     image="", width=0, height=0
                 )
 
     def _clean_dealer_slots(self):
-        for pos in self.gui.slot_dealer.values():
+        for pos in self.components.slot_dealer.values():
             pos.configure(image="", width=0)
 
     def _clean_info(self):
         for slot in range(4):
-            self.gui.info_text[str(slot)].set("")
+            self.components.info_text[str(slot)].set("")
 
     def _display_dealer_cards(self, hide_second: bool = True):
         for ind, card in enumerate(self.dealer.cards):
@@ -618,17 +604,21 @@ class Game:
                 img, width, _ = get_image()
             else:
                 img, width, _ = get_image(card)
-            self.gui.slot_dealer[str(ind)].configure(image=img, width=width)
-            self.gui.slot_dealer[str(ind)].image = img
+            self.components.slot_dealer[str(ind)].configure(
+                image=img, width=width
+            )
+            self.components.slot_dealer[str(ind)].image = img  # type: ignore
 
     def _display_player_cards(self, hand: Hand, rotate_last: bool = False):
         for ind, card in enumerate(hand.cards):
             rotate = ind == len(hand.cards) - 1 and rotate_last is True
             img, width, height = get_image(card, rotate=rotate)
-            self.gui.slot_player[f"{str(hand.slot)}{str(ind)}"].configure(
-                image=img, width=width, height=height
-            )
-            self.gui.slot_player[f"{str(hand.slot)}{str(ind)}"].image = img
+            self.components.slot_player[
+                f"{str(hand.slot)}{str(ind)}"
+            ].configure(image=img, width=width, height=height)
+            self.components.slot_player[
+                f"{str(hand.slot)}{str(ind)}"
+            ].image = img  # type: ignore
 
     def _display_insurance_chip(self, triple: bool = False):
         bet = (
@@ -645,17 +635,17 @@ class Game:
         else:
             text = str(bet)
         img = _get_chip_image(color)
-        self.gui.insurance_chip.configure(
+        self.components.insurance_chip.configure(
             image=img,
             compound="center",
             fg="white",
             text=text,
             font="helvetica 10 bold",
         )
-        self.gui.insurance_chip.image = img  # type: ignore
+        self.components.insurance_chip.image = img  # type: ignore
 
     def _hide_insurance_chip(self):
-        self.gui.insurance_chip.configure(image="", text="")
+        self.components.insurance_chip.configure(image="", text="")
 
     def _display_chip(self, hand: Hand, pos: int, color: str = "red"):
         img = _get_chip_image(color)
@@ -663,46 +653,46 @@ class Game:
             text = self.bet
         else:
             text = ".5" if self.bet == 1 else self.bet / 2
-        self.gui.chips[f"{str(hand.slot)}{str(pos)}"].configure(
+        self.components.chips[f"{str(hand.slot)}{str(pos)}"].configure(
             image=img,
             compound="center",
             fg="white",
             text=text,
             font="helvetica 10 bold",
         )
-        self.gui.chips[f"{str(hand.slot)}{str(pos)}"].image = img
+        self.components.chips[f"{str(hand.slot)}{str(pos)}"].image = img  # type: ignore
 
     def _display_finger(self, hand: Hand):
         self._hide_fingers()
         img = _get_finger_image()
-        self.gui.finger[f"{str(hand.slot)}"].configure(image=img)
-        self.gui.finger[f"{str(hand.slot)}"].image = img
+        self.components.finger[f"{str(hand.slot)}"].configure(image=img)
+        self.components.finger[f"{str(hand.slot)}"].image = img  # type: ignore
 
     def _dealer_info(self, text: str = ""):
-        self.gui.dealer_info.configure(text=text)
+        self.components.dealer_info.configure(text=text)
 
     def _hide_chips(self, hand: Hand):
         for pos in range(4):
-            self.gui.chips[f"{str(hand.slot)}{str(pos)}"].configure(
+            self.components.chips[f"{str(hand.slot)}{str(pos)}"].configure(
                 image="", text=""
             )
 
     def _hide_all_chips(self):
-        for chip in self.gui.chips.values():
+        for chip in self.components.chips.values():
             chip.configure(image="", text="")
 
     def _hide_fingers(self):
-        for finger in self.gui.finger.values():
+        for finger in self.components.finger.values():
             finger.configure(image="")
 
     def _display_info(self, hand: Hand, info: str):
-        self.gui.info_text[str(hand.slot)].set(info)
+        self.components.info_text[str(hand.slot)].set(info)
 
     def _reset_accuracy(self):
         self._n_correct_play = 0
         self._n_mistakes = 0
         self._n_rounds = 0
-        self.gui.accuracy_text.set("")
+        self.check_button.accuracy_text.set("")
 
 
 def _get_chip_image(color: str = "red") -> ImageTk.PhotoImage:
@@ -848,24 +838,27 @@ def main(args: Namespace):
         description += ", 7-7-7 pays 3:1"
     root.title(f"Blackjack - {description}")
     background = "#4e9572"
+    side_panel_position = 1025
     root.configure(background=background)
 
     components = TableComponents(root, background)
     components.setup_canvas()
-    shoe_progress = components.get_shoe_progress(args.rules.number_of_decks)
-    label_text = components.get_label()
-    dealer_info = components.get_dealer_info()
-    info, info_text = components.get_info()
-    finger = components.get_finger()
-    slot_player = components.get_player_slots(N_CARDS_MAX)
-    chips = components.get_chips()
-    slot_dealer = components.get_dealer_slot()
-    insurance_chip = components.get_insurance_chip()
+    components.get_shoe_progress(args.rules.number_of_decks)
+    components.get_label()
+    components.get_dealer_info()
+    components.get_info()
+    components.get_finger()
+    components.get_player_slots(N_CARDS_MAX)
+    components.get_chips()
+    components.get_dealer_slot()
+    components.get_insurance_chip()
+    components.get_shuffle_indicator()
     components.set_side_panel()
-    shuffle = components.add_shuffle_box()
+    components.get_slider(side_panel_position, args.bet)
+
     check_button = CheckButton(root, args, background)
-    accuracy_text, fix_mistakes = check_button.fetch_accuracy()
-    count_text, fix_count = check_button.fetch_count()
+    check_button.fetch_accuracy()
+    check_button.fetch_count()
 
     # Buttons
     menu = {
@@ -907,13 +900,10 @@ def main(args: Namespace):
             button.configure(command=lambda: game.even_money())
         else:
             raise ValueError
-    x_sidepanel = 1025
     for ind, button in enumerate(menu.values()):
-        button.place(x=x_sidepanel, y=ind * 33 + 230)
-    menu["deal"].place(x=x_sidepanel, y=500)
-    menu["reset"].place(x=x_sidepanel, y=65)
-
-    slider = components.get_slider(x_sidepanel, args.bet)
+        button.place(x=side_panel_position, y=ind * 33 + 230)
+    menu["deal"].place(x=side_panel_position, y=500)
+    menu["reset"].place(x=side_panel_position, y=65)
 
     def open_settings():
         root.destroy()
@@ -926,34 +916,13 @@ def main(args: Namespace):
         font="15",
         command=lambda: open_settings(),
     )
-    settings_button.place(x=x_sidepanel, y=20)
-
-    gui = Gui(
-        root,
-        menu,
-        label_text,
-        slot_player,
-        slot_dealer,
-        info_text,
-        info,
-        chips,
-        finger,
-        shoe_progress,
-        fix_mistakes,
-        slider,
-        insurance_chip,
-        dealer_info,
-        accuracy_text,
-        fix_count,
-        count_text,
-        shuffle,
-    )
+    settings_button.place(x=side_panel_position, y=20)
 
     dealer = Dealer(args.rules.game_type)
     player = Player(
         rules=args.rules,
         stack=args.stack,
     )
-    game = Game(player, dealer, gui, args)
+    game = Game(player, dealer, args, menu, components, check_button)
     game.reset()
     tkinter.mainloop()

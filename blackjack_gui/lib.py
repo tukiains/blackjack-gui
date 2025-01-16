@@ -406,6 +406,10 @@ def get_correct_play(
                 hand, dealer_card, (9, 10)
             ):
                 return surrender
+            if dealer_card.value == 10 and deviations:
+                return stay if count.running_count > 0 else hit
+            if dealer_card.value == 10 and n_cards >= 3:
+                return stay
             if n_cards >= 3 and dealer_card.value == 10:
                 return stay
             if not dealer_ace and dealer_card.value in (2, 3, 4, 5, 6):

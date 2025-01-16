@@ -137,6 +137,15 @@ and whether surrender is available. For a detailed, rule-specific strategy,
 consult the [Wizard of Odds Blackjack Strategy Calculator](https://wizardofodds.com/games/blackjack/strategy/calculator/)
 to identify the optimal basic strategy for each game configuration.
 
+## Deviations
+
+The following deviations are implemented to the code (I will slowly add more):
+
+| Your Hand | Dealer's Upcard | Deviation                   | Index             |
+| :-------- | :-------------- | :-------------------------- | :---------------- |
+| Any       | A               | Take insurance / even money | True count > 3    |
+| 16        | 10              | Stand instead of hit        | Running count > 0 |
+
 ## Development
 
 Install `blackjack-gui` with dev-dependencies from GitHub:
@@ -166,7 +175,6 @@ pre-commit run --all
 
 ## Notes
 
-- Deviations from the basic strategy are not yet implemented.
 - Card images taken from [here](https://code.google.com/archive/p/vector-playing-cards/).
 
 ## Licence

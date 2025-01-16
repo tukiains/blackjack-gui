@@ -384,6 +384,16 @@ def get_correct_play(
                 return double
             return hit
         if hand.sum == 12:
+            if dealer_card.value == 2 and deviations and count.true_count >= 3:
+                return stay
+            if dealer_card.value == 3 and deviations and count.true_count >= 2:
+                return stay
+            if (
+                dealer_card.value == 4
+                and deviations
+                and count.running_count < 0
+            ):
+                return hit
             return stay if dealer_card.value in (4, 5, 6) else hit
         if hand.sum == 13:
             return stay if dealer_card.value in range(2, 7) else hit

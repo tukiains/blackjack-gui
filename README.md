@@ -145,6 +145,9 @@ The following deviations are implemented to the code (I will slowly add more):
 | :-------- | :-------------- | :-------------------------- | :---------------- |
 | Any       | A               | Take insurance / even money | True count > 3    |
 | 16        | 10              | Stand instead of hit        | Running count > 0 |
+| 12        | 2               | Stand instead of hit        | True count > 3    |
+| 12        | 3               | Stand instead of hit        | True count > 2    |
+| 12        | 4               | Hit instead of stand        | Running count < 0 |
 
 ## Development
 

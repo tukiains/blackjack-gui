@@ -17,6 +17,12 @@ class Rules:
     csm: bool = False
 
 
+@dataclass
+class Count:
+    running_count: int
+    true_count: float
+
+
 class Card:
     def __init__(self, label: str, suit: str, visible: bool = True):
         self.label = label
@@ -224,8 +230,7 @@ class Player:
         self.hands: List[Hand] = []
         self.initial_stack = stack
         self.invested = 0.0
-        self.running_count = 0
-        self.true_count = 0.0
+        self.count = Count(0, 0.0)
 
     def buy_in(self, bet: float):
         self.stack = bet
@@ -255,27 +260,27 @@ class Player:
         raise RuntimeError("Too many hands")
 
     def init_count(self):
-        self.running_count = 0
-        self.true_count = 0.0
-
-    def update_true_count(self, shoe: Shoe):
-        n_decs_left = shoe.n_cards / 52
-        self.true_count = self.running_count / n_decs_left
-
-    def update_running_count(self, card: Card):
-        if not card.visible or card.counted:
-            return
-        if card.label == "A" or card.value == 10:
-            self.running_count -= 1
-        elif isinstance(card.value, int) and card.value <= 6:
-            self.running_count += 1
-        card.counted = True
+        self.count.running_count = 0
+        self.count.true_count = 0.0
 
     def update_counts(self, hand: Hand | list[Card], shoe: Shoe):
         cards = hand.cards if isinstance(hand, Hand) else hand
         for card in cards:
-            self.update_running_count(card)
-        self.update_true_count(shoe)
+            self._update_running_count(card)
+            self._update_true_count(shoe)
+
+    def _update_true_count(self, shoe: Shoe):
+        n_decs_left = shoe.n_cards / 52
+        self.count.true_count = self.count.running_count / n_decs_left
+
+    def _update_running_count(self, card: Card):
+        if not card.visible or card.counted:
+            return
+        if card.label == "A" or card.value == 10:
+            self.count.running_count -= 1
+        elif isinstance(card.value, int) and card.value <= 6:
+            self.count.running_count += 1
+        card.counted = True
 
 
 def evaluate_hand(cards: list) -> tuple:
@@ -330,7 +335,12 @@ def get_rules(region: Literal["US", "Europe", "Helsinki"]):
 
 
 def get_correct_play(
-    hand: Hand, dealer_card: Card, n_hands: int, rules: Rules
+    hand: Hand,
+    dealer_card: Card,
+    n_hands: int,
+    rules: Rules,
+    count: Count,
+    deviations: bool = False,
 ) -> str:
     cards = hand.cards
     n_cards = len(cards)

@@ -43,8 +43,12 @@ def play(args):
             shoe = Shoe(n_decs)
             player.init_count()
         player.hands = []
-        if args.ai is True and args.count is True and player.true_count > 1:
-            bet = args.bet * math.floor(player.true_count)
+        if (
+            args.ai is True
+            and args.count is True
+            and player.count.true_count > 1
+        ):
+            bet = args.bet * math.floor(player.count.true_count)
         else:
             bet = args.bet
         hand = player.start_new_hand(bet)
@@ -67,7 +71,7 @@ def play(args):
 
         # Insurance
         if dealer.has_ace and hand.is_blackjack is False:
-            should_insure = "yes" if player.true_count > 3 else "no"
+            should_insure = "yes" if player.count.true_count > 3 else "no"
             if args.ai is True:
                 action = (
                     "y"
@@ -84,7 +88,9 @@ def play(args):
                 dealer.insurance_bet = insurance_bet
         # Even money
         elif dealer.has_ace and hand.is_blackjack is True:
-            should_take_even_money = "yes" if player.true_count > 3 else "no"
+            should_take_even_money = (
+                "yes" if player.count.true_count > 3 else "no"
+            )
             if args.ai is True:
                 action = (
                     "y"
@@ -120,7 +126,12 @@ def play(args):
             # Surrender can be done only here. And not against dealer's Ace.
             if args.rules.surrender == "2-10" and not dealer.has_ace:
                 correct_play = get_correct_play(
-                    hand, dealer.cards[0], len(player.hands), args.rules
+                    hand,
+                    dealer.cards[0],
+                    len(player.hands),
+                    args.rules,
+                    player.count,
+                    deviations=True,
                 )
                 if args.ai is True:
                     action = "y" if correct_play == "surrender" else "n"
@@ -147,7 +158,12 @@ def play(args):
                         and hand.is_asked_to_split is False
                     ):
                         correct_play = get_correct_play(
-                            hand, dealer.cards[0], len(player.hands), args.rules
+                            hand,
+                            dealer.cards[0],
+                            len(player.hands),
+                            args.rules,
+                            player.count,
+                            deviations=True,
                         )
                         if args.ai is True:
                             action = "y" if correct_play == "split" else "n"
@@ -197,7 +213,12 @@ def play(args):
                 if len(hand.cards) == 2 and hand.is_hittable is True:
                     # Doubling
                     correct_play = get_correct_play(
-                        hand, dealer.cards[0], len(player.hands), args.rules
+                        hand,
+                        dealer.cards[0],
+                        len(player.hands),
+                        args.rules,
+                        player.count,
+                        deviations=True,
                     )
                     if hand.sum == 21:
                         hand.played = True
@@ -229,7 +250,12 @@ def play(args):
                 if hand.is_hittable is True:
                     # Hit or stay
                     correct_play = get_correct_play(
-                        hand, dealer.cards[0], len(player.hands), args.rules
+                        hand,
+                        dealer.cards[0],
+                        len(player.hands),
+                        args.rules,
+                        player.count,
+                        deviations=True,
                     )
                     if args.ai is True:
                         if correct_play in ("hit", "surrender"):

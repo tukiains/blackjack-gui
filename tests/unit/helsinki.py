@@ -6,6 +6,7 @@ from blackjack_gui.lib import (
     evaluate_hand,
     get_correct_play,
     get_rules,
+    Count,
 )
 
 
@@ -408,4 +409,10 @@ def test_get_correct_play(cards, dealer, correct_play):
     hand.sum, hand.is_hard = evaluate_hand(hand.cards)
     n_hands = 1
     dealer_card = Card(dealer, "clubs")
-    assert get_correct_play(hand, dealer_card, n_hands, rules) == correct_play
+    count = Count(0, 0)
+    assert (
+        get_correct_play(
+            hand, dealer_card, n_hands, rules, count, deviations=False
+        )
+        == correct_play
+    )

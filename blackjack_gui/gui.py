@@ -2,6 +2,7 @@ from argparse import Namespace
 import os
 import tkinter
 from typing import Any, Literal, cast
+from .lib import Count
 
 
 from PIL import Image, ImageTk
@@ -50,6 +51,7 @@ class Game:
         self._n_correct_play = 0
         self._n_mistakes = 0
         self._n_rounds = 0
+        self.count: Count
 
     def start_new_round(self):
         """Starts new round."""
@@ -427,9 +429,9 @@ class Game:
 
     def _handle_counts(self, hand: Hand | list[Card], shoe: Shoe):
         self.player.update_counts(hand, shoe)
-        true_count = int(self.player.true_count)
+        true_count = int(self.player.count.true_count)
         self.check_button.count_text.set(
-            f"Running count: {self.player.running_count}\nTrue count: {true_count}"
+            f"Running count: {self.player.count.running_count}\nTrue count: {true_count}"
         )
 
     def _resolve_lost_hand(self, hand: Hand):
@@ -486,7 +488,12 @@ class Game:
         if self.check_button.fix_mistakes.get() == 0:
             return True
         correct_play = get_correct_play(
-            hand, self.dealer.cards[0], len(self.player.hands), self.rules
+            hand,
+            self.dealer.cards[0],
+            len(self.player.hands),
+            self.rules,
+            self.player.count,
+            self.components.deviations.get() == 1,
         )
         if correct_play != play:
             self._display_info(hand, "Try again!")
@@ -508,7 +515,7 @@ class Game:
         self.check_button.accuracy_text.set(txt)
 
     def _check_insurance(self, hand: Hand) -> bool:
-        if self.player.true_count < 3:
+        if self.player.count.true_count < 3:
             self._display_info(hand, "Try again!")
             self.root.after(1000, self._clean_info)
             return False
@@ -859,6 +866,7 @@ def main(args: Namespace):
     check_button = CheckButton(root, args, background)
     check_button.fetch_accuracy()
     check_button.fetch_count()
+    check_button.fetch_deviations()
 
     # Buttons
     menu = {

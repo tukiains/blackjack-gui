@@ -1,6 +1,13 @@
 import pytest
 
-from blackjack_gui.lib import Card, Hand, evaluate_hand, get_correct_play, Rules
+from blackjack_gui.lib import (
+    Card,
+    Hand,
+    evaluate_hand,
+    get_correct_play,
+    Rules,
+    Count,
+)
 
 
 # Test hands that are OK to hit
@@ -480,5 +487,11 @@ def test_get_correct_play(cards, dealer, correct_play):
         hand.cards.append(Card(label, "clubs"))
     hand.sum, hand.is_hard = evaluate_hand(hand.cards)
     n_hands = 1
+    count = Count(0, 0)
     dealer_card = Card(dealer, "clubs")
-    assert get_correct_play(hand, dealer_card, n_hands, rules) == correct_play
+    assert (
+        get_correct_play(
+            hand, dealer_card, n_hands, rules, count, deviations=False
+        )
+        == correct_play
+    )

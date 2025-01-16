@@ -33,6 +33,7 @@ class TableComponents:
         self.accuracy_text: tkinter.StringVar
         self.fix_count: tkinter.IntVar
         self.count_text: tkinter.StringVar
+        self.deviations: tkinter.IntVar
 
     def setup_canvas(self) -> None:
         rect = tkinter.Canvas(
@@ -253,7 +254,7 @@ class CheckConfig:
 
 class CheckButton:
     x = 1030
-    y = 600
+    y = 590
     y_offset = 25
 
     def __init__(
@@ -266,7 +267,7 @@ class CheckButton:
     def fetch_count(self):
         txt_location = (10, 610)
         conf = CheckConfig(
-            location=(CheckButton.x, CheckButton.y),
+            location=(CheckButton.x, CheckButton.y - 10),
             txt_location=txt_location,
             txt="Show count",
         )
@@ -288,6 +289,19 @@ class CheckButton:
         self._show_accuracy(label, checkbox, txt_location)
         self.fix_mistakes = checkbox
         self.accuracy_text = text
+
+    def fetch_deviations(self):
+        var = tkinter.IntVar()
+        checkbutton = tkinter.Checkbutton(
+            self.root,
+            text="Include deviations",
+            variable=var,
+            background="lightgrey",
+        )
+        checkbutton.place(
+            x=CheckButton.x, y=CheckButton.y + CheckButton.y_offset * 2
+        )
+        self.deviations = var
 
     def _get_table_infotext(
         self, txt_location: tuple[int, int]
@@ -311,8 +325,12 @@ class CheckButton:
         def toggle():
             if var.get() == 1:
                 label.place(x=conf.txt_location[0], y=conf.txt_location[1])
+                if "Coach" in conf.txt:
+                    self.deviations.set(1)
             else:
                 label.place_forget()
+                if "Coach" in conf.txt:
+                    self.deviations.set(0)
 
         var = tkinter.IntVar()
         checkbutton = tkinter.Checkbutton(

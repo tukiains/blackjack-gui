@@ -128,18 +128,16 @@ The rules in the U.S. typically include:
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-usa.png" alt="" width="400"/>
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/usa-symbols.png" alt="" width="320"/>
 
-### Notes
+### Rule-based deviations
 
-There are minor deviations from the basic strategy charts presented above, which depend on the
-specific table rules—such as the number of decks, whether the dealer hits or stands on soft 17,
-whether the dealer peeks for blackjack, whether you can double after splitting,
-and whether surrender is available. For a detailed, rule-specific strategy,
-consult the [Wizard of Odds Blackjack Strategy Calculator](https://wizardofodds.com/games/blackjack/strategy/calculator/)
-to identify the optimal basic strategy for each game configuration.
+There are a few deviations from the basic strategy, which depend on the
+specific combination of the table rules. For a detailed, rule-specific strategy,
+consult the [Wizard of Odds Blackjack Strategy Calculator](https://wizardofodds.com/games/blackjack/strategy/calculator/) to identify the optimal basic strategy for each game configuration.
 
-## Deviations
+## Count-based deviations
 
-The following deviations are implemented to the code (I will slowly add more):
+Card counting affects the basic strategy. The following deviations are implemented
+in `blackjack-gui` (I will slowly add more). Use "Coach mode" with "Include deviations" enabled to verify your play!
 
 | Your Hand | Dealer's Upcard | Deviation                   | Index             |
 | :-------- | :-------------- | :-------------------------- | :---------------- |

@@ -245,6 +245,10 @@ class Game:
 
     def _shuffle_shoe(self):
         self.shoe.fill_discard_tray(self.components.shoe_progress)
+        self.bet = self.initial_bet
+        self.components.slider.configure(state=tkinter.NORMAL)
+        self.components.slider.set(self.bet)
+        self.components.slider.configure(state=tkinter.DISABLED)
         self.components.shuffle.place(relx=0.45, rely=0.5, anchor="center")
         self.root.update_idletasks()
         self.root.after(TIME_DELAY * 2, self._hide_shuffle)
@@ -493,7 +497,7 @@ class Game:
             len(self.player.hands),
             self.rules,
             self.player.count,
-            self.components.deviations.get() == 1,
+            self.check_button.deviations.get() == 1,
         )
         if correct_play != play:
             self._display_info(hand, "Try again!")

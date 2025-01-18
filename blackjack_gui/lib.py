@@ -192,15 +192,15 @@ class Hand:
 
 class Dealer:
     def __init__(self, game_type: Literal["h17", "s17"]):
-        self.cards: list[Card] = []
-        self.sum = 0.0
-        self.is_blackjack = False
-        self.is_finished = False
-        self.is_over = False
-        self.insurance_bet = 0.0
-        self.even_money = False
         self.game_type = game_type
-        self.has_ace = False
+        self.cards: list[Card] = []
+        self.sum: float = 0.0
+        self.is_blackjack: bool = False
+        self.is_finished: bool = False
+        self.is_over: bool = False
+        self.insurance_bet = 0.0
+        self.even_money: bool = False
+        self.has_ace: bool = False
 
     def init_hand(self):
         self.cards = []
@@ -214,12 +214,14 @@ class Dealer:
     def deal(self, shoe: Shoe):
         card = shoe.draw()
         self.cards.append(card)
-        self.sum, _ = evaluate_hand(self.cards)
-        labels = [c.label for c in self.cards]
-        self.has_ace = True if labels[0] == "A" else False
-        if self.sum == 17 and self.game_type == "h17" and "A" in labels:
-            pass
-        elif self.sum > 16:
+        self.sum, is_hard = evaluate_hand(self.cards)
+        self.has_ace = self.cards[0].label == "A"
+        if self.sum == 17:
+            if self.game_type == "s17":
+                self.is_finished = True
+            if self.game_type == "h17":
+                self.is_finished = is_hard
+        elif self.sum > 17:
             self.is_finished = True
         if self.sum == 21 and len(self.cards) == 2:
             self.is_blackjack = True

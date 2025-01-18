@@ -66,6 +66,7 @@ def test_hit(player, dealer, stack):
         ("A,2,7", "6,10,2", 12),
         ("A,7,2", "2,10,5", 12),
         ("A,8,3", "6,9,2", 8),
+        ("A,8,2", "6,9,4", 12),
     ],
 )
 def test_double(player, dealer, stack):
@@ -77,11 +78,16 @@ def test_double(player, dealer, stack):
     [
         ("A,A,J,J", "10,9", 12),
         ("A,A,5,2", "5,10,J", 12),
-        ("A,A,A,A,A,A,A,A", "10,7", 8),
-        ("8,8,3,3,J,K", "10,K", 14),
-        ("A,A,K,K", "A,K", 9),
+        ("A,A,A,A,A,A,A,A", "10,7", 8),  # No RSA
+        ("8,8,3,3,J,K", "10,K", 14),  # DAS
+        ("7,7,2,2,10,10", "3,6,3,10", 14),  # DAS
+        ("7,7,2,2,10,10", "10,A", 9),  # Dealer Peek
+        ("A,A,K,K", "A,K", 9),  # Dealer Peek
         ("A,A,K,K", "A,6,4", 10),
         ("A,A,K,K", "A,6,3", 12),
+        ("A,A,2,2", "5,6,3,2,A", 8),
+        ("A,A,2,2", "5,6,6", 8),
+        ("A,A,2,2", "7,6,10", 12),
     ],
 )
 def test_split(player, dealer, stack):

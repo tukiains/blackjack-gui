@@ -139,19 +139,21 @@ class Hand:
     def __init__(self, rules: Rules):
         self.rules = rules
         self.cards: list[Card] = []
-        self.sum = 0.0
-        self.bet = 0.0
-        self.is_hard = True
-        self.is_hittable = True  # if True, can receive more cards
-        self.is_blackjack = False
-        self.is_over = False
-        self.surrender = False
-        self.is_asked_to_split = False
-        self.is_split_hand = False
+        self.sum: float = 0.0
+        self.bet: float = 0.0
+        self.is_hard: bool = True
+        self.is_hittable: bool = True  # if True, can receive more cards
+        self.is_blackjack: bool = False
+        self.is_over: bool = False
+        self.surrender: bool = False
+        self.is_asked_to_split: bool = False
+        self.is_split_hand: bool = False
         self.slot = None
-        self.is_finished = False  # if True, no more playing for this hand
-        self.played = False
-        self.is_triple_seven = False
+        self.is_finished: bool = False  # if True, no more playing for this hand
+        self.played: bool = False
+        self.is_triple_seven: bool = False
+        self.is_allowed_to_split: bool = True  # if False, can't split this hand
+        self.is_pair: bool = False
 
     def deal(
         self,
@@ -162,6 +164,11 @@ class Hand:
         else:
             self.cards.append(source)
         self.sum, self.is_hard = evaluate_hand(self.cards)
+
+        if len(self.cards) == 2 and self.cards[0].value == self.cards[1].value:
+            self.is_pair = True
+        else:
+            self.is_pair = False
 
         if (
             len(self.cards) == 3

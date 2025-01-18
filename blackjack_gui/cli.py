@@ -9,6 +9,7 @@ from .lib import (
     format_hand,
     get_correct_play,
     get_starting_hand,
+    Rules,
 )
 
 
@@ -21,11 +22,12 @@ def _is_correct(correct_play: str, action: str, decisions: dict) -> dict:
 
 
 def play(args):
+    rules: Rules = args.rules
     decisions = {"correct": 0, "incorrect": 0}
     n_decs = 6
     n_total_hands = 0
-    dealer = Dealer(args.rules.game_type)
-    player = Player(args.rules)
+    dealer = Dealer(rules.game_type)
+    player = Player(rules)
     player.buy_in(args.stack)
     shoe = Shoe(n_decs)
     logging.debug("----------------")
@@ -111,7 +113,7 @@ def play(args):
                 dealer.even_money = True
 
         # Dealer peek
-        if args.rules.region == "US" and dealer.is_blackjack is True:
+        if rules.region == "US" and dealer.is_blackjack is True:
             if dealer.insurance_bet > 0:
                 logging.debug("You win insurance bet.")
                 player.stack += dealer.insurance_bet * 3
@@ -129,12 +131,12 @@ def play(args):
 
         if hand.is_blackjack is False:
             # Surrender can be done only here. And not against dealer's Ace.
-            if args.rules.surrender == "2-10" and not dealer.has_ace:
+            if rules.surrender == "2-10" and not dealer.has_ace:
                 correct_play = get_correct_play(
                     hand,
                     dealer.cards[0],
                     len(player.hands),
-                    args.rules,
+                    rules,
                     player.count,
                     deviations=True,
                 )
@@ -161,12 +163,13 @@ def play(args):
                     if (
                         hand.cards[0].value == hand.cards[1].value
                         and hand.is_asked_to_split is False
+                        and hand.is_allowed_to_split is True
                     ):
                         correct_play = get_correct_play(
                             hand,
                             dealer.cards[0],
                             len(player.hands),
-                            args.rules,
+                            rules,
                             player.count,
                             deviations=True,
                         )
@@ -189,6 +192,12 @@ def play(args):
                                 handy.is_blackjack = False
                                 if handy.cards[0].label == "A":
                                     handy.is_hittable = False
+                                if (
+                                    handy.cards[0].label == "A"
+                                    and handy.cards[1].label == "A"
+                                    and not rules.resplit_aces
+                                ):
+                                    handy.is_allowed_to_split = False
                             logging.debug(
                                 f"Player: {format_hand(player.hands)}"
                             )
@@ -196,11 +205,19 @@ def play(args):
                             hand.is_asked_to_split = True
                         if len(player.hands) == 4:
                             break
+                        if all(
+                            [
+                                not hand.is_allowed_to_split or not hand.is_pair
+                                for hand in player.hands
+                            ]
+                        ):
+                            break
                 done_splitting = True
                 for hand in player.hands:
                     if (
-                        hand.cards[0].value == hand.cards[1].value
-                        and hand.is_asked_to_split is False
+                        hand.is_pair
+                        and not hand.is_asked_to_split
+                        and hand.is_allowed_to_split
                     ):
                         done_splitting = False
                     player.update_counts(hand, shoe)
@@ -221,7 +238,7 @@ def play(args):
                         hand,
                         dealer.cards[0],
                         len(player.hands),
-                        args.rules,
+                        rules,
                         player.count,
                         deviations=True,
                     )
@@ -258,7 +275,7 @@ def play(args):
                         hand,
                         dealer.cards[0],
                         len(player.hands),
-                        args.rules,
+                        rules,
                         player.count,
                         deviations=True,
                     )
@@ -302,7 +319,7 @@ def play(args):
             logging.debug(f"Dealer: {dealer}")
             dealer_labels = [card.label for card in dealer.cards]
             if dealer.sum == 17:
-                if args.rules.game_type == "h17" and "A" in dealer_labels:
+                if rules.game_type == "h17" and "A" in dealer_labels:
                     hit_dealer = True
                 else:
                     hit_dealer = False
@@ -320,6 +337,7 @@ def play(args):
 
         # Even money
         if dealer.even_money is True:
+            logging.debug("You win with even money.")
             player.stack += hand.bet * 2
 
         # Insurance

@@ -124,7 +124,9 @@ The rules in the U.S. typically include:
 - Dealer must hit on soft 17
 - Dealer peek is in use
 - Late surrender is not available
-- Doubling and splitting rules same as above
+- Re-splitting of Aces (RSA) is not available
+- Doubling and splitting rules otherwise same as above
+- 7-7-7 rule is not available
 
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-usa.png" alt="" width="400"/>
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/usa-symbols.png" alt="" width="320"/>

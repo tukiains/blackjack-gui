@@ -46,9 +46,14 @@ def play(args):
         if (
             args.ai is True
             and args.count is True
-            and player.count.true_count > 1
+            and player.count.true_count > 0
         ):
-            bet = args.bet * math.floor(player.count.true_count)
+            if player.count.true_count < 5:
+                bet = args.bet * math.ceil(player.count.true_count)
+            elif player.count.true_count < 6:
+                bet = 8 * args.bet
+            else:
+                bet = 12 * args.bet
         else:
             bet = args.bet
         hand = player.start_new_hand(bet)

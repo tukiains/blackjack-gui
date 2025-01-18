@@ -316,6 +316,7 @@ def get_rules(region: Literal["US", "Europe", "Helsinki"]):
             game_type="h17",
             surrender="no",
             peek=True,
+            resplit_aces=False,
         )
     if region == "Europe":
         rules = Rules(

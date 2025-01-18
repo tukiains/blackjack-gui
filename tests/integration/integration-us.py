@@ -21,6 +21,11 @@ prefix = "blackjack --n-games=1 --cli --ai --loglevel=WARNING --stack=10 --bet=1
         ("6,Q", "4,10,3", 9),
         ("6,Q", "5,10,K", 11),
         ("6,Q", "6,10,4", 9),
+        ("A,K", "6,10,5", 11.5),
+        ("Q,Q", "6,A,4", 9),
+        ("Q,Q", "6,A,4", 9),
+        ("Q,Q", "6,A,3", 10),
+        ("Q,Q", "7,A,3", 11),
     ],
 )
 def test_stay(player, dealer, stack):
@@ -33,6 +38,12 @@ def test_stay(player, dealer, stack):
         ("10,6,3", "9,Q", 10),
         ("10,6,3", "10,8", 11),
         ("10,5,3", "10,7", 11),
+        ("7,7,7", "A,K", 9),
+        ("7,7,7", "A,4,6", 10),
+        ("7,7,7", "A,4,5", 11),
+        ("7,7,7", "10,7", 11),
+        ("7,7,7", "A,10", 9),
+        ("7,7,7", "10,A", 9),
     ],
 )
 def test_hit(player, dealer, stack):
@@ -55,9 +66,6 @@ def test_hit(player, dealer, stack):
         ("A,2,7", "6,10,2", 12),
         ("A,7,2", "2,10,5", 12),
         ("A,8,3", "6,9,2", 8),
-        ("7,7,7", "10,7", 11),
-        ("7,7,7", "A,10", 9),
-        ("7,7,7", "10,A", 9),
     ],
 )
 def test_double(player, dealer, stack):
@@ -69,10 +77,11 @@ def test_double(player, dealer, stack):
     [
         ("A,A,J,J", "10,9", 12),
         ("A,A,5,2", "5,10,J", 12),
-        ("A,A,A,A,A,A,A,A", "10,7", 6),
-        ("A,A,A,A,K,K,K,K", "10,K", 14),
+        ("A,A,A,A,A,A,A,A", "10,7", 8),
         ("8,8,3,3,J,K", "10,K", 14),
         ("A,A,K,K", "A,K", 9),
+        ("A,A,K,K", "A,6,4", 10),
+        ("A,A,K,K", "A,6,3", 12),
     ],
 )
 def test_split(player, dealer, stack):
@@ -83,6 +92,12 @@ def test_insurance():
     player = "K,J"
     dealer = "A,K"
     assert call(player, dealer) == 9
+
+
+def test_even_money():
+    player = "A,J"
+    dealer = "A,K"
+    assert call(player, dealer) == 10
 
 
 def call(player: str, dealer: str) -> float:

@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.8.0 – 2025-01-18
+
+- Fix H17 bug
+- Add option to use deviations
+- Add 16 vs 10 deviation
+- Add 12 vs 2,3,4 deviations
+- Remove RSA from US rules
+- Improve bet spread
+- Fix RSA in CLI
+- Improve tests
+- Add PyPI badge
+
 ## 1.7.10 – 2025-01-12
 
 - Make bet spread more realistic

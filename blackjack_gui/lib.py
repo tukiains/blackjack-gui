@@ -111,7 +111,7 @@ class Shoe:
                 x=30, y=y, anchor="se", relheight=fraction, relwidth=1.0
             )
 
-    def arrange(self, cards: list, randomize: bool = False):
+    def arrange(self, cards: list[str], randomize: bool = False):
         """Arranges shoe so that next cards are the requested ones."""
         if ";" in str(cards):
             # Choose one hand randomly from input like --cards="A,7;7,7;10,10"
@@ -140,7 +140,7 @@ class Hand:
         self.rules = rules
         self.cards: list[Card] = []
         self.sum: float = 0.0
-        self.bet: float = 0.0
+        self.bet: int = 0
         self.is_hard: bool = True
         self.is_hittable: bool = True  # if True, can receive more cards
         self.is_blackjack: bool = False
@@ -244,7 +244,7 @@ class Player:
     def buy_in(self, bet: float):
         self.stack = bet
 
-    def start_new_hand(self, bet: float) -> Hand:
+    def start_new_hand(self, bet: int) -> Hand:
         hand = Hand(self.rules)
         hand.bet = bet
         self.stack -= bet

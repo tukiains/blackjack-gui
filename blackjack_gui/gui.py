@@ -38,16 +38,18 @@ class Game:
     ):
         self.player = player
         self.dealer = dealer
-        self.args = args
         self.root = components.root
         self.menu = menu
         self.components = components
         self.check_button = check_button
-        self.bet = args.bet
+        self.cards: list[str] | None = args.cards
+        self.dealer_cards: list[str] | None = args.dealer_cards
+        self.subset: str | None = args.subset
+        self.bet: int = args.bet
         self.rules: Rules = args.rules
         self.shoe = Shoe(self.rules.number_of_decks)
         self.active_slot = None
-        self.initial_bet = args.bet
+        self.initial_bet: int = args.bet
         self._n_correct_play = 0
         self._n_mistakes = 0
         self._n_rounds = 0
@@ -58,7 +60,7 @@ class Game:
         self._hide_buttons()
         self._n_rounds += 1
         self._update_accuracy()
-        self.bet = self.components.slider.get()
+        self.bet = int(self.components.slider.get())
         self.components.slider.configure(state=tkinter.DISABLED)
         self._hide_all_chips()
         self._hide_insurance_chip()
@@ -69,9 +71,9 @@ class Game:
         shuffle_limit = 52  # How many cards left in the shoe before shuffle
         is_end_of_shoe = self.shoe.n_cards < shuffle_limit
         is_user_given_cards = (
-            self.args.cards is not None
-            or self.args.subset is not None
-            or self.args.dealer_cards is not None
+            self.cards is not None
+            or self.subset is not None
+            or self.dealer_cards is not None
         )
         if self.rules.csm or is_end_of_shoe or is_user_given_cards:
             self.shoe = Shoe(self.rules.number_of_decks)
@@ -261,17 +263,17 @@ class Game:
         self.shoe.fill_discard_tray(self.components.shoe_progress)
         hand = self.player.start_new_hand(self.bet)
         self.dealer.init_hand()
-        if self.args.dealer_cards is not None:
-            self.shoe.arrange(self.args.dealer_cards)
+        if self.dealer_cards:
+            self.shoe.arrange(self.dealer_cards)
         self.dealer.deal(self.shoe)
         self.dealer.deal(self.shoe)
         self.dealer.cards[1].visible = False
         self._display_dealer_cards()
         self._handle_counts(self.dealer.cards, self.shoe)
-        if self.args.cards is not None:
-            self.shoe.arrange(self.args.cards, randomize=True)
-        elif self.args.subset is not None:
-            cards = get_starting_hand(self.args.subset)
+        if self.cards:
+            self.shoe.arrange(self.cards, randomize=True)
+        elif self.subset is not None:
+            cards = get_starting_hand(self.subset)
             self.shoe.arrange(cards)
         hand.deal(self.shoe)
         hand.deal(self.shoe)
@@ -661,9 +663,9 @@ class Game:
     def _display_chip(self, hand: Hand, pos: int, color: str = "red"):
         img = _get_chip_image(color)
         if color == "red":
-            text = self.bet
+            text = str(self.bet)
         else:
-            text = ".5" if self.bet == 1 else self.bet / 2
+            text = "0.5" if self.bet == 1 else str(self.bet / 2)
         self.components.chips[f"{str(hand.slot)}{str(pos)}"].configure(
             image=img,
             compound="center",

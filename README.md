@@ -142,14 +142,14 @@ consult the [Wizard of Odds Blackjack Strategy Calculator](https://wizardofodds.
 Card counting affects the basic strategy. The following deviations are implemented
 in `blackjack-gui` (I will slowly add more). Use "Coach mode" with "Include deviations" enabled to verify your play!
 
-| Your Hand | Dealer's Upcard | Deviation                   | Index             |
-| :-------- | :-------------- | :-------------------------- | :---------------- |
-| Any       | A               | Take insurance / even money | True count > 3    |
-| 16        | 10              | Stand instead of hit        | Running count > 0 |
-| 12        | 2               | Stand instead of hit        | True count > 3    |
-| 12        | 3               | Stand instead of hit        | True count > 2    |
-| 12        | 4               | Hit instead of stand        | Running count < 0 |
-| A4        | 4               | Hit instead of double       | Running count < 0 |
+| Your Hand | Dealer's Upcard | Basic strategy                    | Deviation                   | Index             |
+| :-------- | :-------------- | :-------------------------------- | :-------------------------- | :---------------- |
+| Any       | A               | Don't take insurance / even money | Take insurance / even money | True count > 3    |
+| 16        | 10              | Hit                               | Stand                       | Running count > 0 |
+| 12        | 2               | Hit                               | Stand                       | True count > 3    |
+| 12        | 3               | Hit                               | Stand                       | True count > 2    |
+| 12        | 4               | Stand                             | Hit                         | Running count < 0 |
+| A4        | 4               | Double                            | Hit                         | Running count < 0 |
 
 ## Development
 

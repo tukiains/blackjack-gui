@@ -301,6 +301,8 @@ class CheckButton:
         checkbutton.place(
             x=CheckButton.x, y=CheckButton.y + CheckButton.y_offset * 2
         )
+        if self.args.subset is not None or self.args.cards is not None:
+            var.set(1)
         self.deviations = var
 
     def _get_table_infotext(

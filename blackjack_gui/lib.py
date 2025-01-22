@@ -543,7 +543,19 @@ def get_correct_play(
                 if dealer_card.value in range(3, 7) and can_be_doubled
                 else hit
             )
-        if hand.sum in (15, 16):
+        if hand.sum == 15:
+            if (
+                dealer_card.value == 4
+                and deviations
+                and count.running_count < 0
+            ):
+                return hit
+            return (
+                double
+                if dealer_card.value in (4, 5, 6) and can_be_doubled
+                else hit
+            )
+        if hand.sum == 16:
             return (
                 double
                 if dealer_card.value in (4, 5, 6) and can_be_doubled

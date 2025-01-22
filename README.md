@@ -149,6 +149,7 @@ in `blackjack-gui` (I will slowly add more). Use "Coach mode" with "Include devi
 | 12        | 2               | Stand instead of hit        | True count > 3    |
 | 12        | 3               | Stand instead of hit        | True count > 2    |
 | 12        | 4               | Hit instead of stand        | Running count < 0 |
+| A4        | 4               | Hit instead of double       | Running count < 0 |
 
 ## Development
 

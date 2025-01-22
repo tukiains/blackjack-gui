@@ -50,6 +50,7 @@ class Game:
         self.shoe = Shoe(self.rules.number_of_decks)
         self.active_slot = None
         self.initial_bet: int = args.bet
+        self._running_count_from_user: int = args.running_count
         self._n_correct_play = 0
         self._n_mistakes = 0
         self._n_rounds = 0
@@ -78,6 +79,9 @@ class Game:
         if self.rules.csm or is_end_of_shoe or is_user_given_cards:
             self.shoe = Shoe(self.rules.number_of_decks)
             self.player.init_count()
+        # Set running count if given as arguments (for testing and practice purposes)
+        if self._running_count_from_user != 0 and self._n_rounds == 1:
+            self.player.count.running_count = self._running_count_from_user
         self._shuffle_shoe() if is_end_of_shoe else self._finish_round()
 
     def surrender(self):

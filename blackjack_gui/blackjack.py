@@ -60,6 +60,12 @@ def main():
         help="Rules to be used. US = H17, peek, no surrender. Helsinki = S17, no peek, surrender.",
         default="US",
     )
+    parser.add_argument(
+        "--running-count",
+        type=int,
+        default=0,
+        help="Running count. Default is 0. For testing purposes.",
+    )
 
     args = parser.parse_args()
 

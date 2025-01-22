@@ -140,16 +140,16 @@ consult the [Wizard of Odds Blackjack Strategy Calculator](https://wizardofodds.
 ## Count-based deviations
 
 Card counting affects the basic strategy. The following deviations are implemented
-in `blackjack-gui` (I will slowly add more). Use "Coach mode" with "Include deviations" enabled to verify your play!
+in `blackjack-gui` (I will slowly add more). Use "Coach mode" with "Include deviations" to verify your play!
 
-| Your Hand | Dealer's Upcard | Basic strategy                    | Deviation                   | Index             |
-| :-------- | :-------------- | :-------------------------------- | :-------------------------- | :---------------- |
-| Any       | A               | Don't take insurance / even money | Take insurance / even money | True count > 3    |
-| 16        | 10              | Hit                               | Stand                       | Running count > 0 |
-| 12        | 2               | Hit                               | Stand                       | True count > 3    |
-| 12        | 3               | Hit                               | Stand                       | True count > 2    |
-| 12        | 4               | Stand                             | Hit                         | Running count < 0 |
-| A4        | 4               | Double                            | Hit                         | Running count < 0 |
+| Your Hand | Dealer's Upcard | Basic strategy                    | Deviation                   | Index |
+| :-------- | :-------------- | :-------------------------------- | :-------------------------- | :---- |
+| Any       | A               | Don't take insurance / even money | Take insurance / even money | +3    |
+| 16        | 10              | Hit                               | Stand                       | 0+    |
+| 12        | 2               | Hit                               | Stand                       | +3    |
+| 12        | 3               | Hit                               | Stand                       | +2    |
+| 12        | 4               | Stand                             | Hit                         | 0-    |
+| A4        | 4               | Double                            | Hit                         | 0-    |
 
 ## Development
 

@@ -152,6 +152,8 @@ in `blackjack-gui` (I will slowly add more). Use "Coach mode" with "Include devi
 | 12        | 4               | Stand                 | Hit       | 0-    |
 | A4        | 4               | Double                | Hit       | 0-    |
 
+Where 0- means any negative running count, 0+ means any positive running count, and +X means true count of X or greater.
+
 ## Development
 
 Install `blackjack-gui` with dev-dependencies from GitHub:

@@ -96,14 +96,15 @@ $ blackjack --subset hard
 Blackjack rules vary depending on the casino. In this application they follow the rules of Casino Helsinki,
 explained in Finnish [here](http://www.rahapeliopas.fi/kasinopelit/blackjack/), i.e.:
 
-- 6 decs
+- 6 decks
 - Blackjack pays 3 to 2
 - Dealer must stand on soft 17
+- Dealer peek is not in use
 - Any two cards can be doubled
 - Max. 4 hands can be achieved by splitting
-- Aces can be split but they receive only one extra card
 - Doubling after splitting is allowed
-- Dealer peek not in use
+- Aces can be split but they receive only one extra card
+- Resplit of aces is allowed
 - Early surrender is allowed but not against Ace
 - A 7-7-7 with the first three cards (not in a split game) pays 3 to 1 directly
 

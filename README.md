@@ -182,9 +182,13 @@ Run `pre-commit` checks:
 pre-commit run --all
 ```
 
-## Notes
+## Credits
 
-- Card images taken from [here](https://code.google.com/archive/p/vector-playing-cards/).
+- Card images sourced from [Google's Vector Playing Cards](https://code.google.com/archive/p/vector-playing-cards/).
+- Basic strategy follows [Wizard of Odds Blackjack Strategy Calculator](https://wizardofodds.com/games/blackjack/strategy/calculator/).
+- Deviations are based on [A1 Blackjack](https://www.youtube.com/channel/UCk52qcPJUckYK4fY2I1qvNw/videos),
+  an excellent source of free and useful blackjack content.
+- Inspiration drawn from [Blackjack Apprenticeship](https://www.blackjackapprenticeship.com/) the premier resource for serious card counters.
 
 ## Licence
 

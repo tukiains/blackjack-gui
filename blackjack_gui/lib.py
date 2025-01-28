@@ -408,22 +408,28 @@ def get_correct_play(
         if hand.sum == 13:
             return stay if dealer_card.value in range(2, 7) else hit
         if hand.sum == 14:
-            if rules.surrender != "no" and _should_surrender(
-                hand, dealer_card, (10,)
+            if (
+                rules.surrender != "no"
+                and n_hands == 1
+                and _should_surrender(hand, dealer_card, (10,))
             ):
                 return surrender
             return stay if dealer_card.value in range(2, 7) else hit
         if hand.sum == 15:
-            if rules.surrender != "no" and _should_surrender(
-                hand, dealer_card, (10,)
+            if (
+                rules.surrender != "no"
+                and n_hands == 1
+                and _should_surrender(hand, dealer_card, (10,))
             ):
                 return surrender
             if not dealer_ace and dealer_card.value in range(2, 7):
                 return stay
             return hit
         if hand.sum == 16:
-            if rules.surrender != "no" and _should_surrender(
-                hand, dealer_card, (9, 10)
+            if (
+                rules.surrender != "no"
+                and n_hands == 1
+                and _should_surrender(hand, dealer_card, (9, 10))
             ):
                 return surrender
             if dealer_card.value == 10 and deviations:
@@ -453,15 +459,21 @@ def get_correct_play(
                 return stay
             return split
         if cards[0].value == 8:
-            if rules.peek:
+            if rules.peek and n_hands < 4:
                 return split
-            if rules.surrender != "no" and _should_surrender(
-                hand, dealer_card, (10,)
+            if (
+                rules.surrender != "no"
+                and n_hands == 1
+                and _should_surrender(hand, dealer_card, (10,))
             ):
                 return surrender
             if dealer_card.value == 10 and not rules.peek:
                 return hit
-            if n_hands == 4 or dealer_ace:
+            if dealer_card.value in (2, 3, 4, 5, 6) and n_hands == 4:
+                return stay
+            if dealer_card.value in (7, 8, 9, 10) and n_hands == 4:
+                return hit
+            if dealer_ace:
                 return hit
             return split
         if cards[0].value == 7:
@@ -474,6 +486,8 @@ def get_correct_play(
                 return split
             if dealer_card.value in (2, 3, 4, 5, 6, 7) and n_hands < 4:
                 return split
+            if dealer_card.value in (2, 3, 4, 5, 6) and n_hands == 4:
+                return stay
             return hit
         if cards[0].value == 6:
             if (
@@ -491,6 +505,8 @@ def get_correct_play(
                 return split
             if dealer_card.value in (2, 3, 4, 5, 6) and n_hands < 4:
                 return split
+            if dealer_card.value in (4, 5, 6) and n_hands == 4:
+                return stay
             return hit
         if cards[0].value == 5:
             if dealer_card.value in range(2, 10) and can_be_doubled:

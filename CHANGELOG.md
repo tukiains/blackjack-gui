@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.1 – 2025-02-18
+
+- Add running-count argument for testing purposes
+- Add A4 vs 5 deviation
+- Fix bug in correct play with pairs and 4 hands
+- Remove blackjack from soft training hands
+
 ## 1.8.0 – 2025-01-18
 
 - Fix H17 bug

@@ -662,7 +662,6 @@ def get_starting_hand(subset: str) -> list[str]:
         "A,7",
         "A,8",
         "A,9",
-        "A,10",
     ]
     pairs = [
         "2,2",

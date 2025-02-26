@@ -83,6 +83,6 @@ def test_insurance():
 
 def call(player: str, dealer: str) -> float:
     result = subprocess.check_output(
-        f"{prefix} " f"--cards={player} " f"--dealer-cards={dealer}", shell=True
+        f"{prefix} --cards={player} --dealer-cards={dealer}", shell=True
     )
     return float(result)

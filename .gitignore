@@ -5,5 +5,7 @@ blackjack_gui.egg-info/
 build/
 dist/
 venv/
+.venv/
+node_modules
 *__init__.pyc*
 .vscode

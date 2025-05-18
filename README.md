@@ -56,25 +56,19 @@ blackjack [-h] [--cli] [--ai] [--count] [--bet BET] [--stack STACK]
 
 ## Examples
 
-Open the GUI version with Casino Helsinki Rules:
+Start the game:
 
 ```
 $ blackjack
 ```
 
-With US rules:
-
-```
-$ blackjack --rules US
-```
-
-With the default settings, play 10 rounds of blackjack with the command line interface:
+With the default settings, play 10 rounds of blackjack using the command line interface:
 
 ```
 $ blackjack --cli
 ```
 
-Let the computer play perfect basic game and use card counting technique to bring down the house:
+Let the computer play blackjack using perfect basic strategy and card counting to beat the house.
 
 ```
 $ blackjack --cli --ai --count --n-games=100000 --loglevel=INFO
@@ -92,10 +86,14 @@ Practise to play "hard" starting hands:
 $ blackjack --subset hard
 ```
 
-## Rules
+## Optimal basic strategy
 
-Blackjack rules vary depending on the casino. In this application they follow the rules of Casino Helsinki,
-explained in Finnish [here](http://www.rahapeliopas.fi/kasinopelit/blackjack/), i.e.:
+Blackjack rules vary depending on the casino, and the optimal basic strategy depends on the rules.
+See overview of the most common rule variations [here](rule-variations.md).
+
+### Optimal basic strategy for Casino Helsinki
+
+The rules at Casino Helsinki:
 
 - 6 decks
 - Blackjack pays 3 to 2
@@ -109,9 +107,7 @@ explained in Finnish [here](http://www.rahapeliopas.fi/kasinopelit/blackjack/), 
 - Early surrender is allowed but not against Ace
 - A 7-7-7 with the first three cards (not in a split game) pays 3 to 1 directly
 
-See overview of the most common rule variations [here](rule-variations.md).
-
-### Optimal basic strategy for Casino Helsinki
+The dealers at Casino Helsinki use shuffling machines.
 
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/chart-helsinki.png" alt="" width="400"/>
 <img src="https://raw.githubusercontent.com/tukiains/blackjack-gui/main/blackjack_gui/images/helsinki-symbols.png" alt="" width="218"/>

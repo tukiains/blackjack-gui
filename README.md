@@ -1,7 +1,8 @@
 # blackjack-gui
 
+<img src="blackjack_gui/images/blackjack-gui-logo.png" alt="Blacjack GUI" width="75px"/>
+
 [![Blackjack GUI CI](https://github.com/tukiains/blackjack-gui/actions/workflows/test.yml/badge.svg)](https://github.com/tukiains/blackjack-gui/actions/workflows/test.yml)
-[![Downloads](https://pepy.tech/badge/blackjack-gui)](https://pepy.tech/project/blackjack-gui)
 [![PyPI version](https://badge.fury.io/py/blackjack-gui.svg)](https://badge.fury.io/py/blackjack-gui)
 
 Single-player blackjack including graphical and command line interfaces, written in Python. Can be used to simulate games
